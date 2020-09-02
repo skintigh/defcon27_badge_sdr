@@ -393,7 +393,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: ./signals/temp.txt
+    file: ./decoded.txt
     type: short
     unbuffered: 'True'
     vlen: '1'

@@ -5,7 +5,7 @@ lst = []
 max_list = 30  #128 and 256 find bad data
 min_match = 30 #10 found false positives, so did 20
 
-with open("temp.txt", 'r') as infile:
+with open("decoded.txt", 'r') as infile:
 	while True:
 		line = infile.read(1000000)
 		if not line: break
