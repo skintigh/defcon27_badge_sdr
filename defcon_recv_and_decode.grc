@@ -27,7 +27,7 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3, 1]
+    coordinate: [0, -4.0]
     rotation: 0
     state: enabled
 
@@ -50,31 +50,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [262, 492]
+    coordinate: [232, 572.0]
     rotation: 0
     state: enabled
 - name: dec
   id: variable
   parameters:
     comment: ''
-    value: int(interp*samp_rate_in/resample_rate_out)
+    value: int(interp*samp_rate_in/resample_rate)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [479, 245]
-    rotation: 0
-    state: enabled
-- name: end_samp_rate
-  id: variable
-  parameters:
-    comment: ''
-    value: 300e3
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [408, 3]
+    coordinate: [472, -4.0]
     rotation: 0
     state: enabled
 - name: eq_gain
@@ -95,7 +83,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [139, 350]
+    coordinate: [128, 444.0]
     rotation: 0
     state: enabled
 - name: eq_sps
@@ -107,7 +95,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [950, 191]
+    coordinate: [1176, -4.0]
     rotation: 0
     state: enabled
 - name: if_gain
@@ -128,7 +116,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [133, 493]
+    coordinate: [120, 572.0]
     rotation: 0
     state: enabled
 - name: interp
@@ -140,7 +128,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [548, 245]
+    coordinate: [536, -4.0]
     rotation: 0
     state: enabled
 - name: lpf_cutoff_freq
@@ -161,7 +149,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [527, 489]
+    coordinate: [464, 572.0]
     rotation: 0
     state: disabled
 - name: lpf_gain
@@ -182,7 +170,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [398, 490]
+    coordinate: [344, 572.0]
     rotation: 0
     state: enabled
 - name: nfilts
@@ -194,7 +182,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [655, 325]
+    coordinate: [784, -4.0]
     rotation: 0
     state: enabled
 - name: pcs_sps_in
@@ -206,7 +194,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [679, 387]
+    coordinate: [1000, -4.0]
     rotation: 0
     state: enabled
 - name: pcs_sps_out
@@ -218,7 +206,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [763, 387]
+    coordinate: [1080, -4.0]
     rotation: 180
     state: enabled
 - name: phase_bw
@@ -239,19 +227,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [263, 350]
+    coordinate: [248, 444.0]
     rotation: 0
     state: enabled
-- name: resample_rate_out
+- name: resample_rate
   id: variable
   parameters:
     comment: ''
-    value: end_samp_rate * eq_sps * pcs_sps_in / pcs_sps_out
+    value: samp_rate_out * eq_sps * pcs_sps_in / pcs_sps_out
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [271, 2]
+    coordinate: [256, -4.0]
     rotation: 0
     state: enabled
 - name: rf_gain
@@ -272,7 +260,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [7, 490]
+    coordinate: [0, 572.0]
     rotation: 0
     state: enabled
 - name: rrc_taps
@@ -285,19 +273,31 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [723, 325]
+    coordinate: [848, -4.0]
     rotation: 0
     state: enabled
 - name: samp_rate_in
   id: variable
   parameters:
     comment: sample rate 8-20 MSPS
-    value: resample_rate_out*10
+    value: resample_rate*10
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [169, 2]
+    coordinate: [160, -4.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate_out
+  id: variable
+  parameters:
+    comment: ''
+    value: 300e3
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, -4.0]
     rotation: 0
     state: enabled
 - name: taps
@@ -309,7 +309,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [677, 266]
+    coordinate: [608, -4.0]
     rotation: 0
     state: enabled
 - name: timing_loop_bw
@@ -330,7 +330,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [3, 350]
+    coordinate: [0, 444.0]
     rotation: 0
     state: enabled
 - name: variable_constellation_0
@@ -349,7 +349,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [702, 495]
+    coordinate: [880, 572.0]
     rotation: 0
     state: enabled
 - name: blocks_add_const_vxx_0
@@ -367,7 +367,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1120, 483]
+    coordinate: [1072, 420.0]
     rotation: 0
     state: enabled
 - name: blocks_char_to_short_0
@@ -383,7 +383,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [986, 487]
+    coordinate: [912, 424.0]
     rotation: 0
     state: enabled
 - name: blocks_file_sink_0
@@ -393,7 +393,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: ./decoded.txt
+    file: ./symbols.txt
     type: short
     unbuffered: 'True'
     vlen: '1'
@@ -401,7 +401,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1258, 467]
+    coordinate: [1240, 404.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -419,7 +419,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [294, 169]
+    coordinate: [280, 260.0]
     rotation: 0
     state: enabled
 - name: controls
@@ -453,7 +453,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [549, 411]
+    coordinate: [608, 620.0]
     rotation: 0
     state: enabled
 - name: digital_cma_equalizer_cc_0
@@ -472,7 +472,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [933, 97]
+    coordinate: [896, 188.0]
     rotation: 0
     state: enabled
 - name: digital_constellation_decoder_cb_0
@@ -488,7 +488,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1186, 335]
+    coordinate: [1128, 340.0]
     rotation: 180
     state: enabled
 - name: digital_costas_loop_cc_0
@@ -506,7 +506,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1173, 93]
+    coordinate: [1128, 184.0]
     rotation: 0
     state: enabled
 - name: digital_diff_decoder_bb_0
@@ -522,7 +522,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1017, 335]
+    coordinate: [920, 340.0]
     rotation: 180
     state: enabled
 - name: digital_pfb_clock_sync_xxx_0
@@ -545,33 +545,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [675, 121]
+    coordinate: [640, 212.0]
     rotation: 0
     state: enabled
-- name: low_pass_filter_0
-  id: low_pass_filter
-  parameters:
-    affinity: ''
-    alias: ''
-    beta: '6.76'
-    comment: ''
-    cutoff_freq: lpf_cutoff_freq
-    decim: '1'
-    gain: lpf_gain
-    interp: '1'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: samp_rate_in
-    type: fir_filter_ccf
-    width: '100000'
-    win: firdes.WIN_HAMMING
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [267, 210]
-    rotation: 0
-    state: disabled
 - name: osmosdr_source_0
   id: osmosdr_source
   parameters:
@@ -976,7 +952,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [2, 81]
+    coordinate: [0, 172.0]
     rotation: 0
     state: enabled
 - name: qtgui_const_sink_x_0
@@ -1068,11 +1044,11 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1174, 5]
+    coordinate: [1128, 84.0]
     rotation: 180
     state: enabled
-- name: qtgui_time_sink_x_0
-  id: qtgui_time_sink_x
+- name: qtgui_time_raster_sink_x_0
+  id: qtgui_time_raster_sink_x
   parameters:
     affinity: ''
     alias: ''
@@ -1086,88 +1062,48 @@ blocks:
     alpha7: '1.0'
     alpha8: '1.0'
     alpha9: '1.0'
-    autoscale: 'False'
     axislabels: 'True'
-    color1: blue
-    color10: dark blue
-    color2: red
-    color3: green
-    color4: black
-    color5: cyan
-    color6: magenta
-    color7: yellow
-    color8: dark red
-    color9: dark green
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
     comment: ''
-    ctrlpanel: 'False'
-    entags: 'True'
     grid: 'False'
     gui_hint: ''
-    label1: Signal 1
-    label10: Signal 10
-    label2: Signal 2
-    label3: Signal 3
-    label4: Signal 4
-    label5: Signal 5
-    label6: Signal 6
-    label7: Signal 7
-    label8: Signal 8
-    label9: Signal 9
-    legend: 'True'
-    marker1: '-1'
-    marker10: '-1'
-    marker2: '-1'
-    marker3: '-1'
-    marker4: '-1'
-    marker5: '-1'
-    marker6: '-1'
-    marker7: '-1'
-    marker8: '-1'
-    marker9: '-1'
-    name: '"LPF output, keep under 2V?"'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    mult: '[]'
+    name: '""'
+    ncols: '110'
     nconnections: '1'
-    size: '1024'
-    srate: samp_rate_in
-    stemplot: 'False'
-    style1: '1'
-    style10: '1'
-    style2: '1'
-    style3: '1'
-    style4: '1'
-    style5: '1'
-    style6: '1'
-    style7: '1'
-    style8: '1'
-    style9: '1'
-    tr_chan: '0'
-    tr_delay: '0'
-    tr_level: '0.0'
-    tr_mode: qtgui.TRIG_MODE_FREE
-    tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_tag: '""'
-    type: complex
-    update_time: '0.10'
-    width1: '1'
-    width10: '1'
-    width2: '1'
-    width3: '1'
-    width4: '1'
-    width5: '1'
-    width6: '1'
-    width7: '1'
-    width8: '1'
-    width9: '1'
-    ylabel: Amplitude
-    ymax: '2'
-    ymin: '-2'
-    yunit: '""'
+    nrows: '512'
+    offset: '[]'
+    samp_rate: samp_rate_out
+    type: byte
+    update_time: '0.01'
+    zmax: '7'
+    zmin: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [462, 316]
+    coordinate: [904, 476.0]
     rotation: 0
-    state: disabled
+    state: true
 - name: qtgui_time_sink_x_0_0
   id: qtgui_time_sink_x
   parameters:
@@ -1221,10 +1157,10 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '"RR output, keep under 2V?"'
+    name: '"Rational Resampler output, keep under 2V?"'
     nconnections: '1'
     size: '64'
-    srate: resample_rate_out
+    srate: resample_rate
     stemplot: 'False'
     style1: '1'
     style10: '1'
@@ -1257,12 +1193,12 @@ blocks:
     ylabel: Amplitude
     ymax: '2'
     ymin: '-2'
-    yunit: '""'
+    yunit: we
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [681, 22]
+    coordinate: [640, 388.0]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_0
@@ -1282,7 +1218,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [475, 145]
+    coordinate: [448, 236.0]
     rotation: 0
     state: enabled
 - name: received
@@ -1316,25 +1252,22 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [407, 409]
+    coordinate: [744, 620.0]
     rotation: 0
     state: enabled
 
 connections:
 - [blocks_add_const_vxx_0, '0', blocks_file_sink_0, '0']
 - [blocks_char_to_short_0, '0', blocks_add_const_vxx_0, '0']
-- [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_multiply_const_vxx_0, '0', rational_resampler_xxx_0, '0']
 - [digital_cma_equalizer_cc_0, '0', digital_costas_loop_cc_0, '0']
 - [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0, '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0, '0']
 - [digital_diff_decoder_bb_0, '0', blocks_char_to_short_0, '0']
+- [digital_diff_decoder_bb_0, '0', qtgui_time_raster_sink_x_0, '0']
 - [digital_pfb_clock_sync_xxx_0, '0', digital_cma_equalizer_cc_0, '0']
-- [low_pass_filter_0, '0', qtgui_time_sink_x_0, '0']
-- [low_pass_filter_0, '0', rational_resampler_xxx_0, '0']
 - [osmosdr_source_0, '0', blocks_multiply_const_vxx_0, '0']
-- [osmosdr_source_0, '0', low_pass_filter_0, '0']
 - [rational_resampler_xxx_0, '0', digital_pfb_clock_sync_xxx_0, '0']
 - [rational_resampler_xxx_0, '0', qtgui_time_sink_x_0_0, '0']
 
