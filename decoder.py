@@ -294,9 +294,9 @@ def hammingwt(n):
 	return c
 	
 
-def compute(in_data, debug=False):
+def compute(in_data, expected, debug=False):
 	start = HDR_LEN+5*4
-	length = 20
+	length = 16
 	
 	nibbles = [x>>(4*i)&0xf for x in in_data for i in range(0, 2)]
 	if debug: print("nibbles:      ", nibbles)
@@ -336,7 +336,11 @@ def compute(in_data, debug=False):
 	diff = [((odd_single_d0[x]+odd_single_d1[x]+odd_single_d2[x]+odd_single_d3[x]+odd_single_d5[x]+odd_single_d6[x])%8) for x in range(0, length)]
 	sum = [(zeros_symbols[x+start] - ((odd_single_d0[x]+odd_single_d1[x]+odd_single_d2[x]+odd_single_d3[x]+odd_single_d5[x]+odd_single_d6[x])%8)+8)%8 for x in range(0, length)]
 	
-	if debug:
+	error =  diff != expected
+	if error:
+		print("Data mismatch")
+	
+	if debug or error:
 		print("odd_single_d0:", odd_single_d0)
 		print("odd_single_d1:", odd_single_d1)
 		print("odd_single_d2:", odd_single_d2)
@@ -345,15 +349,15 @@ def compute(in_data, debug=False):
 		print("odd_single_d6:", odd_single_d6)
 		print("sum          :", sum)
 		print("diff         :", diff)
-		
+		print("expected     :", expected)
 	return sum
 	
-compute([0,0,1,0])
+compute([0,0,0,0], 16*[0])
 print("\n\n")
 for n in range(0,256):
 	if hammingwt(n) == 1:
 		print("\n",data_symbols[n][0])
-		result = compute(data_symbols[n][0],True)
+		result = compute(data_symbols[n][0],16*[0],True)
 		print(result[0:16])
 		print(data_symbols[n][1][0:16])
 		print(result[0:16] == data_symbols[n][1][0:16])
