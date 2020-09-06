@@ -2,7 +2,8 @@
 
 Install
 
-Install Pentoo on a physical machine. Common belief is it SDR won't work on a VM. This seems correct on Oracle Virtualbox, but earlier experiments of mine indicated VMWare might work
+Install Pentoo on a physical machine. Common belief is it SDR won't work on a VM. This seems correct on Oracle Virtualbox, but earlier experiments of mine indicated VMWare might work.
+
 Gnuradio-companion will timeout on UHD for 10 seconds every time you try to run a program. This is a very old bug in 0.2.0. It was fixed in 2018, to fix it you need to uninstall 0.2.0 and build the latest version. Directions...
 
 Intro
