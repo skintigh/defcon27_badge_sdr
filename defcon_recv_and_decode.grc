@@ -395,7 +395,7 @@ blocks:
     comment: ''
     file: ./symbols.txt
     type: short
-    unbuffered: 'True'
+    unbuffered: 'False'
     vlen: '1'
   states:
     bus_sink: false
