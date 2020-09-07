@@ -103,10 +103,11 @@ def compute(in_data_orig, expected, debug=False, ignore=0):
 	odd_100010 = [6 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
 	odd_1000100 = [4 * (odd_bits[x-6]*odd_bits[x-2]) for x in range(0, length)]
 	odd_1000010 = [4 * (odd_bits[x-6]*odd_bits[x-1]) for x in range(0, length)]
+	odd_1000001 = [4 * (odd_bits[x-6]*odd_bits[x-0]) for x in range(0, length)]
 	
 	diff = [((odd_single_d0[x] + odd_single_d1[x] + odd_single_d2[x] + odd_single_d3[x] 
 	+ odd_single_d5[x] + odd_single_d6[x] + even_single[x] + odd_11[x] + odd_1001000[x] 
-	+ odd_100010[x] + odd_1000100[x] + odd_1000010[x]
+	+ odd_100010[x] + odd_1000100[x] + odd_1000010[x] + odd_1000001[x]
 	)%8) for x in range(0, length)]
 	
 	sum = [(zeros_symbols[x+start] - diff[x] + 8) % 8 for x in range(0, length)]
@@ -116,10 +117,11 @@ def compute(in_data_orig, expected, debug=False, ignore=0):
 		print("Data mismatch")
 	
 	if debug or error:
+		print("bytes        :", in_data)
 		print("nibbles      : [", end='')
 		for x in nibbles[0:-4]:
 			print("%x,    "%x,end='')
-		print(']')
+		print('\b\b]')
 		print("nips         :", nips[:-8],"\n")
 		print("odd_bits     :", odd_bits[:-8])
 		print("even_bits    :", even_bits[:-8])
@@ -132,9 +134,10 @@ def compute(in_data_orig, expected, debug=False, ignore=0):
 		print("even_single  :", even_single)
 		print("odd_11       :", odd_11)
 		print("odd_1001000  :", odd_11)
-		print("odd_100010   :", odd_100010)
+		print("odd_100010   :",  odd_100010)
 		print("odd_1000100  :", odd_1000100)
 		print("odd_1000010  :", odd_1000010)
+		print("odd_1000001  :", odd_1000001)
 		#print("odd_11b      :", odd_11b)
 		#print("odd_11c      :", odd_11c)
 		print("diff         :", diff)
@@ -146,23 +149,15 @@ def compute(in_data_orig, expected, debug=False, ignore=0):
 			if sum[x] == expected[x]: print("   ",end="")
 			else: print("*  ", end="")
 		print()
-		sys.exit(1)
+		#sys.exit(1)
 	return sum
 
+###################################################################################
 
-
-
-#load data to test
-#with open("data_1byte.txt", 'r') as f:
-with open("data_0XYY.txt", 'r') as f:
-	data_symbols = ast.literal_eval(f.read())
-print(len(data_symbols), "data records loaded")
-	
-#length = 4*5 6
-length = 4 * len(data_symbols[0][0])
 
 #compute([0,0,0,0], data_symbols[0][1][0:16])
 print("\n\n")
+
 
 '''
 print("test by hamming weight")
@@ -177,17 +172,55 @@ for h in range(0,9):
 			print(result[0:length] == data_symbols[n][1][0:length])			
 	print()
 '''
-	
+
+
+
+
+with open("data_0XYY.txt", 'r') as f:
+	data_symbols = ast.literal_eval(f.read())
+print(len(data_symbols), "data records loaded")	
+length = 4 * len(data_symbols[0][0])
+
 print("test in order")
+errors = tests = 0
 ignore = 2 #ignore first 2 symbols
 for n in range(0,len(data_symbols)):
+	tests += 1
 	#print(data_symbols[n][0])
 	result = compute(data_symbols[n][0], data_symbols[n][1][0:length], ignore = ignore)
 	#print(result[0:length])
 	#print(data_symbols[n][1][0:length])
 	if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
 		print("Error on", data_symbols[n][0])
-print()
+		errors += 1
+print("\n",errors,"errors in", tests, "tests")
+
+
+
+
+
+
+#load data to test
+#with open("data_1byte.txt", 'r') as f:
+#with open("data_0XYY.txt", 'r') as f:
+with open("data_2bytes.txt", 'r') as f:
+	data_symbols = ast.literal_eval(f.read())
+print(len(data_symbols), "data records loaded")
+length = 4 * len(data_symbols[0][0])
+
+print("test in order")
+errors = tests = 0
+ignore = 2 #ignore first 2 symbols
+for n in range(0,len(data_symbols)):
+	tests += 1
+	#print(data_symbols[n][0])
+	result = compute(data_symbols[n][0], data_symbols[n][1][0:length], ignore = ignore)
+	#print(result[0:length])
+	#print(data_symbols[n][1][0:length])
+	if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
+		print("Error on", data_symbols[n][0])
+		errors += 1
+print("\n",errors,"errors in", tests, "tests")
 
 
 compute([0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0], [5,4,1,6,0,0,5,7,4,0,3,4,0,2,3,7,1,4,5,5,0,4,4,5,6,7,4,3,3,0,4,0])#,4,3,2,4,7,5,7,3,5,2,7,7,5,2,7,0,6,6,7,5,2,4,6,1,7,0])
