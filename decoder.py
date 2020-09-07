@@ -28,7 +28,7 @@ delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
 expected_6 = [1,1,7,1,7,1,1,7,7,1,7,1,1,1,1,7,1,7,7,1,7,1,7,7,7,1,7,1,1,1,7,7,1,1,7,1,1,1,7,1,1,1,1,1,1,7,1,1,7,1,1,7,7,7,1,1,1,7,7,7,7,1,7,7]
 #print(*expected_6)
 print("Same =", delta_6[HDR_LEN:-FTR_LEN]==expected_6)
-
+print()
 
 
 
@@ -100,7 +100,17 @@ def compute(in_data_orig, expected, debug=False, ignore=0):
 	
 	#odd_1111 = 
 	
-	odd_100010 = [6 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
+	odd_100010 = []
+	for x in range(0, length):
+		if x%4==0: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))
+		elif x%4==3: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))
+		elif x%4==1: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))
+		elif x%4==2: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))
+		#else: odd_100010.append(0)
+	#if x%4==0: odd_100010 = [6 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
+	#if x%4==3: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
+	#if x%4==1: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
+	#if x%4==2: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
 	odd_1000100 = [4 * (odd_bits[x-6]*odd_bits[x-2]) for x in range(0, length)]
 	odd_1000010 = [4 * (odd_bits[x-6]*odd_bits[x-1]) for x in range(0, length)]
 	odd_1000001 = [4 * (odd_bits[x-6]*odd_bits[x-0]) for x in range(0, length)]
@@ -149,15 +159,13 @@ def compute(in_data_orig, expected, debug=False, ignore=0):
 			if sum[x] == expected[x]: print("   ",end="")
 			else: print("*  ", end="")
 		print()
-		#sys.exit(1)
+		sys.exit(1)
 	return sum
 
 ###################################################################################
 
 
 #compute([0,0,0,0], data_symbols[0][1][0:16])
-print("\n\n")
-
 
 '''
 print("test by hamming weight")
@@ -172,8 +180,6 @@ for h in range(0,9):
 			print(result[0:length] == data_symbols[n][1][0:length])			
 	print()
 '''
-
-
 
 
 with open("data_0XYY.txt", 'r') as f:
@@ -193,16 +199,11 @@ for n in range(0,len(data_symbols)):
 	if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
 		print("Error on", data_symbols[n][0])
 		errors += 1
-print("\n",errors,"errors in", tests, "tests")
+print(errors,"errors in", tests, "tests\n")
 
 
 
 
-
-
-#load data to test
-#with open("data_1byte.txt", 'r') as f:
-#with open("data_0XYY.txt", 'r') as f:
 with open("data_2bytes.txt", 'r') as f:
 	data_symbols = ast.literal_eval(f.read())
 print(len(data_symbols), "data records loaded")
@@ -220,8 +221,10 @@ for n in range(0,len(data_symbols)):
 	if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
 		print("Error on", data_symbols[n][0])
 		errors += 1
-print("\n",errors,"errors in", tests, "tests")
+print(errors,"errors in", tests, "tests\n")
 
 
+
+print("Test", [0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0])
 compute([0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0], [5,4,1,6,0,0,5,7,4,0,3,4,0,2,3,7,1,4,5,5,0,4,4,5,6,7,4,3,3,0,4,0])#,4,3,2,4,7,5,7,3,5,2,7,7,5,2,7,0,6,6,7,5,2,4,6,1,7,0])
 																																																																																																												
