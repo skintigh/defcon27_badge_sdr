@@ -32,20 +32,20 @@ For use by the badge, the 16 bytes of data consist of:
 Install
 -------
 
-Install Pentoo on a physical machine. Common belief is it SDR won't work on a VM. This seems correct on Oracle Virtualbox, but earlier experiments of mine indicated VMWare might work.
+Install Pentoo on a physical machine. Common belief is SDR won't work on a VM. This seems true on Oracle Virtualbox, but earlier experiments of mine suggest VMWare might work.
 
-Gnuradio-companion will timeout on UHD for 10 seconds every time you try to run a program. This is a very old bug in 0.2.0. It was fixed in 2018, to fix it you need to uninstall 0.2.0 and build the latest version:
+Gnuradio-companion will timeout on UHD for 10 seconds every time you try to run a program. This is an annoying and very old bug in soapyplutosdr 0.2.0. It was fixed in 2018, to fix it you need to uninstall 0.2.0 and build the latest version:
 
 > sudo emerge -Ca net-wireless/soapyplutosdr
 
-Then follow the instructions at this repo, copied here but possibly out of date:
- > git clone https://github.com/pothosware/SoapyPlutoSDR
- > cd SoapyPlutoSDR
- > mkdir build
- > cd build
- > cmake ..
- > make
- > sudo make install
+Then follow the instructions at this repo, copied here but possibly out of date:  
+ > git clone https://github.com/pothosware/SoapyPlutoSDR  
+ > cd SoapyPlutoSDR  
+ > mkdir build  
+ > cd build  
+ > cmake ..  
+ > make  
+ > sudo make install  
 
 Files in this Repo
 ------------------
