@@ -5,7 +5,7 @@ lst = []
 max_list = 30  #128 and 256 find bad data
 min_match = 30 #10 found false positives, so did 20
 
-with open("decoded.txt", 'r') as infile:
+with open("symbols.txt", 'r') as infile:
 	while True:
 		line = infile.read(1000000)
 		if not line: break
@@ -31,4 +31,12 @@ with open("decoded.txt", 'r') as infile:
 				lst=lst[-max_list:-1]
 			#print(len(lst))
 
-	#print(lst)
+	'''
+	#code for determining how many datagrams per burst. Need to set max_list to be in the thousands for just a few bursts.
+	print("length:",len(lst))
+	total = 0
+	for l in lst: 
+		print(l[1],end=' ')
+		total += l[1]
+	print("\nTotal:", total)
+	'''
