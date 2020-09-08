@@ -7,12 +7,11 @@ Introduction
 The Defcon 27 badge communicates via NFMI bursts. Each burst has 4 sections. 
 * Section 1 is 21 half-power clusters of 2 high frequency signals and a square wave with a short pause inbetween each cluster. I assume this is timing data for the PLL and maybe training for the D8PSK receiver. It's probably also used to set the amplifier on the antenna, hense it's half power to avoid damage.
 * Section 2 is 2 copies of the datagram preamble with a pause inbetween: 
- > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 
- > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 7 1  
- > (The last 12 or so symbols are the pause/noise)
- > This is curious because the expected values are 
- > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 4 2 7 7 4 6 7 5 6
- > This suggests those last 8 symbols are actually data of some sort...
+ > > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0  
+ > > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 7 1  
+ > > I think the last 12 or so symbols are the pause/noise. This is curious because the expected values are:  
+ > > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 4 2 7 7 4 6 7 5 6  
+ > > This suggests those last 8 symbols are actually data of some sort...
 * 3rd is 4 square waves with pauses. 7 0 0 0 0 0 0 0 0 0 0 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 7 7 0 0 0 0 0 0 0 0 0 0 0 0 0 5 3 
 * 4th is 271 (yes, 271...?!?) copies of the same datagram. These program receive those signals, convert all 4 sections to symbols, and decode the datagrams from the 4th section only.
 
