@@ -47,7 +47,7 @@ Then follow the instructions at this repo, copied here but possibly out of date:
  > make  
  > sudo make install  
 
-Then downlaod and run these files.
+Then downlaod and run this repo.
 
 Files in this Repo
 ------------------
