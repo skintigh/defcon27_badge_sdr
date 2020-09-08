@@ -10,8 +10,8 @@ The Defcon 27 badge communicates via NFMI bursts. Each burst has 4 sections.
  > > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0  
  > > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 7 1  
  > > I think the last 12 or so symbols are the pause/noise. This is curious because the expected values are:  
- > > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 4 2 7 7 4 6 7 5 6  
- > > This suggests those last 8 symbols are actually data of some sort...
+ > > 4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 **4 2 7 7 4 6 7 5 6**  
+ > > This suggests those last 9 symbols are actually data of some sort...
 * 3rd is 4 square waves with pauses. 7 0 0 0 0 0 0 0 0 0 0 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 7 7 0 0 0 0 0 0 0 0 0 0 0 0 0 5 3 
 * 4th is 271 (yes, 271...?!?) copies of the same datagram. These program receive those signals, convert all 4 sections to symbols, and decode the datagrams from the 4th section only.
 
