@@ -18,7 +18,7 @@ The Defcon 27 badge communicates via NFMI bursts. Each burst has 4 sections.
 Each datagram consists of symbols. I'm going to refer to 4 symbols as a byte.
 
 Each datagram consists of:
-* 8 bytes of preamble (or 6 bytes of preample + 2 bytes of ?????)
+* 8 (or 6 + 2 of ???) bytes of preamble (or midamble/prefix code/syncword/sync sequence?)
 * 16 bytes of data
 * 2.5 bytes of something that seems random but is probably a CRC and maybe something else (or maybe just 7 symbols from an 8-bit CRC, I hope?)
 * 1 byte of symbols that seem to be the signal decaying, as if a pause between datagrams. Maybe the half byte from the previous section belongs to this but it's not obvious.
