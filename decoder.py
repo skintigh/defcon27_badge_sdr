@@ -165,66 +165,70 @@ def compute(in_data_orig, expected, debug=False, ignore=0):
 ###################################################################################
 
 
-#compute([0,0,0,0], data_symbols[0][1][0:16])
 
-'''
-print("test by hamming weight")
-for h in range(0,9): 
-	print(h)
-	for n in range(0,256):
-		if hammingwt(n) == h:
-			print(data_symbols[n][0])
-			result = compute(data_symbols[n][0], data_symbols[n][1][0:length])
-			#print(result[0:length])
-			#print(data_symbols[n][1][0:length])
-			print(result[0:length] == data_symbols[n][1][0:length])			
-	print()
-'''
+def main():
+	#compute([0,0,0,0], data_symbols[0][1][0:16])
 
-
-with open("data_0XYY.txt", 'r') as f:
-	data_symbols = ast.literal_eval(f.read())
-print(len(data_symbols), "data records loaded")	
-length = 4 * len(data_symbols[0][0])
-
-print("test in order")
-errors = tests = 0
-ignore = 2 #ignore first 2 symbols
-for n in range(0,len(data_symbols)):
-	tests += 1
-	#print(data_symbols[n][0])
-	result = compute(data_symbols[n][0], data_symbols[n][1][0:length], ignore = ignore)
-	#print(result[0:length])
-	#print(data_symbols[n][1][0:length])
-	if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
-		print("Error on", data_symbols[n][0])
-		errors += 1
-print(errors,"errors in", tests, "tests\n")
+	'''
+	print("test by hamming weight")
+	for h in range(0,9): 
+		print(h)
+		for n in range(0,256):
+			if hammingwt(n) == h:
+				print(data_symbols[n][0])
+				result = compute(data_symbols[n][0], data_symbols[n][1][0:length])
+				#print(result[0:length])
+				#print(data_symbols[n][1][0:length])
+				print(result[0:length] == data_symbols[n][1][0:length])			
+		print()
+	'''
 
 
+	with open("data_0XYY.txt", 'r') as f:
+		data_symbols = ast.literal_eval(f.read())
+	print(len(data_symbols), "data records loaded")	
+	length = 4 * len(data_symbols[0][0])
 
-
-with open("data_2bytes.txt", 'r') as f:
-	data_symbols = ast.literal_eval(f.read())
-print(len(data_symbols), "data records loaded")
-length = 4 * len(data_symbols[0][0])
-
-print("test in order")
-errors = tests = 0
-ignore = 2 #ignore first 2 symbols
-for n in range(0,len(data_symbols)):
-	tests += 1
-	#print(data_symbols[n][0])
-	result = compute(data_symbols[n][0], data_symbols[n][1][0:length], ignore = ignore)
-	#print(result[0:length])
-	#print(data_symbols[n][1][0:length])
-	if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
-		print("Error on", data_symbols[n][0])
-		errors += 1
-print(errors,"errors in", tests, "tests\n")
+	print("test in order")
+	errors = tests = 0
+	ignore = 2 #ignore first 2 symbols
+	for n in range(0,len(data_symbols)):
+		tests += 1
+		#print(data_symbols[n][0])
+		result = compute(data_symbols[n][0], data_symbols[n][1][0:length], ignore = ignore)
+		#print(result[0:length])
+		#print(data_symbols[n][1][0:length])
+		if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
+			print("Error on", data_symbols[n][0])
+			errors += 1
+	print(errors,"errors in", tests, "tests\n")
 
 
 
-print("Test", [0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0])
-compute([0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0], [5,4,1,6,0,0,5,7,4,0,3,4,0,2,3,7,1,4,5,5,0,4,4,5,6,7,4,3,3,0,4,0])#,4,3,2,4,7,5,7,3,5,2,7,7,5,2,7,0,6,6,7,5,2,4,6,1,7,0])
-																																																																																																												
+
+	with open("data_2bytes.txt", 'r') as f:
+		data_symbols = ast.literal_eval(f.read())
+	print(len(data_symbols), "data records loaded")
+	length = 4 * len(data_symbols[0][0])
+
+	print("test in order")
+	errors = tests = 0
+	ignore = 2 #ignore first 2 symbols
+	for n in range(0,len(data_symbols)):
+		tests += 1
+		#print(data_symbols[n][0])
+		result = compute(data_symbols[n][0], data_symbols[n][1][0:length], ignore = ignore)
+		#print(result[0:length])
+		#print(data_symbols[n][1][0:length])
+		if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
+			print("Error on", data_symbols[n][0])
+			errors += 1
+	print(errors,"errors in", tests, "tests\n")
+
+
+
+	print("Test", [0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0])
+	compute([0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0], [5,4,1,6,0,0,5,7,4,0,3,4,0,2,3,7,1,4,5,5,0,4,4,5,6,7,4,3,3,0,4,0])#,4,3,2,4,7,5,7,3,5,2,7,7,5,2,7,0,6,6,7,5,2,4,6,1,7,0])
+
+if __name__ == "__main__":
+	main()																																																																																																												
