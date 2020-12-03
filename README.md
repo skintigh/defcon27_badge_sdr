@@ -49,7 +49,9 @@ Then follow the instructions at this repo, copied here but possibly out of date:
 
 Then downlaod and run this repo.
 
-To broadcast, I had to rebuild osmosdr_sink.blobk.yml with gen_osmosdr_blocks.py that I found in instructions online somewhere...
+To broadcast, I had to rebuild osmosdr_sink.blobk.yml with gen_osmosdr_blocks.py Instructions and files here:
+https://gist.github.com/gbevan/8e583b9cf87aa3c58102251454fa48a6
+https://github.com/osmocom/gr-osmosdr/blob/master/grc/gen_osmosdr_blocks.py
 
 Files in this Repo
 ------------------
