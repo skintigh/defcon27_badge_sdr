@@ -4,10 +4,15 @@
 
 import sys, ast
 
+
+from compute import compute
+
+'''
 #this version allows expected, print_error
 def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 	in_data = in_data_orig.copy() # prevent modification of data
-	start = 0
+	start = ignore*4
+	
 	length = len(in_data)*4
 	in_data += [0,0]
 	nibbles = [x>>(4*i)&0xf for x in in_data for i in range(0, 2)]
@@ -21,10 +26,31 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 	#if debug: print("even_bits:    ", even_bits)
 	
 	#print("odd_bits:     ", odd_bits)
-	#odd_merge = [0,0,0,0]+ [ 4* ((x%8==4)|(x%8==2)) & even_bits[x-3] & even_bits[x+1] for x in range(4,length-2)] + [0,0]
-	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 > 0) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			#added this to compensate for byte 0,1 == 4,4. Might actually need to be 3-4 consecutive 4s
-	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 < 3) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			#added this to compensate for byte 0,1 == 4,4. Might actually need to be 3-4 consecutive 4s
-	odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [0,2,3]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			#added this to compensate for byte 0,1 == 4,4. Might actually need to be 3-4 consecutive 4s
+	#odd_merge = [0,0,0,0]+ [ 4* ((x%8==4)|(x%8==2)) & even_bits[x-3] & even_bits[x+1] for x in range(4,length-2)] + [0,0] #passes sanity
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 > 0) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			#added this to compensate for byte 0,1 == 4,4. Might actually need to be 3-4 consecutive 4s  fails sanity
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 < 3) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			
+	
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [0,2,3]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]	#works most of the time data 0 and 1		fail mini test  test1 127->192
+	#odd_merge = [0,0,0,0,0,0]+ [ 4 * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]  #fail   test1 119-192
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [0,2]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)] #nope  passes mini test tho   test1 127,255 - 0,192
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [3,2]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)] #maybe... fail
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [3,0]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)] #maybe...  winner for data 2    test1 255,233,95-0,0,192
+	#really just 100010?
+	#odd_merge = [0,0,0,0,0]+ [ 4* (x%4 in [3,0]) * odd_bits[x-5] * odd_bits[x-1] for x in range(5,length)] # 254,223,95 - 0,0,192
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%12 in [0,2,3,4,6,7,8,11]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)] #better...?  95-192
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [3]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)] #maybe... fail
+
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [0,2]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [2,3]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			#added this to compensate for byte 0,1 == 4,4. Might actually need to be 3-4 consecutive 4s
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [0,3]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			#added this to compensate for byte 0,1 == 4,4. Might actually need to be 3-4 consecutive 4s
+	#odd_merge = [0,0,0,0,0,0]+ [ 4 * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			#added this to compensate for byte 0,1 == 4,4. Might actually need to be 3-4 consecutive 4s
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [1,2,3]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]			#added this to compensate for byte 0,1 == 4,4. Might actually need to be 3-4 consecutive 4s
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [0,1,2,3]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]	
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%4 in [4]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)]	
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%12 in [0,2,3,4,6,7,11]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)] #better...?
+	#odd_merge = [0,0,0,0,0,0]+ [ 4* (x%12 in [0,2,3,4,6,7,8,9,10,11]) * odd_bits[x-5] * odd_bits[x-1] for x in range(6,length)] #better...?
+	pos_odd_merge = [0,0,0,0,0]+ [ 4  * odd_bits[x-5] * odd_bits[x-1] for x in range(5,length)] #better...?
+
 	#print("odd_merge    :", odd_merge)
 	
 	#print("even_bits    :", even_bits[:-8])
@@ -58,27 +84,36 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 	#if debug: print("even_single  :", even_single)
 	
 	odd_11 = [4*((odd_bits[x]+odd_bits[x-1]+odd_bits[x-2]+odd_bits[x-3])==2 or (odd_bits[x]+odd_bits[x-1]+odd_bits[x-2]+odd_bits[x-3])==3) for x in range(0, length)]
+	#odd_11 = [4*((((odd_bits[x]+odd_bits[x-1]+odd_bits[x-2]+odd_bits[x-3])==2) and (odd_bits[x-3:x+1] != [0,1,1,0])) or (odd_bits[x]+odd_bits[x-1]+odd_bits[x-2]+odd_bits[x-3])==3) for x in range(0, length)]
 	
-	odd_1001000 = [4 * (odd_bits[x-6]*odd_bits[x-3]) for x in range(0, length)]#1nn1nnn
+	odd_1001000 = [4 * (odd_bits[x-6]*odd_bits[x-3]) for x in range(0, length)]#1nn1nnn   was working but made no sense
+	#odd_1001000 = [0,0,0,0,0,0] + [4 * (odd_bits[x-6]*odd_bits[x-3]) for x in range(6, length)]#1nn1nnn
+
+
 	
 	odd_100010 = []
 	for x in range(0, length):
-		if x%4==0: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))
-		elif x%4==3: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))
-		elif x%4==1: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))
-		elif x%4==2: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))
+		#if   x%12==11: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))   #to fic count in byte 3 of count
+		if   x%16==11: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))   #to fic count in byte 3 of count
+		elif x%4==0: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))
+		elif x%4==1: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))  #32? 
+		elif x%4==2: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))    
+		elif x%4==3: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))  #6 6 2 6 used to work   2662 should equal merge rule 0,3
 		#else: odd_100010.append(0)
 	#if x%4==0: odd_100010 = [6 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
 	#if x%4==3: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
 	#if x%4==1: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
 	#if x%4==2: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
-	odd_1000100 = [4 * (odd_bits[x-6]*odd_bits[x-2]) for x in range(0, length)]
+
+	odd_1000100 = [4 * (odd_bits[x-6]*odd_bits[x-2]) for x in range(0, length)] #was working but makes no sense
+	#odd_1000100 = [0,0,0,0,0,0] + [4 * (odd_bits[x-6]*odd_bits[x-2]) for x in range(6, length)] #was working but makes no sense
+
 	odd_1000010 = [4 * (odd_bits[x-6]*odd_bits[x-1]) for x in range(0, length)]
 	odd_1000001 = [4 * (odd_bits[x-6]*odd_bits[x-0]) for x in range(0, length)]
 	
 	diff = [((odd_single_d0[x] + odd_single_d1[x] + odd_single_d2[x] + odd_single_d3[x] 
 	+ odd_single_d5[x] + odd_single_d6[x] + even_single[x] + odd_11[x] + odd_1001000[x] 
-	+ odd_100010[x] + odd_1000100[x] + odd_1000010[x] + odd_1000001[x] + odd_merge[x] #+ even_merge[x]
+	+ odd_100010[x] + odd_1000100[x] + odd_1000010[x] + odd_1000001[x] #+ odd_merge[x] 
 	)%8) for x in range(0, length)]
 	
 	
@@ -118,12 +153,13 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 		print("odd_single_d6:", odd_single_d6)
 		print("even_single  :", even_single)
 		print("odd_11       :", odd_11)
-		print("odd_1001000  :", odd_11)
+		print("odd_1001000  :", odd_1001000)
 		print("odd_100010   :",  odd_100010)
 		print("odd_1000100  :", odd_1000100)
 		print("odd_1000010  :", odd_1000010)
 		print("odd_1000001  :", odd_1000001)
-		print("odd_merge    :", odd_merge)
+		#print("odd_merge    :", odd_merge)
+		print("pos_odd_merge:", pos_odd_merge)
 		#print("even_merge   :", even_merge)
 		#print("odd_11b      :", odd_11b)
 		#print("odd_11c      :", odd_11c)
@@ -144,8 +180,7 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 
 	#print(sum)
 	return sum
-
-
+'''
 
 
 def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=True, print_result=True):
@@ -166,7 +201,8 @@ def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=True,
 			print()
 			print(sum)
 			print(expected)
-		for x in range(ignore,L):
+		#print(ignore, L)
+		for x in range(0,L):
 			if sum[x] != expected[x]:
 				#print(x)
 				#print(in_data)
@@ -189,267 +225,147 @@ def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=True,
 		print("Found:", in_data)
 		for c in in_data: 	print(hex(c),end=" ")
 		print()
+		'''
 		for c in in_data: 
 			if c != 0x9e: print(chr(c),end=" ")   #printing 9e or 9e 6e kills python???
 		print()
+		for c in in_data: 		
+			print(hex(c%16*16+c//16),end=" ")
+		print()
+		for c in in_data: 		
+			print(chr(c%16*16+c//16),end=" ")
+		'''	
 	return in_data
 
+if 0:
+	#Z = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6,  2, 3, 3, 6,   7, 7, 0, 1,   3, 2,0, 0,  3,2,4,3 ,0,7,3,2,  	Z= [5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7,5,4,4,3, 7,7,7,7,0,1,0,0,0,0]
+	#                      
+	#Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 4, 0,  3,2,4,3 ,0,7,3,2, ]
 
+	#startup3 = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6,  2, 7, 3, 4,  2, 7, 3, 5,  3, 4, 4, 2,  3, 4, 0, 7,  0, 7, 3, 2,  	startup3 = [5, 4, 5, 0, 5, 0, 0, 6, 2, 6, 2, 3, 2, 3, 5, 4, 2, 4, 6, 1, 7, 3, 1, 1, 5, 5, 1, 6, 1, 7, 6, 1, 1, 4, 1, 1, 6, 7, 7, 3, 5, 2, 7, 7, 7, 1, 2, 5]#, 2, 7, 2, 4]#, 0, 0]
 
-if 1:
-	#                                                                                                          |           |           |           |           |           |
-	#startup3 = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6, 2, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2, 5, 4, 5, 0, 5, 0, 0, 6, 2, 6, 2, 3, 2, 3, 5, 4, 2, 4, 6, 1, 7, 3, 1, 1, 5, 5, 1, 6, 1, 7, 6, 1, 1, 4, 1, 1, 6, 7, 7, 3, 5, 2, 7, 7, 7, 1, 2, 5, 2, 7, 2, 4]#, 0, 0]
-	#Z =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6, 0, 6, 7, 3, 6, 3, 5, 1, 1, 6, 1, 1, 3, 3, 5, 5, 0, 7, 3, 2, 5, 4, 3, 5, 7, 0, 3, 6, 4, 0, 7, 3, 0, 4, 1, 4, 4, 2, 7, 4, 6, 2, 0, 2, 0, 7, 6, 6, 1, 6, 4, 1, 3, 1, 4, 4, 0, 7, 7, 3, 5, 2, 7, 7, 5, 4, 4, 3, 6, 4, 0, 0]#, 0, 0] #, 3, 0, 0, 1] Found: [0, 0, 0, 0, 0, 0, 0, 0, 51, 51, 13, 0, 0, 48, 52, 176, 51, 69, 48, 52, 149, 0, 0, 0, 129, 170]
 	# Found: [0, 0, 0, 0, 0, 0, 0, 0, 51, 51, 13, 0, 0, 48, 52, 176, 51, 69, 48, 52, 149, 0, 0, 0, 129, 170]
 	# 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x33 0x33 0xd 0x0 0x0 0x30 0x34 0xb0 0x33 0x45 0x30 0x34 0x95 0x0 0x0 0x0 0x81 0xaa 
    # 3 3 \d   0 4 ° 3 E 0 4      ª  
 
-
 	#                                                                                  |                        |          |           |            |           |          |
-	#Z =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 3, 6, 3, 5, 1, 1, 6, 1, 1, 3, 3, 5, 5, 0, 7, 3, 2, 5, 4, 3, 5, 7, 0, 3, 6, 4, 0, 7, 3, 0, 4, 1, 4, 4, 2, 7, 4, 6, 2, 0, 2, 0, 7, 6, 6, 1, 6, 4, 1, 3, 1, 4, 4, 0, 7, 7, 3, 5, 2, 7, 7, 5, 4, 4, 3, 6, 4, 0, 0]#, 0, 0] #, 3, 0, 0, 1] Found: [0, 0, 0, 0, 0, 128, 135, 0, 51, 51, 13, 0, 0, 48, 52, 176, 51, 69, 48, 52, 149, 0, 0, 0, 129, 170]
+
 	# Found: [0, 0, 0, 0, 0, 128,| 135, 0,| 51, 51, 13, 0, 0, 48, 52, 176, 51, 69, 48, 52, 149, 0, 0, 0, 129, 170]
 	# 0x0 0x0 0x0 0x0 0x0 0x80 0x87 0x0 | 0x33 0x33 0xd 0x0 0x0 0x30 0x34 0xb0 0x33 0x45 0x30 0x34 0x95 0x0 0x0 0x0 0x81 0xaa 
    #3 3 \d    0 4 ° 3 E 0 4      ª 
-	
-	
-	#                                                                                                          |           |           |           |           |           |
-	#startup3 = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6, 6, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2, 5, 4, 5, 0, 5, 0, 0, 6, 2, 6, 2, 3, 2, 3, 5, 4, 2, 4, 6, 1, 7, 3, 1, 1, 5, 5, 1, 6, 1, 7, 6, 1, 1, 4, 1, 1, 6, 7, 7, 3, 5, 2, 7, 7, 7, 1, 2, 5, 2, 7, 2, 4]#, 0, 0]
-	#Z =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6, 0, 6, 7, 3, 6, 3, 5, 1, 1, 6, 1, 1, 3, 3, 5, 5, 0, 7, 3, 2, 5, 4, 3, 5, 7, 0, 3, 6, 4, 0, 7, 3, 0, 4, 1, 4, 4, 2, 7, 4, 6, 2, 0, 2, 0, 7, 6, 6, 1, 6, 4, 1, 3, 1, 4, 4, 0, 7, 7, 3, 5, 2, 7, 7, 5, 4, 4, 3, 6, 4, 0, 0]#, 0, 0] #, 3, 0, 0, 1] Found: [0, 0, 0, 0, 0, 0, 0, 0, 51, 51, 13, 0, 0, 48, 52, 176, 51, 69, 48, 52, 149, 0, 0, 0, 129, 170]
-	# Found: [0, 0, 0, 0, 0, 0, 0, 0, 49, 51, 13, 0, 0, 48, 52, 176, 51, 69, 48, 52, 149, 0, 0, 0, 129, 170]
-	# 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x31 0x33 0xd 0x0 0x0 0x30 0x34 0xb0 0x33 0x45 0x30 0x34 0x95 0x0 0x0 0x0 0x81 0xaa 
-   # 1 3 \d     0 4 ° 3 E 0 4      ª 
-
-	#init pattern + 2
-	#          |           |           |           |           |           |
-	startup3 = [6, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
-	Z =        [0, 6, 7, 3, 6, 3, 5, 1, 1, 6, 1, 1, 3, 3, 5, 5, 0, 7, 3, 2]
-	# Found: [49, 51, 13, 0, 0]
-	# 0x31 0x33 0xd 0x0 0x0 
-
-
-
-
-
-
-	#earliest startup counter
-	#          |           |           |           |           |           |
-	startup3 = [4, 0, 0, 6, 1, 4, 5, 1, 4, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [214, 151, 12, 0, 8]
-	# 0xd6 0x97 0xc 0x0 0x8 
-	
-	#          |           |           |           |           |           |
-	startup3 = [0, 0, 0, 6, 1, 4, 5, 1, 4, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [212, 151, 12, 0, 8]
-	# 0xd4 0x97 0xc 0x0 0x8 
-	
-	#          |           |           |           |           |           |
-	startup3 = [4, 2, 7, 5, 1, 2, 6, 4, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [202, 23, 12, 0, 8]
-	# 0xca 0x17 0xc 0x0 0x8 
 		
-	#          |           |           |           |           |           |
-	startup3 = [0, 2, 7, 5, 1, 2, 6, 4, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [200, 23, 12, 0, 8]
-	# 0xc8 0x17 0xc 0x0 0x8 	
-
-	#          |           |           |           |           |           |
-	startup3 = [4, 4, 6, 7, 3, 2, 5, 2, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [206, 23, 12, 0, 8]
-	# 0xce 0x17 0xc 0x0 0x8 		
-	
-	#          |           |           |           |           |           |
-	startup3 = [4, 6, 7, 5, 1, 2, 6, 4, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [194, 23, 12, 0, 8]
-	# 0xc2 0x17 0xc 0x0 0x8 		
-	
-	#          |           |           |           |           |           |
-	startup3 = [0, 6, 7, 5, 1, 2, 6, 4, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [192, 23, 12, 0, 8]
-	# 0xc0 0x17 0xc 0x0 0x8 		
-	
-	#          |           |           |           |           |           |
-	startup3 = [4, 0, 6, 7, 3, 2, 5, 2, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [198, 23, 12, 0, 8]
-	# 0xc6 0x17 0xc 0x0 0x8 	
-	
-	#          |           |           |           |           |           |
-	startup3 = [0, 0, 6, 7, 3, 2, 5, 2, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [196, 23, 12, 0, 8]
-	# 0xc4 0x17 0xc 0x0 0x8 	
-	
-	#          |           |           |           |           |           |
-	startup3 = [4, 2, 1, 6, 2, 2, 0, 3, 3, 1, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [186, 151, 12, 0, 8]
-	# 0xba 0x97 0xc 0x0 0x8  	
-	
-	
-	
-	
-	
-	#          |           |           |           |           |           |	
-	Z=         [6, 5, 0, 3, 6, 7, 5, 4, 2, 2, 1, 4, 4, 2, 0, 7, 0, 7, 3, 2]
-	#init pattern
-	startup3 = [2, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
-	#Found: [54, 230, 0, 0, 0]   0x36 0xe6 0x0 0x0 0x0 
-
-
-	#init pattern + 2
-	#startup3 = [6, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
-	#Found: [52, 230, 0, 0, 0]   0x34 0xe6 0x0 0x0 0x0 
-
-	
-	
-	#earliest startup counter
-	#          |           |           |           |           |           |
-	startup3 = [4, 0, 0, 6, 1, 4, 5, 1, 4, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [211, 74, 1, 0, 8]	0xd3 0x4a 0x1 0x0 0x8 
-	startup3 = [0, 0, 0, 6, 1, 4, 5, 1, 4, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [209, 74, 1, 0, 8] 0xd1 0x4a 0x1 0x0 0x8 
-	startup3 = [4, 2, 7, 5, 1, 2, 6, 4, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [207, 74, 1, 0, 8]
-	startup3 = [0, 2, 7, 5, 1, 2, 6, 4, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [205, 74, 1, 0, 8]
-	startup3 = [4, 4, 6, 7, 3, 2, 5, 2, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [203, 74, 1, 0, 8]
-	startup3 = [4, 6, 7, 5, 1, 2, 6, 4, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [199, 74, 1, 0, 8]
-	startup3 = [0, 6, 7, 5, 1, 2, 6, 4, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#197
-	startup3 = [4, 0, 6, 7, 3, 2, 5, 2, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#195
-	startup3 = [0, 0, 6, 7, 3, 2, 5, 2, 2, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [193, 74, 1, 0, 8]
-	startup3 = [4, 2, 1, 6, 2, 2, 0, 3, 3, 1, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [191, 74, 1, 0, 8]
-	
-	
-	#other earliest startup counter
-	startup3 = [2, 3, 5, 1, 6, 2, 0, 2, 1, 2, 3, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	# Found: [14, 73, 1, 0, 8]
-	# 0xe 0x49 0x1 0x0 0x8 
-
-
-
-
-	startup3 = [0, 0, 6, 1, 4, 3, 2, 7, 1, 4, 4, 3, 1, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [1, 247, 1, 0, 8]
-	#0x1 0xf7 0x1 0x0 0x8 
-
-	#rollover
-	startup3 = [4, 2, 1, 0, 7, 0, 6, 1, 7, 4, 1, 4, 4, 2, 0, 7, 0, 3, 3, 2]
-	#Found: [255, 0, 2, 0, 8]
-	#0xff 0x0 0x2 0x0 0x8 
-	
-	
-	
-	#test 11 rollover
-	startup3 = [0, 0, 6, 1, 4, 3, 2, 7, 5, 0, 4, 3, 1, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [1, 247, 11, 0, 8]
-	startup3 = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 2, 3, 4, 4, 7, 6, 6, 3, 3, 2]
-	#Found: [255, 0, 20, 0, 8]
-
-
-
-
-	#          |           |           |           |           |           |	
-	Z=         [2, 3, 3, 6, 7, 7, 0, 1, 3, 4, 1, 4, 4, 2, 0, 7, 0, 7, 3, 2]       #third block should be 3 2 . .
-	#test 11 rollover
-	startup3 = [0, 0, 6, 1, 4, 3, 2, 7, 5, 0, 4, 3, 1, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [255, 87, 9, 0, 8]
-	startup3 = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 2, 3, 4, 4, 7, 6, 6, 3, 3, 2]
-	#Found: [1, 0, 20, 0, 8]
-
-	#earliest startup counter
-	startup3 = [4, 0, 0, 6, 1, 4, 5, 1, 4, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [45, 74, 1, 0, 8]
-
-	#init
-	startup3 = [2, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
-	#Found: [200, 230, 2, 0, 0]
-
-
-
-
-	Z = [2, 3, 3, 6,  7, 7, 0, 1,  5, 1, 1, 3, 2, 3, 6, 0, 6, 7, 3, 2]   #1,0,19
-	#test 11 rollover
-	startup3 = [0, 0, 6, 1, 4, 3, 2, 7, 5, 0, 4, 3, 1, 3, 6, 7, 0, 3, 3, 2]
-	#Found: [255, 87, 154, 0, 8]
-
-	startup3 = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 2, 3, 4, 4, 7, 6, 6, 3, 3, 2]
-	#Found: [1, 0, 7, 0, 8]
-
-	#init
-	startup3 = [2, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]	
-	#Found: [200, 230, 17, 0, 0]
-	#0xc8 0xe6 0x11 0x0 0x0 
-
-
-
-	#Z = [2, 3, 3, 6,   7, 4, 4, 6,   5, 1, 1, 3, 2, 3, 6, 0, 6, 7, 3, 2]   #imp
-	Z = [2, 3, 3, 6,   7, 3, 2, 4,   5, 1, 1, 3, 2, 3, 6, 0, 6, 7, 3, 2]   #
-	
-	startup3 = [0, 0, 6, 1, 4, 3, 2, 7] #Found: [255, 239]
-	startup3 = [4, 2, 1, 0, 7, 0, 6, 1] #Found: [1, 56]
-
-	Z = [2, 3, 3, 6,   7, 7, 4, 7,   5, 1, 1, 3, 2, 3, 6, 0, 6, 7, 3, 2]   #
-	
-
-	startup3 = [0, 0, 6, 1, 4, 3, 2, 7] #Found: [255, 183]       should be 255 and go to 0...????
-	startup3 = [4, 2, 1, 0, 7, 0, 6, 1] #Found: [1, 0]
-	
-	startup3 = [0, 0, 6, 1, 4, 3, 2, 7, 5, 0, 4, 3, 1, 3, 6, 7, 0, 3, 3, 2]
-	
-	
-	
-	Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 2, 3,  2, 3, 6, 0, 6, 7, 3, 2] 
-	startup3 = [0, 0, 6, 1,  4, 3, 2, 7,  5,0,4,3] #Found: [255, 87, 189]	
-	#startup3 = [4, 2, 1, 0,  7, 0, 6, 1,  3,2,2,3] #Found: [1, 0, 0]	
-	
-	startup3 = [6,5,0,3, 4,4,6,2 ,3,0,1,2] #Found: [254, 111, 27]  0xfe 0x6f 0x1b
-	#startup3 = [2, 3, 3, 6,   7, 7, 6,2, 2,7,4,3] #Found: [0, 80, 153] 0x0 0x50 0x99
-
-	
-	'''	
 	#          |           |           |           |           |           |           |           |           |           |           |           |           |           |
 	startup3 = [5, 4, 5, 0, 5, 0, 0, 6, 2, 6, 2, 3, 2, 3, 5, 4, 2, 4, 6, 1, 7, 3, 1, 1, 5, 5, 1, 6, 1, 7, 6, 1, 1, 4, 1, 1, 6, 7, 7, 3, 5, 2, 7, 7, 7, 1, 2, 5, 2, 7, 2, 4]#, 0, 0]
 	Z =        [5, 4, 3, 5, 7, 0, 3, 6, 4, 0, 7, 3, 0, 4, 1, 4, 4, 2, 7, 4, 6, 2, 0, 2, 0, 7, 6, 6, 1, 6, 4, 1, 3, 1, 4, 4, 0, 7, 7, 3, 5, 2, 7, 7, 5, 4, 4, 3, 6, 4, 0, 0]#, 0, 0] #, 3, 0, 0, 1]
 	#Found: [48, 52, 176, 51, 69, 48, 52, 149, 0, 0, 0, 129, 170]
 	#0x30 0x34 0xb0 0x33 0x45 0x30 0x34 0x95 0x0 0x0 0x0 0x81 0xaa 
 	#0 4 ° 3 E 0 4      ª 
-	'''
-
-	'''
-	startup3 = [7, 1, 2, 5, 2, 7, 2, 4]
-	Z =        [5, 4, 4, 3, 6, 4, 0, 0]  #Found: [129, 170] = 0x81 0xaa 
-	'''
-
-	'''
-	startup3 = [7, 1, 2, 5, 2, 7, 2, 4]
-
-	Z =        [5, 6, 5, 5, 4, 4, 7, 2]#, 0, 0]  # Found: [45, 40]
-	Z=         [1, 0, 2, 2, 4, 6, 0, 3]#, 2, 4]#+2 Found: [155, 32] = 0x9b 0x20 
-	'''
-
-	'''
-	for x in range(0,2):
-		for y in range(0,2):
-			#Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 2, 3,   2, 3, 6, x,  6, 7, 3, 2]   #0xc6 0xc6 0x36 0x*5 
-			#Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 2, 7,   2, 3, 6, x,  6, 7, 3, 2] #0xc6 0xc6 0xb6
-			#Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 4, 0]  #c6c6e6
-			Z = [2, 3, 3, 6, 7, 7, 0, 1, 3, 2, 6, 7] #0xc6 0xc6 0x96 
-			Z = [2, 3, 3, 6, 7, 7, 0, 1, 3, 2, 6, 5] #0xc6 0xc6 0xd6 	
-			Z = [2, 3, 3, 6, 7, 7, 0, 1, 3, 2, 4, 0] #0xc6 0xc6 0xe6		
-			Z = [2, 3, 3, 6, 7, 7, 0, 1, 3, 2, 0, 0] #0xc6 0xc6 0xc6	
-			Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 0, 0,   3,2,4,1,  0+4*x, 1+4*y, 3, 2]
-			print("\n\n",Z)
-			zeros_symbols = Z.copy()
-			delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
-			delta_2 = [(x*2+3)%8 for x in zeros_symbols]
-			delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
-			solution = solver([0,0,0,0,0], [6,1,2,2, 4,7,4,7, 3,4,4,2, 3,4,0,7, 0,7,3,2], debug=False, ignore=0, print_error=False)
-			solution = solver([0,0,0,0,0], [2,3,3,6,7,7,2,6,2,7,4,3,3,3,5,5,2,6,1,4], debug=False, ignore=0, print_error=False)		
+	zeros_symbols = Z.copy()
+	delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
+	delta_2 = [(x*2+3)%8 for x in zeros_symbols]
+	delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
+	solution = solver(len(startup3)//4*[0], startup3, debug=False, ignore=0)
 	sys.exit()
+
+
+
+
+before = [6,5,0,3, 4,4,4,7, 5,0,2,2, 3,1,6,0, 4,6,1,4]# ,3,1,5,7,0,3,6,4,0 7 3 0 4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 1 0 4 4 6 5 1 5 6 0 3  146
+after =  [2,3,3,6, 7,7,0,1, 3,2,0,2, 2,2,7,5, 2,6,1,4]  #,3,1,5,7,0,3,6,4,0 7 3 0 4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 7 1 4 7 0 4 3 2 0 0 4  152	
+t3=[6,5,0,3,4,0,0,5,0,6,4,2,4,3,6,0,4,6,1,4]#,5,3,1,5,7,0,3,6,4,0,7,3,0,4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 5 2 5 2 4 5 6 7 2 4 1  43
+t4=[2,3,3,6,7,3,6,0,7,7,1,4,4,3,6,0,4,6,1,4] #,5,3,1,5,7,0,3,6,4,0,7 3 0 4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 1 0 4 4 2 5 1 1 6 0 3  95
+
+t5=[2, 7, 5, 1, 2, 4, 5, 6, 6, 0, 4, 1, 2, 3, 6, 0]
+t6=[2, 7, 5, 1, 0, 7, 0, 7, 6, 5, 1, 4, 4, 3, 6, 0]
+
+if 0:  #mini tests
+	Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 0, 0]
+	zeros_symbols = Z.copy()
+	delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
+	delta_2 = [(x*2+3)%8 for x in zeros_symbols]
+	delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
+
+	#1277: [2, 3, 3, 6, 7, 7, 6, 0, 7, 7, 1, 4, 4, 3, 6, 0] [  0, 144, 127] [00000000, 10010000, 01111111]
+	#should be 255?
+	print(solver([0,0,0], [2, 3, 3, 6, 7, 7, 6, 0, 7, 7, 1, 4, 4, 3, 6, 0] , debug=False, ignore=0))
+
+	sys.exit()
+	#print(solver([0,0,0], [2, 3, 3, 6, 7, 7, 6, 6, 6, 5, 3, 4, 3, 1, 6, 0] , debug=False, ignore=0))
+	print(solver([0,0,0], [6, 5, 0, 3, 4, 4, 0, 5, 0, 6, 4, 2, 4, 3, 6, 0] , debug=False, ignore=0))
+
+	print(" was 	[254, 159, 255] last should be 127")
+	sys.exit()
+	print(solver([0,0,0], [2, 3, 1, 7, 5, 5, 6, 7, 5, 7, 1, 4, 4, 3, 6, 0] , debug=False, ignore=0))
+	print("was [ 16,  16, 143] should be [ 16,  144, 143]  ")
+	sys.exit()
+
+
+	print(solver([0,0,0], [2, 3, 3, 6, 1, 0, 7, 5, 7, 6, 4, 1, 2, 3, 6, 0], debug=False, ignore=0))
+	print("was [  0, 167, 175] should be [  0, 135, 175] ")
+	sys.exit()
+
+	print(solver([0,0,0], [2, 1, 2, 0, 3, 0, 0, 3, 1, 1, 5, 4, 2, 2, 7, 5], debug=False, ignore=0))
+	print("was [  4,  39, 176] should be 4 7 127")
+	sys.exit()
+
+	solution1 = solver([0,0,0], before, debug=False, ignore=0)#, print_error=False, print_result=False)
+	print(solution1) #Found: [254, 255, 119]
+	solution2 = solver([0,0,0], after, debug=False, ignore=0, print_error=False)#, print_result=False)
+	print(solution2)
+	#sys.exit()
+
+	solution3 = solver([0,0,0], t3, debug=False, ignore=0, print_error=False, print_result=False) 
+	print(solution3)
+	solution4 = solver([0,0,0], t4, debug=False, ignore=0, print_error=False, print_result=False)
+	print(solution4)
+	#sys.exit()
+
+	solution5 = solver([0,0,0], t5, debug=False, ignore=0, print_error=False, print_result=False) 
+	print(solution5) #[248, 143, 223] odd_100010   : [0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 2, 0]
+
+	solution6 = solver([0,0,0], t6, debug=False, ignore=0, print_error=False, print_result=False) 
+	print(solution6) #[248, 16, 255]  odd_100010   : [0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 6]
+
+	sys.exit()
+
+if 0:
+	if 1:
+		for x in range(0,8):
+			for y in range(0,8):
+				#Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 2, 3,   2, 3, 6, x,  6, 7, 3, 2]   #0xc6 0xc6 0x36 0x*5 
+				#Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 2, 7,   2, 3, 6, x,  6, 7, 3, 2] #0xc6 0xc6 0xb6
+				#Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 4, 0]  #c6c6e6
+				#Z = [2, 3, 3, 6,  7, 7, 0, 1,  3, 2, 6, 7] #0xc6 0xc6 0x96 
+				#Z = [2, 3, 3, 6,  7, 7, 0, 1,  3, 2, 6, 5] #0xc6 0xc6 0xd6 	
+				#Z = [2, 3, 3, 6,  7, 7, 0, 1,  3, 2, 4, 0] #0xc6 0xc6 0xe6		
+				#Z = [2, 3, 3, 6,  7, 7, 0, 1,  3, 2, 0, 0] #0xc6 0xc6 0xc6	
+				#Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 0, 0,   3,2,4,1,  0+4*x, 1+4*y, 3, 2]
+				Z = [2,3,3,6, 7,7,0,1, 3,2,x,y]# ,2,2,7,5]  #known 0
+				#print("\n\n",Z)
+				zeros_symbols = Z.copy()
+				delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
+				delta_2 = [(x*2+3)%8 for x in zeros_symbols]
+				delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
+				solution1 = solver([0,0,0], before, debug=False, ignore=0, print_error=False, print_result=False)   #startup
+				solution2 = solver([0,0,0], after, debug=False, ignore=0, print_error=False, print_result=False)   #startup
+				solution3 = solver([0,0,0], t3, debug=False, ignore=0, print_error=False, print_result=False) 	  #startup
+				solution4 = solver([0,0,0], t4, debug=False, ignore=0, print_error=False, print_result=False)   #startup
+				if solution1 != "Impossible" and solution2 != "Impossible" and (solution1[2]+1 == solution2[2]):# and (solution3[2]+1 == solution4[2]):  
+					print(Z)
+					print(solution1)
+					print(solution2)
+					print(solution3)
+					print(solution4)
+					#if solution1[2]+1 == solution2[2]: print("!!!!!!!!!!!")
+					print()
+				#	for c in solution: 		
+				#		print(chr(c%16*16+c//16),end=" ")
+				#	print()
+				#solution = solver([0,0,0], [2,3,3,6, 7,7,6,2, 2,7,4,3,3,3,5,5,2,6,1,4], debug=False, ignore=0, print_error=False)		#0,0x50,?
+				#solution = solver([0,0,0], [4,0,0,6, 1,4,5,1, 4,3,1,2, 3,3,6,7, 0,3,3,2], debug=False, ignore=0, print_error=False)		#lowest count seen
+		sys.exit()
 	
+	'''
 	for x in range(0,1):
 		for y in range(0,8):		
 			Z = [2, 3, 3, 6,   7, 7,x,y]
@@ -476,51 +392,145 @@ if 1:
 			startup3 = [2, 3, 3, 6,   7, 7, 6,2, 2,7,4,3] #Found: [0, 80, 153] 0x0 0x50 0x99	
 			solution = solver([0,0], startup3, debug=False, print_error=False, ignore=0)#, print_error=False)	
 	'''
-	Z = [2, 3, 3, 6,   7, 7, 0, 1,   3, 2, 0, 0,]
+	
+if 1:
+	Z = [2, 3, 3, 6,   7, 7, 0, 1,   3,2,4,0]
+
+	Z = [4,4,4,0, 4,0,4,0, 2,4,6,0, 0,0,0,0, 6,4,2,0, 0,0,4,4, 2,7,7,4, 6,7,5,6,    2,3,3,6,   7,7,0,1,   3,2,4, 0,  3,2,4,3 ,0,7,3,2,  5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7,5,4,4,3, 7,7,7,7,0,1,0,0,0,0]
+
+
 	zeros_symbols = Z.copy()
 	delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
 	delta_2 = [(x*2+3)%8 for x in zeros_symbols]
 	delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
 	
-	
-	#solution = solver([4,4], [2, 1, 2, 0, 5, 5, 6, 1], debug=False, ignore=0)#, print_error=False, print_result=False)
-	#print()
-	#solution = solver([0, 1, 235], [2, 3, 3, 6, 5, 6, 6, 3, 5, 0, 4, 4, 2, 1, 5, 5], debug=False, ignore=0)#, print_error=False, print_result=False)
-	#sys.exit()	
-	
-	#with open("test_0s_110_symbols.txt") as infile:
-	with open("test_0s_20_90_147_symbols.txt") as infile:	
-		'''
-		num = 5+256*2
-		for x in range(0,55616+(1+num)*128*10000):
-			line = infile.readline()
-			if x < 55616-4*128: continue
-			#if x < 24700: continue
-			if (x-64)%(128*256) < 10:
-			#if x<25100:
-				symbols = [int(n) for n in line.split(' ')[0:20]]
-				solution = solver([0,0,0], symbols, debug=False, ignore=0, print_error=False, print_result=False)
-				print("{}: {} [{:3}, {:3}, {:3}] [{:08b}, {:08b}, {:08b}]".format(x, symbols[0:16], solution[0], solution[1],solution[2], solution[0], solution[1],solution[2]))
-			if (x-64)%(128*256) == 10: print()
-		'''
-		
-		#this code tests a recording of 200000 and the math works!
-		solution = [116,  78, 233]
-		last_solution = [116,  78, 233]
-		last_sol = solution[0] + 256*solution[1] + 256*256*solution[2] -2
-		line = infile.readline()
-		x = 0
-		while line:
-			symbols = [int(n) for n in line.split(' ')[0:20]]
-			solution = solver([0,0,0], symbols, debug=False, ignore=0, print_error=False, print_result=False)
-			sol = solution[0] + 256*solution[1] + 256*256*solution[2]
-			if sol-2 != last_sol:
-				print(x,last_solution, solution,last_sol, sol)
-				print("{}: {} [{:3}, {:3}, {:3}] [{:08b}, {:08b}, {:08b}]".format(x, symbols[0:16], solution[0], solution[1],solution[2], solution[0], solution[1],solution[2]))
-			last_sol = sol
-			last_solution = solution
-			line = infile.readline()
-			x += 1
+	if 1:
+		print("2 sanity checks")
+		solution = solver([4,4], [2, 1, 2, 0, 5, 5, 6, 1], debug=False, ignore=8)#, print_error=False, print_result=False)
+		print("Should be 4,4", solution)
+		if solution == "Impossible": sys.exit(1)
+		#solution = solver([0, 1, 235], [2, 3, 3, 6, 5, 6, 6, 3, 5, 0, 4, 4, 2, 1, 5, 5], debug=False, ignore=0, print_error=False)#, print_result=False)
+		#print(solution)
+		#sys.exit()	
+
+	if 1:	
+		#filename = "test_0s_20_70_147_symbols.txt" #Total errors: 61   new zero syms:  [*, *, 25-31-0] #0 impossibles, 5 major errors, 48 skips, 5 doubles
+		#filename = "test_0s_20_50_147_symbols.txt" #10 impossibles, 5 major errors, 12 skips, 41 doubles
+
+
+		#filename = "test_0s_20_70_147_symbols_2_missing_lots.txt"
+
+
+		#filename = "test_0s_100_25_11_symbols_3.txt" #27 impossibles, 0 major errors, 3 skips, 44 doubles    imp counts: 51, 40, 38 38 37 37...
+		#filename = "test_0s_50_40_11_symbols_3.txt" #1 impossibles, 1 major errors, 221 skips, 6 doubles     impossible had count 51
+		#filename = "test_0s_100_40_11_symbols_3.txt" # 87157: 1 impossibles, 1 major errors, 229 skips, 6 doubles   more skips?!?!? oh, longer data file   [*,*,12-15]
+
+		#filename = "test_0s_50_40_11_symbols_4.txt"  #  154866   5 impossibles, 2 major errors, 255 skips, 17 doubles
+
+		filename = "test_0s_50_40_11_symbols_5.txt" #98184:  4 impossibles, 2 major errors, 236 skips, 35 doubles
+
+		with open(filename, "r") as infile:	
+			'''
+			if 0:
+				#print batches at transitions to help figure out math, print based on assumed count    obsolete
+				num = 5+256*2
+				x = -1
+				#for x in range(0,55616+(1+num)*128*10000):
+				while True:
+					x+=1
+					if line == '': print (x)
+					line = infile.readline()
+					if x < 55616-4*128: continue
+					#if x < 24700: continue
+					if (x-64)%(128*256) < 10:
+					#if x<25100:
+						try:
+							symbols = [int(n) for n in line.split(' ')[0:20]]
+						catch:
+							print(line)
+							sys.exit(1)
+						solution = solver([0,0,0], symbols, debug=False, ignore=0, print_error=False, print_result=False)
+						print("{:6}: {} [{:3}, {:3}, {:3}] [{:08b}, {:08b}, {:08b}]".format(x, symbols[0:16], solution[0], solution[1],solution[2], solution[0], solution[1],solution[2]))
+					if (x-64)%(128*256) == 10: print()
+				sys.exit()
+			'''
+			if 0:
+				#print batches at transitions to help figure out math
+				#num = 5+256*2
+				p = False
+				x = -1
+				count = 0
+				line = infile.readline()
+				while line:
+					x+=1
+					if line[0:7] == '2 7 5 1':  #[248] - 6
+						count = 8
+						p = True
+					#if line[0:15] == '2 7 5 1 2 4 3 5': #[248, 255] - [6,0]
+					#	count = 8
+					#	p = True
+					#if line[0:7] == '2 3 3 6': count = 1  #[0, *]
+
+					#if line[0:31] == '6 1 2 0 5 7 5 6 7 7 1 4 4 3 6 0':
+					#	count = 256
+					if count:
+						symbols = [int(n) for n in line.split(' ')[0:20]]
+						solution = solver([0,0,0], symbols, debug=False, ignore=0, print_error=False, print_result=False)
+						print("{:6}: {} [{:3}, {:3}, {:3}] [{:08b}, {:08b}, {:08b}]".format(x, symbols[0:16], solution[0], solution[1],solution[2], solution[0], solution[1],solution[2]))
+						count -= 1
+						if not count and p: print()
+					#if (x-64)%(128*256) == 10: print()
+					line = infile.readline()
+					if not x % 1000: input("Press any key to continue...")			
+
+			if 1:
+				print("\nCheck every packet, verify they are in sequential order to verify my math is right.")
+				solution = [116,  78, 233]
+				last_solution = [116,  78, 233]
+				last_sol = solution[0] + 256*solution[1] + 256*256*solution[2] -2
+				line = infile.readline()
+				x = -1
+				minors = 0
+				majors = 0
+				skips = 0
+				dbls = 0
+				imps = 0
+				while line:
+					x += 1
+					#if x < 227510:  #skip some entries if need be
+					#	line = infile.readline()
+					#	continue
+					symbols = [int(n) for n in line.split(' ')[0:20]]
+					solution = solver([0,0,0], symbols, debug=False, ignore=8, print_error=False, print_result=False)
+					sol = solution[0] + 256*solution[1] + 256*256*solution[2]
+					#try:
+					if solution == "Impossible" :
+						print(x, symbols, "solution =", solution)
+						#solver([0,0,0], symbols, debug=False, ignore=0, print_error=True, print_result=False)
+						#if len(line) >= 154-2
+						print("Last value, maybe count:", line.split(' ')[-1], end="")
+						imps += 1
+					else:
+						if sol-2 != last_sol:
+							if sol-4 == last_sol:
+								print("{}: missing packet".format(x))
+								skips += 1
+							elif sol == last_sol:
+								print("{}: doubled packet".format(x))
+								dbls += 1
+							elif x: #skip x=0
+								print("{}: mismatch of {}   {} {} {} {}".format(x, sol-last_sol-2,last_solution, solution,last_sol, sol))
+								print("{}: {} [{:3}, {:3}, {:3}] [{:08b}, {:08b}, {:08b}]".format(x, symbols[0:16], solution[0], solution[1],solution[2], solution[0], solution[1],solution[2]))
+								majors += 1
+						last_sol = sol
+						last_solution = solution
+					line = infile.readline()
+				print("\n#{} impossibles, {} major errors, {} skips, {} doubles".format(imps, majors, skips, dbls))
+
+
+	#solution = solver([0,0,0,0], [6,1,2,2, 4,7,4,7, 3,4,4,2, 3,4,0,7, 0,7,3,2], debug=False, ignore=0)#, print_error=False)  #startup
+	#solution = solver([0,0,0,0,0], [2,3,3,6,7,7,2,6,2,7,4,3,3,3,5,5,2,6,1,4], debug=False, ignore=0, print_error=False)		
+
 	sys.exit()	
 	
 	
