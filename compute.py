@@ -8,11 +8,11 @@ delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
 
 #this version allows expected, print_error
 #ignore 20 causes problems?
-def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
+def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6):    #in_data_orig and expected are ONLY the values to be computed, ignore sets the pos in zero_symbols
 	in_data = in_data_orig.copy() # prevent modification of data
 	start = ignore*4
 	
-	length = len(in_data)*4
+	length = len(in_data)*4 #- ignore*4
 	in_data += [0,0]
 	nibbles = [x>>(4*i)&0xf for x in in_data for i in range(0, 2)]
 	#if debug: print("nibbles:      ", nibbles)
@@ -57,6 +57,7 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 	#print("even_merge   :", even_merge)
 	
 	#if debug: print("\ndelta1347:    ", delta_1347[start:start+length])
+	#print(length, start, len(zeros_symbols))
 	odd_single_d0 = [(delta_1347[x+start]*odd_bits[x-0])  for x in range(0, length)]  
 	#if debug: print("odd_single_d0:", odd_single_d0)
 		
@@ -116,6 +117,7 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 	)%8) for x in range(0, length)]
 	
 	
+
 	
 	try:
 		sum = [(zeros_symbols[x+start] - diff[x] + 8) % 8 for x in range(0, length)]
@@ -127,15 +129,16 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 		print("diff         :", diff, len(diff))
 		sys.exit(1)
 		
-		
-		
-	error =  sum[ignore:] != expected[ignore:]
+	
+
+	error =  sum != expected
 	#if error:
 	#	print("Data mismatch")
-	
+	#print(error)
+
 	if debug or (error and print_error):
 		print("compute() debug:")
-		print("zeros_symbols:", zeros_symbols)
+		print("zeros_symbols:", zeros_symbols[start:])
 		print("bytes        :", in_data)
 		print("nibbles      : [", end='')
 		for x in nibbles[0:-4]:
@@ -164,14 +167,15 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True):
 		#print("odd_11c      :", odd_11c)
 		print("diff         :", diff)
 		print("sum          :", sum)
-		print("expected     :", expected)		
+		print("expected     :", expected)
+		print()
 		
 	if error and print_error:
 		print("sum          :", sum)
 		print("expected     :", expected)
 		print("                ", end="")
-		print(ignore*"-  ", end="")
-		for x in range(ignore,length):
+		#print(4*ignore*"-  ", end="")
+		for x in range(0, length):
 			if sum[x] == expected[x]: print("   ",end="")
 			else: print("*  ", end="")
 		print()
