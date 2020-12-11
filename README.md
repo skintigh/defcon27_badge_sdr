@@ -20,8 +20,8 @@ Each datagram consists of symbols. I'm going to refer to 4 symbols as a byte.
 Each datagram consists of:
 * 8 (or 6 + 2 of ???) bytes of preamble (or midamble/syncword/sync sequence?)
 * 16 bytes of data
-* 2.5 bytes of something that seems random but is probably a CRC and maybe something else (or maybe just 7 symbols from an 8-bit CRC, I hope?)
-* 1 byte of symbols that seem to be the signal decaying, as if a pause between datagrams. Maybe the half byte from the previous section belongs to this but it's not obvious.
+* 11 symbol that appear to be a 12-bit CRC
+* 3 symbols that seem to be the signal decaying, as if a pause between datagrams.
 
 For use by the badge, the 16 bytes of data consist of:
 * 4 bytes of some sort of counter increasing by 2. Sometimes it's even, sometimes odd, and it doesn't seem to start at 0.
@@ -48,6 +48,10 @@ Then follow the instructions at this repo, copied here but possibly out of date:
  > sudo make install  
 
 Then downlaod and run this repo.
+
+To broadcast, I had to rebuild osmosdr_sink.blobk.yml with gen_osmosdr_blocks.py Instructions and files here:
+https://gist.github.com/gbevan/8e583b9cf87aa3c58102251454fa48a6
+https://github.com/osmocom/gr-osmosdr/blob/master/grc/gen_osmosdr_blocks.py
 
 Files in this Repo
 ------------------
