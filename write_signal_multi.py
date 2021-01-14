@@ -17,7 +17,8 @@ crcs_11 = [10002111244, 10002111604, 10002115244, 10002151244, 10002151245, 1000
 crcs = crcs_10
 NUMSEGS = 16
 SEGLEN = 256
-REPEAT = 40 #40 works?
+REPEAT = 10 #40 works?
+start_seg = 0
 
 #I think using a CRC of length 11 was much more reliable than using 10. Not sure I took notes on it.
 
@@ -32,7 +33,7 @@ preamble = [4, 4, 4, 0,  4, 0, 4, 0,  2, 4, 6, 0,  0, 0, 0, 0,  6, 4, 2, 0,  0, 
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)  # open serial port
 print(ser.name)         	# check which port was really used
-ser.write(b'?\r\n')     	# request the help menu   need a delay between commands or even \r\n ?
+ser.write(b'H\r\n')     	# request the help menu   need a delay between commands or even \r\n ?
 serial_output = ser.read(1024)
 #serial_output=serial_output.decode()
 if "Ctrl-X: Exit interactive mode" not in serial_output.decode(): 
@@ -44,14 +45,17 @@ else:
 	print(serial_output.decode())
 	#""Waiting for Packet(s)...""
 
-seg = 0
+seg = 1
 while seg < NUMSEGS:
 	print("Trying segment", seg)
 	with open("signal.bin","wb") as f:
 		
+		# 0xD7D6DCD8D7D2DFDBD0D0D0D0D7DFD0D0
+		# 2 1 2 2 2 6 0 2 0 7 4 1 2 2 0 7 0 7 3 2  1 2 0 0 6 4 2 1 0 0 3 4 2 7 7 6 2 3 7 3 7 4 0 2 2 4 3 5 4 5 3 4 2 3 4 4 0 7 7 3 5 2 7 7    5 2 7 0 6 2 3 1 6 0
+
 		#compute all 16 bytes of data but leave at least last byte 0 to avoid hitting the crc
 		#data = [0]*16*4 #temp filler
-		data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 4,3,3,2,  5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7] #temp filler of zeroes   length 0?
+		#data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 4,3,3,2,  5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7] #temp filler of zeroes   length 0?
 		'''
 		Trying segment 1
 		Packet received: "0x0059630000014F00
@@ -111,10 +115,10 @@ while seg < NUMSEGS:
 
 		0x0000430000014F00
 		0x0000FF003500FF00
-		
+
 		'''
 
-		#data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,  5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]  #length 16?
+		#data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,  5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]  #length 16? 16 bad????
 		#seg 0!
 		'''
 		this actually worked several times with seg 0 when I was watching manually, serial code failed silently????
@@ -147,17 +151,128 @@ while seg < NUMSEGS:
 		00FF
 		00			
 		'''
+		#data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,           5,4,3,5, 7,0,3,6, 0,0,7,3,  0,4,1,0, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		#																						    ^     ^
+		#so 4th data byte should be different. 4th data byte is really the first?
+		'''
+		Trying segment 4
+		Packet received: "0xF300A30000014F00
+		-> Unique ID: 0xF300A300
+		-> Badge Type: Human
+		-> Magic Token: Yes
+		-> Game Flags: 01001111
+
+		Trying segment 6
+		sox WARN rate: rate clipped 1 samples; decrease volume?
+		sox WARN dither: dither clipped 1 samples; decrease volume?
+		setting rec mode output was "0x9600FF003500FF00
+		-> Unique ID: 0x9600FF00
+		-> Badge Type: Unknown
+		-> Magic Token: No
+		-> Game Flags: 11111111
+
+		Trying segment 7
+		setting rec mode output was "Waiting for Packet(s)...
+		"
+		Packet received: "0xF300A30000014F00
+		-> Unique ID: 0xF300A300
+		-> Badge Type: Human
+		-> Magic Token: Yes
+		-> Game Flags: 01001111
+
+		starting to wonder if these are just noise or nonsense... maybe all 0s triggers some weird mode, or len 0 does
+
+		'''
+		##########data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           5,4,3,5, 7,0,3,6, 0,0,7,3,  0,4,1,0, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		# 						 				      ^									
+		#length = 8
+		#Trying segment 5
+		#Packet received: "0x 00 00 02 80 00000064 huh, maybe bits were right...
 
 
+		 #data= [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           5,4,3,5, 7,0,3,6, 0,0,7,3,  4,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		# 											  ^		                     		   	       ^     ^
+		#changed bits back, len 8
+		'''
+		Trying segment 8
+		#Packet received: "0x 00 00 02 02 00755614 
+		-> Unique ID: 0x00000202
+		-> Badge Type: Human
+		-> Magic Token: Yes
+		-> Game Flags: 01010110
+		'''
+		
+		#data =    [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           5,4,3,5, 7,0,3,6, 4,0,7,3,  0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		# 											      								    ^	            ^
+		'''
+		Trying segment 9
+		Packet received: "0x 00 00 84 32 05200000  stupid
 
-		for x in range(0,256):
-			
+		0x0000198105555604
+-> Unique ID: 0x00001981
+-> Badge Type: Village
+-> Magic Token: Yes
+-> Game Flags: 01010110
+
+0x081C1D0144154B13
+-> Unique ID: 0x081C1D01
+-> Badge Type: Unknown
+-> Magic Token: Yes
+-> Game Flags: 01001011
+        '''
+        #                                                              7        8        5        6        3        4
+		#data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           5,4,3,5, 7,0,3,6, 0,0,7,3, 0,4,1,0, 4,2,7,4, 2,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		# 											  ^		                     		   	                        ^
+		'''
+		Trying segment 7
+		Packet received: "0x00 50 52 01 41 635551        fluke or sign I should work left to right on the symbols?
+		'''
+
+		#                                                              7        8        5        6        3        4   I want to flip nibble 6 by 2
+		#                                                              7   8    5   6    3   4    1   2
+		#                                                              0   1    2   3    4   5    6   7
+		#data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           5,4,3,5, 7,0,3,6, 0,0,7,3, 4,4,1,0, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		#                                             ^                                           ^    
+		#Packet received: "0x 00 00 02 80 00000064  <- WAS
+		#Trying segment 13
+		#Packet received: "0x 00 00 02 82 00000000  <- off by 4 symbols, looks like they are displayed in same order as symbols
+
+		#                                                              0   1    2   3    4   5    6   7
+		data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,0, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		#                                             ^                                  ^    
+		#Packet received: "0x 00 00 02 80 00000064  <- WAS
+		#Trying segment 3
+		#Packet received: "0x 00 00 00 80 00000000
+		#also
+		#Trying segment 9
+		#Packet received: "0x0017088200000000
+
+		#                                                              0   1    2   3    4   5    6   7
+		data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           5,4,3,5, 7,0,3,6, 4,0,7,3, 0,0,1,0, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		#                                             ^                                             ^    
+		# 5 I think, only saw manually?!?!?!
+		# 0x00004C9805A00000
+		# does it not like all 0s? Maybe set one other bit?
+
+		data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           1,4,3,5, 7,0,3,6, 4,0,7,3, 0,0,1,0, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		#                                             ^                ^                            ^    doh 80 = 128 2/8/32/128
+		#Trying segment 4
+		#Packet received: "0xF300A30000014F00
+		#Packet received: "0x 02 00 00 88 00000000
+
+		#                                                              0   1    2   3    4   5    6   7
+		data = [2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,7,3,2,           5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7]#, 5,4,4,3, 7,7,7,7,0,1]
+		#                                             ^                ^                                ^    
+
+
+		for i in range(0,271): #271 not 270?
+			x = i % 256
 
 			#add the crc
 			crc = crcs[x + seg*SEGLEN]
 			crc = [int(c) for c in str(crc)]
 			#print (crc)
-			packet = [4] + preamble + data + crc + [0,0,0] #or [8,8,8] or null...
+			#packet = [4] + preamble + data + crc + [0,0,0] #or [8,8,8] or null...
 			packet = [0] + preamble + data + crc + [0,0,0] #or [8,8,8] or null...
 			#1 byte of decaying/filler/spacer symbols   4 symbol, 110 total
 			#packet += [0,0,0,0]  #should I be starting with 4 and ending with [8,8,8]? 8s will break my 8PSK, 9PSK encoder probably won't work with my code right now...
@@ -189,7 +304,7 @@ while seg < NUMSEGS:
 	if proc_ret.returncode: print("Trim .wav exit code was: %d" % proc_ret.returncode)
 
 	#echo -e \\n Resample it to be 1.2MHz
-	proc_ret = subprocess.run("sox trans_output_trim.wav -r 1200000 trans_output_trim_resamp.wav".split(" "))
+	proc_ret = subprocess.run("sox trans_output_trim.wav -r 1200000 trans_output_trim_resamp.wav".split(" "), stderr=subprocess.DEVNULL) #eat random warnings about 1 clipped sample
 	if proc_ret.returncode: print("Resample .wav exit code was: %d" % proc_ret.returncode)
 
 	#echo -e \\nConcat files
