@@ -1,14 +1,26 @@
-#zeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 4,2,1,0, 7,0,6,1 ,3,4,1,4, 4,2,0,7, 0,7,3,2,        5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7,5,4,4,3, 6,4,0,0,0,0,3,0,0,1]
-zeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6,  2,3,3,6,   7,7,0,1,   3,2,4, 0,  3,2,4,3 ,0,7,3,2,  5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7,5,4,4,3, 7,7,7,7,0,1,0,0,0,0]
+#zeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 4,2,1,0, 7,0,6,1 ,3,4,1,4, 4,2,0,7, 0,7,3,2,        5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3, 6,4,0,0,0,0,3,0,0,1]
+#zeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6,  2,3,3,6,   7,7,0,1,   3,2,4, 6,  3,2,4,3 ,0,7,3,2,  5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3, 7,7,7,7,0,1,0,0,0,0]
+#3240 starts at 201
+#3242 starts at 9
+#3244 73
+#3246 137
+#dzeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 2,3,3,6, 7,7,0,1, 3,2,4, 2,  2, 2, 7, 5,  0, 7, 3, 2,  5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3, 7,7,7,7,0,1, 0,0,0,0]
+#recorded during glitch, asssume 1,0,0,0,0
+dzeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 4,3,3,2,            5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3, 7,7,7,7,0,1, 0,0,0,0]
+#                                                																       ^ ^		
+#recorded during glitch 2:
+dzeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,           5,4,3,5, 7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3, 7,7,7,7,0,1]
+#                                                																         ^		
+dzeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,           5,4,3,5, 7,0,3,6, 0,0,7,3, 0,4,1,0, 4,2,7,4, 6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3, 7,7,7,7,0,1]
+#                                                                                           																         ^	   ^ had to change this for start up data, either thise bits wrong or math it wrong again...    	   
 
-delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
-delta_2 = [(x*2+3)%8 for x in zeros_symbols]
-delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
+ddelta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in dzeros_symbols]   # 001 010 101 110 
+ddelta_2 = [(x*2+3)%8 for x in dzeros_symbols]
+ddelta_6 = [1 + 6 * (x & 1) for x in dzeros_symbols]
 
 
 #this version allows expected, print_error
-#ignore 20 causes problems?
-def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6):    #in_data_orig and expected are ONLY the values to be computed, ignore sets the pos in zero_symbols
+def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zeros_symbols=dzeros_symbols, delta_1347=ddelta_1347, delta_2=ddelta_2, delta_6=ddelta_6):    #in_data_orig and expected are ONLY the values to be computed, ignore sets the pos in zero_symbols
 	in_data = in_data_orig.copy() # prevent modification of data
 	start = ignore*4
 	
@@ -89,16 +101,22 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zer
 	odd_1001000 = [4 * (odd_bits[x-6]*odd_bits[x-3]) for x in range(0, length)]#1nn1nnn   was working but made no sense
 	#odd_1001000 = [0,0,0,0,0,0] + [4 * (odd_bits[x-6]*odd_bits[x-3]) for x in range(6, length)]#1nn1nnn
 
-
-	
 	odd_100010 = []
+	'''
+	#shit, this rule depends on how many ignores there are..........
 	for x in range(0, length):
 		#if   x%12==11: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))   #to fic count in byte 3 of count
-		if   x%16==11: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))   #to fic count in byte 3 of count
-		elif x%4==0: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))
-		elif x%4==1: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))  #32? 
-		elif x%4==2: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))    
-		elif x%4==3: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))  #6 6 2 6 used to work   2662 should equal merge rule 0,3
+		if x%12==9: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))  #adds 8    #fix byte 2 in capture #8, maybe others
+		elif x%12==11: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))   #to fic count in byte 3 of count
+		elif x%4==0: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))  #adds 2
+		elif x%4==1: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))  #adds 8    #was 6 must be 2 for byte 1 in the odd count in capture #8
+		elif x%4==2: odd_100010.append(6 * (odd_bits[x-5]*odd_bits[x-1]))  #adds 32
+		elif x%4==3: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))  #adds 128 6 6 2 6 used to work   2662 should equal merge rule 0,3
+	'''
+	for x in range(0, length):
+		if x%12 in [8,9]: odd_100010.append( ((4 + delta_1347[x+1+start])%8) * (odd_bits[x-5]*odd_bits[x-1]) ) #8 is a guess
+		else: odd_100010.append( (delta_1347[x+1+start]) * (odd_bits[x-5]*odd_bits[x-1]) )
+
 		#else: odd_100010.append(0)
 	#if x%4==0: odd_100010 = [6 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
 	#if x%4==3: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
@@ -139,6 +157,9 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zer
 	if debug or (error and print_error):
 		print("compute() debug:")
 		print("zeros_symbols:", zeros_symbols[start:])
+		print("delta_1347:   ", delta_1347[start:])
+		print("delta_2:      ", delta_2[start:])
+		print("delta_6:      ", delta_6[start:])
 		print("bytes        :", in_data)
 		print("nibbles      : [", end='')
 		for x in nibbles[0:-4]:
