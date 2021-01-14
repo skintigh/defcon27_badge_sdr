@@ -41,7 +41,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [542, 11]
+    coordinate: [520, 12.0]
     rotation: 0
     state: enabled
 - name: dec
@@ -53,7 +53,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [343, 75]
+    coordinate: [448, 76.0]
     rotation: 0
     state: enabled
 - name: freq
@@ -68,7 +68,7 @@ blocks:
     start: 10.3e6
     step: '1000'
     stop: 10.8e6
-    value: 10.554e6
+    value: 10.55515e6
     widget: counter_slider
   states:
     bus_sink: false
@@ -86,19 +86,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [343, 11]
+    coordinate: [448, 12.0]
     rotation: 0
     state: enabled
 - name: samp_rate
   id: variable
   parameters:
     comment: ''
-    value: 1.2e6
+    value: '1190550'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [191, 11]
+    coordinate: [176, 12.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_float_0
@@ -114,9 +114,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [478, 231]
+    coordinate: [656, 240.0]
     rotation: 0
-    state: disabled
+    state: enabled
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 252.0]
+    rotation: 0
+    state: enabled
 - name: blocks_wavfile_sink_0
   id: blocks_wavfile_sink
   parameters:
@@ -124,16 +142,16 @@ blocks:
     alias: ''
     bits_per_sample: '16'
     comment: ''
-    file: /home/pentoo/Desktop/10554kHz_2400kps_69_30_30db_b.wav
+    file: /home/pentoo/defcon27_badge_sdr/recorder_10.55515_PCsync_0PPM_119055_.wav
     nchan: '2'
     samp_rate: int(bw)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [734, 227]
+    coordinate: [840, 236.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: osmosdr_source_0
   id: osmosdr_source
   parameters:
@@ -172,7 +190,7 @@ blocks:
     ant8: ''
     ant9: ''
     args: ''
-    bb_gain0: '30'
+    bb_gain0: '0'
     bb_gain1: '20'
     bb_gain10: '20'
     bb_gain11: '20'
@@ -244,7 +262,9 @@ blocks:
     clock_source5: ''
     clock_source6: ''
     clock_source7: ''
-    comment: ''
+    comment: 'was 10.554MHz
+
+      gains were 69 30 30'
     corr0: '0'
     corr1: '0'
     corr10: '0'
@@ -341,7 +361,7 @@ blocks:
     freq7: 100e6
     freq8: 100e6
     freq9: 100e6
-    gain0: '69'
+    gain0: '28'
     gain1: '10'
     gain10: '10'
     gain11: '10'
@@ -405,7 +425,7 @@ blocks:
     gain_mode7: 'False'
     gain_mode8: 'False'
     gain_mode9: 'False'
-    if_gain0: '30'
+    if_gain0: '0'
     if_gain1: '20'
     if_gain10: '20'
     if_gain11: '20'
@@ -488,7 +508,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [15, 171]
+    coordinate: [16, 172.0]
     rotation: 0
     state: enabled
 - name: qtgui_sink_x_0
@@ -517,7 +537,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [486, 466]
+    coordinate: [664, 124.0]
     rotation: 0
     state: enabled
 - name: qtgui_waterfall_sink_x_0
@@ -578,7 +598,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [486, 594]
+    coordinate: [664, 352.0]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_0
@@ -598,14 +618,15 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [304, 295]
+    coordinate: [448, 228.0]
     rotation: 0
     state: enabled
 
 connections:
 - [blocks_complex_to_float_0, '0', blocks_wavfile_sink_0, '0']
 - [blocks_complex_to_float_0, '1', blocks_wavfile_sink_0, '1']
-- [osmosdr_source_0, '0', rational_resampler_xxx_0, '0']
+- [blocks_multiply_const_vxx_0, '0', rational_resampler_xxx_0, '0']
+- [osmosdr_source_0, '0', blocks_multiply_const_vxx_0, '0']
 - [rational_resampler_xxx_0, '0', blocks_complex_to_float_0, '0']
 - [rational_resampler_xxx_0, '0', qtgui_sink_x_0, '0']
 - [rational_resampler_xxx_0, '0', qtgui_waterfall_sink_x_0, '0']
