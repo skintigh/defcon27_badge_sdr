@@ -1,0 +1,3 @@
+retry solutions in tmp on other combos
+
+or just brute force CRC and fuck the math
