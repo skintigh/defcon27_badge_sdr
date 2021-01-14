@@ -75,10 +75,10 @@ blocks:
     orient: Qt.Horizontal
     rangeType: float
     start: '0.0'
-    step: '0.001'
-    stop: '0.1'
-    value: 0.01 *0
-    widget: slider
+    step: '0.00001'
+    stop: '0.01'
+    value: '0'
+    widget: counter_slider
   states:
     bus_sink: false
     bus_source: false
@@ -96,6 +96,27 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1176, -4.0]
+    rotation: 0
+    state: enabled
+- name: freq
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 'controls@0: 2,1,2,1'
+    label: Freq
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: 10.350e6
+    step: '1000'
+    stop: 10.6e6
+    value: 10.47e6
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [536, 716.0]
     rotation: 0
     state: enabled
 - name: if_gain
@@ -123,7 +144,7 @@ blocks:
   id: variable
   parameters:
     comment: interp of 1 seems to work best
-    value: '1'
+    value: '10'
   states:
     bus_sink: false
     bus_source: false
@@ -170,7 +191,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [344, 572.0]
+    coordinate: [408, 716.0]
     rotation: 0
     state: enabled
 - name: nfilts
@@ -201,7 +222,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '2'
+    value: eq_sps
   states:
     bus_sink: false
     bus_source: false
@@ -220,9 +241,9 @@ blocks:
     rangeType: float
     start: '0.0'
     step: '0.01'
-    stop: '1.0'
+    stop: '0.5'
     value: 6.28/100.0
-    widget: slider
+    widget: counter_slider
   states:
     bus_sink: false
     bus_source: false
@@ -263,6 +284,60 @@ blocks:
     coordinate: [0, 572.0]
     rotation: 0
     state: enabled
+- name: rr_frac_bw
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 'controls@0: 2,2,2,1'
+    label: RR Fractional Bandwidth
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '0.0'
+    step: '0.01'
+    stop: '1'
+    value: '0.0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [792, 716.0]
+    rotation: 0
+    state: disabled
+- name: rr_taps
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 'controls@0: 2,2,2,1'
+    label: RR Taps
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: '1'
+    step: '1'
+    stop: '10'
+    value: '1'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [680, 716.0]
+    rotation: 0
+    state: disabled
+- name: rr_taps
+  id: variable
+  parameters:
+    comment: ''
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [416, 164.0]
+    rotation: 0
+    state: enabled
 - name: rrc_taps
   id: variable
   parameters:
@@ -280,7 +355,7 @@ blocks:
   id: variable
   parameters:
     comment: sample rate 8-20 MSPS
-    value: resample_rate*10
+    value: resample_rate*sr_mult
   states:
     bus_sink: false
     bus_source: false
@@ -298,6 +373,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [360, -4.0]
+    rotation: 0
+    state: enabled
+- name: sr_mult
+  id: variable
+  parameters:
+    comment: ''
+    value: '7'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [160, 76.0]
     rotation: 0
     state: enabled
 - name: taps
@@ -322,8 +409,8 @@ blocks:
     orient: Qt.Horizontal
     rangeType: float
     start: '0.0'
-    step: '0.01'
-    stop: '0.2'
+    step: '0.001'
+    stop: '0.1'
     value: '6.28/100.0 '
     widget: slider
   states:
@@ -410,7 +497,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: lpf_gain
+    const: lpf_gain/rr_taps
     maxoutbuf: '0'
     minoutbuf: '0'
     type: complex
@@ -419,7 +506,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [280, 260.0]
+    coordinate: [472, 260.0]
     rotation: 0
     state: enabled
 - name: controls
@@ -618,7 +705,7 @@ blocks:
     bb_gain7: '20'
     bb_gain8: '20'
     bb_gain9: '20'
-    bw0: 400e3
+    bw0: 800e3
     bw1: '0'
     bw10: '0'
     bw11: '0'
@@ -709,7 +796,7 @@ blocks:
 
 
       increasing gain to spread out the clouds made a huge improvement!'
-    corr0: '0'
+    corr0: '1'
     corr1: '0'
     corr10: '0'
     corr11: '0'
@@ -773,7 +860,7 @@ blocks:
     dc_offset_mode7: '0'
     dc_offset_mode8: '0'
     dc_offset_mode9: '0'
-    freq0: 10.544e6
+    freq0: freq
     freq1: 100e6
     freq10: 100e6
     freq11: 100e6
@@ -1087,10 +1174,10 @@ blocks:
     label8: ''
     label9: ''
     mult: '[]'
-    name: '""'
-    ncols: '110'
+    name: '"108"'
+    ncols: '108'
     nconnections: '1'
-    nrows: '512'
+    nrows: '48'
     offset: '[]'
     samp_rate: samp_rate_out
     type: byte
@@ -1159,7 +1246,7 @@ blocks:
     marker9: '-1'
     name: '"Rational Resampler output, keep under 2V?"'
     nconnections: '1'
-    size: '64'
+    size: '128'
     srate: resample_rate
     stemplot: 'False'
     style1: '1'
@@ -1208,17 +1295,17 @@ blocks:
     alias: ''
     comment: ''
     decim: dec
-    fbw: '0'
+    fbw: '0.1'
     interp: interp
     maxoutbuf: '0'
     minoutbuf: '0'
-    taps: '1'
+    taps: rr_taps
     type: ccc
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [448, 236.0]
+    coordinate: [272, 236.0]
     rotation: 0
     state: enabled
 - name: received
@@ -1259,7 +1346,8 @@ blocks:
 connections:
 - [blocks_add_const_vxx_0, '0', blocks_file_sink_0, '0']
 - [blocks_char_to_short_0, '0', blocks_add_const_vxx_0, '0']
-- [blocks_multiply_const_vxx_0, '0', rational_resampler_xxx_0, '0']
+- [blocks_multiply_const_vxx_0, '0', digital_pfb_clock_sync_xxx_0, '0']
+- [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0_0, '0']
 - [digital_cma_equalizer_cc_0, '0', digital_costas_loop_cc_0, '0']
 - [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0, '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
@@ -1267,9 +1355,8 @@ connections:
 - [digital_diff_decoder_bb_0, '0', blocks_char_to_short_0, '0']
 - [digital_diff_decoder_bb_0, '0', qtgui_time_raster_sink_x_0, '0']
 - [digital_pfb_clock_sync_xxx_0, '0', digital_cma_equalizer_cc_0, '0']
-- [osmosdr_source_0, '0', blocks_multiply_const_vxx_0, '0']
-- [rational_resampler_xxx_0, '0', digital_pfb_clock_sync_xxx_0, '0']
-- [rational_resampler_xxx_0, '0', qtgui_time_sink_x_0_0, '0']
+- [osmosdr_source_0, '0', rational_resampler_xxx_0, '0']
+- [rational_resampler_xxx_0, '0', blocks_multiply_const_vxx_0, '0']
 
 metadata:
   file_format: 1
