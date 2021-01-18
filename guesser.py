@@ -8,7 +8,7 @@ from compute import compute
 def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=False, print_result=False, default=True, zeros_symbols=False, delta_1347=False, delta_2=False, delta_6=False):  #in_data_orig and expected are ONLY the values to be computed, ignore sets the pos in zero_symbols
 	in_data = in_data_orig.copy()# prevent modification of data
 	expected = expected_orig.copy()#+8*[0]
-	if debug and False:
+	if debug:# and False:
 		print("solver() debug:")
 		print("in_data",in_data)
 		print("len",len(in_data)*4)
@@ -76,14 +76,14 @@ def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=False
 
 	return in_data
 
-solution = solver([4,4], [2, 1, 2, 0, 5, 5, 6, 1], debug=False, ignore=8)#, print_error=False, print_result=False)
+solution = solver([4,4], [2, 1, 2, 0, 5, 5, 6, 1], debug=False, ignore=8, print_result=False)#, print_error=False, print_result=False)
 if solution == "Impossible": 
 	print("Failed sanity check")
 	sys.exit(1)
 
 lowest_count_seen = [4,0,0,6, 1,4,5,1, 4,3,1,2, 3,3,6,7, 0,3,3,2]
 solution = solver([0,0,0], lowest_count_seen, debug=False, ignore=8, print_error=False, print_result=False)		#lowest count seen [45, 74, 5] 346669 (or [45, 74, 197]   0x2d 0x4a 0xc5  - J ?)
-print(solution, solution[0]+256*solution[1]+256*256*solution[2])
+#print(solution, solution[0]+256*solution[1]+256*256*solution[2])
 if solution == "Impossible": 
 	print("Failed sanity check")
 	sys.exit(1)
@@ -561,7 +561,7 @@ if 0:
 
 
 #solve for last 9 symbols of preamble... why 9? Because they aren't in section 3
-if 1:
+if 0:
 	print("solve for 2 mystery bytes after the confirmed header 6 bytes")
 	#Found: [0, 0, 0, 0, 0, 128, 135, 0]
 	#0x0 0x0 0x0 0x0 0x0 0x80 0x87 0x0       1000 0000  1000 0111
@@ -621,7 +621,7 @@ if 1:
 	#Z      =        [0,0,0,0]*9
 	#Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0,  6,4,2,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,]  #xe0 xff x15 solving for 8 but data 9 long and actual 8 or 9
 	#Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0,  6,4,2,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]  #xe0 xff x55          yeah this must be some error or bug right?
-	Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0,  6,4,2,0, 0,0,4,0, 0,0,0,0, 0,0,0,0]
+	Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0,  6,4,2,0, 0,0,4,0, 0,0,0,0, 0,0,0,0] #xc0 xff x55 
 	zeros_symbols = Z.copy()
 	#actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4, 2,3,3,6]  #
 	actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4]  #
@@ -730,7 +730,7 @@ if 0:
 
 
 #solve for last 9 symbols of preamble... why 9? Because they aren't in section 3
-if 1:
+if 0:
 	print("solve for all after the confirmed header bytes using sec2 preamble")
 	#Found: [0, 0, 0, 0, 0, 128, 135, 0]
 	#0x0 0x0 0x0 0x0 0x0 0x80 0x87 0x0       1000 0000  1000 0111
@@ -767,127 +767,128 @@ if 0:
 	#zeros_symbols = Z.copy()
 	solution = solver([0,0,0,0,0,0,0,0], actual, debug=True, ignore=0, print_result=True, print_error=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)
 	print(solution,"\n\n\n")
-sys.exit()	
+	sys.exit()	
 
 
+if 0:
 
-print("solve for 2 mystery bytes + 1 after the confirmed header 6 bytes")
-print("zeros_symbols:", zeros_symbols)
-zeros_symbols = Z.copy() + [4, 2, 1, 0, 7, 0, 6, 1, 3, 2] #must add at least 7 for a byte  		works
-zeros_symbols = Z.copy() + [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 0,2] #must add at least 7 for a byte  		works
-#zeros_symbols = Z.copy() + 10*[0]  #must add at least 7 for a byte  			works
-#zeros_symbols = Z.copy() + [0, 0, 0, 0, 7, 0, 6, 1, 3, 2] #must add at least 7 for a byte
-#zeros_symbols = Z.copy() + [4, 2, 1, 0, 0, 0, 0, 0, 3, 2] #must add at least 7 for a byte    impossible
-#zeros_symbols = Z.copy() + [0, 0, 0, 0, 7, 0, 6, 1, 3, 2] #must add at least 7 for a byte    impossible
+	print("solve for 2 mystery bytes + 1 after the confirmed header 6 bytes")
+	print("zeros_symbols:", zeros_symbols)
+	zeros_symbols = Z.copy() + [4, 2, 1, 0, 7, 0, 6, 1, 3, 2] #must add at least 7 for a byte  		works
+	zeros_symbols = Z.copy() + [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 0,2] #must add at least 7 for a byte  		works
+	#zeros_symbols = Z.copy() + 10*[0]  #must add at least 7 for a byte  			works
+	#zeros_symbols = Z.copy() + [0, 0, 0, 0, 7, 0, 6, 1, 3, 2] #must add at least 7 for a byte
+	#zeros_symbols = Z.copy() + [4, 2, 1, 0, 0, 0, 0, 0, 3, 2] #must add at least 7 for a byte    impossible
+	#zeros_symbols = Z.copy() + [0, 0, 0, 0, 7, 0, 6, 1, 3, 2] #must add at least 7 for a byte    impossible
 
-print("zeros_symbols:", zeros_symbols)
-actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+[0,6,7,3] #old zero byte1 Found: [0, 0, 0, 0, 0, 128, 135, 0, 250]
-actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+[4,2,1,0] #new zero byte1 Found: [0, 0, 0, 0, 0, 128, 135, 0, 110]
-actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+[4,2,1,0, 7,0,6,1] #new zero byte1 Found: [0, 0, 0, 0, 0, 128, 135, 0, 110, 180]
+	print("zeros_symbols:", zeros_symbols)
+	actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+[0,6,7,3] #old zero byte1 Found: [0, 0, 0, 0, 0, 128, 135, 0, 250]
+	actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+[4,2,1,0] #new zero byte1 Found: [0, 0, 0, 0, 0, 128, 135, 0, 110]
+	actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+[4,2,1,0, 7,0,6,1] #new zero byte1 Found: [0, 0, 0, 0, 0, 128, 135, 0, 110, 180]
 
-startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [6, 1, 2, 2, 4, 7, 4, 7, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
-actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+ [6, 1, 2, 2, 4, 7, 4, 7,]           #Found: [0, 0, 0, 0, 0, 128, 135, 0, 169, 114]
-actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+ [6, 1, 2, 2, 4, 7, 4, 7, 3, 4, 4, 2]#Found: [0, 0, 0, 0, 0, 128, 135, 0, 199, 198, 6]
+	startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [6, 1, 2, 2, 4, 7, 4, 7, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
+	actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+ [6, 1, 2, 2, 4, 7, 4, 7,]           #Found: [0, 0, 0, 0, 0, 128, 135, 0, 169, 114]
+	actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]+ [6, 1, 2, 2, 4, 7, 4, 7, 3, 4, 4, 2]#Found: [0, 0, 0, 0, 0, 128, 135, 0, 199, 198, 6]
 
-delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
-delta_2 = [(x*2+3)%8 for x in zeros_symbols]
-delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
-
-
-print(len(zeros_symbols),len(actual),len([0,0,0,0,0,0,0,0]+[0]+[0]+[0])*4)
-
-
-
-solution = solver([0,0,0,0,0,0,0,0]+[0]+[0]+[0], actual, debug=True, ignore=0)#, print_error=False)
-
-
-
-
-
-
-'''
-startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6,   6, 1, 2, 2, 4, 7, 4, 7, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
-zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 1, 4, 3, 3, 6, 7, 0, 7, 3, 2]
-#                                              ?  ?  ?  ?  ?  ?
-zeros_symbols = Z + zeros_data_5
-#print(len(zeros_symbols))
-actual=startup4
-delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
-delta_2 = [(x*2+3)%8 for x in zeros_symbols]
-delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
-solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0)#, print_error=False)
-print(solution)
-'''
-
-'''
-#Code to try all 6 byte combos. takes a while.
-startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [6, 1, 2, 2, 4, 7, 4, 7, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
-zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 1, 4, 4, 2, 0, 7, 0, 7, 3, 2]
-#                                              ?  ?  ?  ?  ?  ?                   not sure about these 6 bytes
-print("[")							
-for a in range(0,8):
-	for b in range(0,8):
-		for c in range(0,8):
-			for d in range(0,8):
-				for e in range(0,8):
-					for f in range(0,8):
-						#print("Testing",a,b,c,d,e,f,end="... ")
-						zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, a, b, c, d, e, f, 0, 7, 3, 2]
-
-						zeros_symbols = Z + zeros_data_5
-						#print(len(zeros_symbols))
-						actual=startup4
-						delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
-						delta_2 = [(x*2+3)%8 for x in zeros_symbols]
-						delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
-						solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0, print_error=False, print_result=False)
-						if solution != "Impossible": 
-							#print("Tested",a,b,c,d,e,f)
-							#print("solved")
-							#sys.exit(0)
-							print([a,b,c,d,e,f],",")
-print("]")
-'''
-
-'''
-#this found nothing new.
-startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [2, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
-with open("byte34_solutions.txt", 'r') as f:
-	sols = ast.literal_eval(f.read()) 
-for sol in sols:
-	zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2] + sol + [0, 7, 3, 2]
-	zeros_symbols = Z + zeros_data_5
-	#print(len(zeros_symbols))
-	actual=startup4
 	delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
 	delta_2 = [(x*2+3)%8 for x in zeros_symbols]
 	delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
-	solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0, print_error=False, print_result=False)
-	if solution == "Impossible": 
-		print("Tested",sol)
-		print("eliminated")			
-'''		
-		
-#this also found nothing new.		
-startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [6,5, 6, 0, 1, 3, 7, 1, 4, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-with open("byte34_solutions.txt", 'r') as f:
-	sols = ast.literal_eval(f.read()) 
-for sol in sols:
-	zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2] + sol + [0, 7, 3, 2]
-	zeros_symbols = Z + zeros_data_5
-	#print(len(zeros_symbols))
-	actual=startup4
-	delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
-	delta_2 = [(x*2+3)%8 for x in zeros_symbols]
-	delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
-	solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0, print_error=False, print_result=False)
+
+
+	print(len(zeros_symbols),len(actual),len([0,0,0,0,0,0,0,0]+[0]+[0]+[0])*4)
+
+
+
+	solution = solver([0,0,0,0,0,0,0,0]+[0]+[0]+[0], actual, debug=True, ignore=0)#, print_error=False)
+
+
+
+
+
+
 	'''
-	if solution != "Impossible": 
-		print("Tested",sol)
-		print("solved")	
-	'''	
-	if solution == "Impossible": 
-		print("Tested",sol)
-		print("eliminated")			
-		
-				
+	startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6,   6, 1, 2, 2, 4, 7, 4, 7, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
+	zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 1, 4, 3, 3, 6, 7, 0, 7, 3, 2]
+	#                                              ?  ?  ?  ?  ?  ?
+	zeros_symbols = Z + zeros_data_5
+	#print(len(zeros_symbols))
+	actual=startup4
+	delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
+	delta_2 = [(x*2+3)%8 for x in zeros_symbols]
+	delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
+	solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0)#, print_error=False)
+	print(solution)
+	'''
+
+	'''
+	#Code to try all 6 byte combos. takes a while.
+	startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [6, 1, 2, 2, 4, 7, 4, 7, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
+	zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 1, 4, 4, 2, 0, 7, 0, 7, 3, 2]
+	#                                              ?  ?  ?  ?  ?  ?                   not sure about these 6 bytes
+	print("[")							
+	for a in range(0,8):
+		for b in range(0,8):
+			for c in range(0,8):
+				for d in range(0,8):
+					for e in range(0,8):
+						for f in range(0,8):
+							#print("Testing",a,b,c,d,e,f,end="... ")
+							zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, a, b, c, d, e, f, 0, 7, 3, 2]
+
+							zeros_symbols = Z + zeros_data_5
+							#print(len(zeros_symbols))
+							actual=startup4
+							delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
+							delta_2 = [(x*2+3)%8 for x in zeros_symbols]
+							delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
+							solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0, print_error=False, print_result=False)
+							if solution != "Impossible": 
+								#print("Tested",a,b,c,d,e,f)
+								#print("solved")
+								#sys.exit(0)
+								print([a,b,c,d,e,f],",")
+	print("]")
+	'''
+
+	'''
+	#this found nothing new.
+	startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [2, 7, 3, 4, 2, 7, 3, 5, 3, 4, 4, 2, 3, 4, 0, 7, 0, 7, 3, 2]
+	with open("byte34_solutions.txt", 'r') as f:
+		sols = ast.literal_eval(f.read()) 
+	for sol in sols:
+		zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2] + sol + [0, 7, 3, 2]
+		zeros_symbols = Z + zeros_data_5
+		#print(len(zeros_symbols))
+		actual=startup4
+		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
+		delta_2 = [(x*2+3)%8 for x in zeros_symbols]
+		delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
+		solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0, print_error=False, print_result=False)
+		if solution == "Impossible": 
+			print("Tested",sol)
+			print("eliminated")			
+	'''		
+			
+	#this also found nothing new.		
+	startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [6,5, 6, 0, 1, 3, 7, 1, 4, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
+	with open("byte34_solutions.txt", 'r') as f:
+		sols = ast.literal_eval(f.read()) 
+	for sol in sols:
+		zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2] + sol + [0, 7, 3, 2]
+		zeros_symbols = Z + zeros_data_5
+		#print(len(zeros_symbols))
+		actual=startup4
+		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
+		delta_2 = [(x*2+3)%8 for x in zeros_symbols]
+		delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
+		solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0, print_error=False, print_result=False)
+		'''
+		if solution != "Impossible": 
+			print("Tested",sol)
+			print("solved")	
+		'''	
+		if solution == "Impossible": 
+			print("Tested",sol)
+			print("eliminated")			
+			
+					
