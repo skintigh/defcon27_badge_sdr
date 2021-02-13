@@ -1,5 +1,6 @@
 import sys, ast
-
+#from compute import compute
+from compute_experimental import compute
 HDR_LEN = 32
 FTR_LEN = 14
 
@@ -41,6 +42,7 @@ def hammingwt(n):
 	return c
 	
 
+'''
 def compute(in_data_orig, expected, debug=False, ignore=0):
 	in_data = in_data_orig.copy() # prevent modification of data
 	start = HDR_LEN+5*4
@@ -162,7 +164,7 @@ def compute(in_data_orig, expected, debug=False, ignore=0):
 		print()
 		sys.exit(1)
 	return sum
-
+'''
 ###################################################################################
 
 
@@ -184,52 +186,57 @@ def main():
 		print()
 	'''
 
+	if 1:
+		with open("generated_data_byte_captures/data_0XYY.txt", 'r') as f:
+			data_symbols = ast.literal_eval(f.read())
+		print(len(data_symbols), "data records loaded")	
+		length = 4 * (len(data_symbols[0][0]) +2)
+		print("test in order")
+		errors = tests = 0
+		ignore = 2 #ignore first 2 symbols
+		for n in range(0,len(data_symbols)):
+			tests += 1
+			#print(data_symbols[n][0])
+			data_symbols[n][1][0] = (data_symbols[n][1][0]-1)%8 #fix errors in data
+			data_symbols[n][1][1] = (data_symbols[n][1][1]+2)%8
+			result = compute(data_symbols[n][0]+[0,0], data_symbols[n][1][0:length], ignore = 8+5)
+			#print(result[0:length])
+			#print(data_symbols[n][1][0:length])
+			if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
+				print("Error on", data_symbols[n][0])
+				errors += 1
+		print(errors,"errors in", tests, "tests\n")
 
-	with open("data_0XYY.txt", 'r') as f:
-		data_symbols = ast.literal_eval(f.read())
-	print(len(data_symbols), "data records loaded")	
-	length = 4 * len(data_symbols[0][0])
 
-	print("test in order")
-	errors = tests = 0
-	ignore = 2 #ignore first 2 symbols
-	for n in range(0,len(data_symbols)):
-		tests += 1
-		#print(data_symbols[n][0])
-		result = compute(data_symbols[n][0], data_symbols[n][1][0:length], ignore = ignore)
-		#print(result[0:length])
-		#print(data_symbols[n][1][0:length])
-		if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
-			print("Error on", data_symbols[n][0])
-			errors += 1
-	print(errors,"errors in", tests, "tests\n")
+	if 1:
+		print("loading data...")
+		with open("generated_data_byte_captures/data_2bytes.txt", 'r') as f:
+			data_symbols = ast.literal_eval(f.read())
+		print(len(data_symbols), "data records loaded")
+		length = 4 * (len(data_symbols[0][0]) +2)
 
-
-
-
-	with open("data_2bytes.txt", 'r') as f:
-		data_symbols = ast.literal_eval(f.read())
-	print(len(data_symbols), "data records loaded")
-	length = 4 * len(data_symbols[0][0])
-
-	print("test in order")
-	errors = tests = 0
-	ignore = 2 #ignore first 2 symbols
-	for n in range(0,len(data_symbols)):
-		tests += 1
-		#print(data_symbols[n][0])
-		result = compute(data_symbols[n][0], data_symbols[n][1][0:length], ignore = ignore)
-		#print(result[0:length])
-		#print(data_symbols[n][1][0:length])
-		if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
-			print("Error on", data_symbols[n][0])
-			errors += 1
-	print(errors,"errors in", tests, "tests\n")
+		print("test in order")
+		errors = tests = 0
+		ignore = 2 #ignore first 2 symbols
+		for n in range(0,len(data_symbols)):
+			tests += 1
+			#print(data_symbols[n][0])
+			data_symbols[n][1][0] = 5 #fix errors in data
+			data_symbols[n][1][1] = 4
+			result = compute(data_symbols[n][0]+[0,0], data_symbols[n][1][0:length], ignore = 8+5)
+			#print(result[0:length])
+			#print(data_symbols[n][1][0:length])
+			#if not(result[ignore:length] == data_symbols[n][1][ignore:length]):
+			if not(result[0:length] == data_symbols[n][1][0:length]):
+				print("Error on", n, data_symbols[n][0])
+				errors += 1
+				sys.exit()
+		print(errors,"errors in", tests, "tests\n")
 
 
 
 	print("Test", [0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0])
-	compute([0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0], [5,4,1,6,0,0,5,7,4,0,3,4,0,2,3,7,1,4,5,5,0,4,4,5,6,7,4,3,3,0,4,0])#,4,3,2,4,7,5,7,3,5,2,7,7,5,2,7,0,6,6,7,5,2,4,6,1,7,0])
+	compute([0x50,0x60,0x70,0x80,0x90,0xa0,0xb0,0xc0], [5,4,1,6,0,0,5,7,4,0,3,4,0,2,3,7,1,4,5,5,0,4,4,5,6,7,4,3,3,0,4,0],ignore=13)#,4,3,2,4,7,5,7,3,5,2,7,7,5,2,7,0,6,6,7,5,2,4,6,1,7,0])
 
 if __name__ == "__main__":
 	main()																																																																																																												
