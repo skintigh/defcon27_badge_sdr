@@ -9,5 +9,5 @@ echo -e \\n Resample it to be 1.2MHz
 sox trans_output_trim.wav -r 1200000 trans_output_trim_resamp.wav
 
 echo -e \\nConcat files
-sox recorded_header_long_3.wav trans_output_trim_resamp.wav synthetic_signal.wav
+sox recordings/recorded_header_long_3.wav trans_output_trim_resamp.wav synthetic_signal.wav
 
