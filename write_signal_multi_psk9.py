@@ -19,7 +19,7 @@ from timeit import default_timer as timer
 from datetime import timedelta
 import subprocess
 from time import sleep
-from crc_list import crcs_10_ordered_by_symbol as crcs_10
+from crc_list import crcs_10_ordered_by_symbol as crcs
 
 '''
 def badge_check(serial_output):
@@ -40,10 +40,6 @@ def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range
 
 			crc_index = crc_inc%crc_range_len + crc_range_start
 			crc_str = crcs[crc_index]
-			#print(crc_str, end = " ")				#this just adds clutter
-			#print(crc_index, end = " ")				#this just adds clutter
-
-			
 			crc_symbols = [int(c) for c in str(crc_str)]
 
 			diffed_packet = preamble + data_symbols + crc_symbols
@@ -86,13 +82,14 @@ def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range
 	
 
 	# enter receive mode
-	ser.write(b'R\r\n')     	
+	ser.write(b'R\r\n')
+	sleep(1)
 	serial_output = ser.read(100000)
 	while serial_output:  	#read until there is no more output to prevent previous test from confusing this one
 		#print('\nSetting RECEIVE mode output was "{}"'.format(serial_output.decode()))
 		print('Setting RECEIVE mode output...')
 		ser.write(b'R\r\n') #maybe this is needed but the sleep isn't?  or make timeout longer? put this before the sleep?
-		sleep(1)  #needed?
+		sleep(2)  #needed? 1 didn't eat enough. I wonder if somehow the transmitter exits early...  2 didn't eat enough? added 1s above
 		serial_output = ser.read(100000)
 	#badge_check(serial_output.decode())
 
@@ -101,39 +98,70 @@ def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range
 	proc_ret = subprocess.run("grcc -r player.grc".split(" "), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	if proc_ret.returncode: print("Player exit code was: %d" % proc_ret.returncode)
 
-
+	#check if it was received
+	found = False
 	serial_output = ser.read(100000).decode()
-	while serial_output:
-		print('\nReceived PACKET:\n"{}"'.format(serial_output))
-		if "Unique" in serial_output or "Badge thinks USB-to-serial adapter is removed, ignoring" not in serial_output:
-			print('CRC segment is', crc_range_start/SEGLEN)
-			print('CRC is in range {} to {}'.format(crc_range_start,crc_range_start+crc_range_len-1))
+	if serial_output: 
+		#a packet was received!
+		found = True
+
+		#display the CRC segment and index/range
+		if crc_range_len == 1: 
+			print('CRC is segment {} inndex {}'.format(crc_range_start//SEGLEN, crc_range_start),end="")
+		else: 
+			print('CRC is segment {} in range {} to {}'.format(crc_range_start//SEGLEN, crc_range_start,crc_range_start+crc_range_len-1),end="")
+
+		if "length" in serial_output: #if there was data in the packet
+			for line in serial_output.split("\r\n"): 
+				if "length" in line: #find and print the line with the data
+					print("\n"+line,end="")
+
+		ser.write(b'R\r\n') #badge usually exits receive mode after the first packet
+		sleep(1)#was getting set receive mode msgs
+		while serial_output: #eat all the responces
+			print(".",end="")
+			'''
+			if "length" in serial_output: #if there was data in the packet
+				for line in serial_output.split("\r\n"): 
+					if "length" in line: #find and print the line with the data
+						print(line)
+			'''
+
+			#ser.write(b'R\r\n') #badge usually exits receive mode after the first packet
+			#need a sleep here?
+			serial_output = ser.read(100000).decode()
+		print()
+		#else:
+		#	print("Recieved packet")
+
+
+		#if "Unique" in serial_output or "Badge thinks USB-to-serial adapter is removed, ignoring" not in serial_output:
+		'''
 			with open("multi_results.txt","a") as resf:
 				resf.write(str(data_bytes))
 				resf.write("\tsegment: "+str(crc_range_start/SEGLEN)+"\n")
 				resf.write('CRC is in range {} to {}'.format(crc_range_start,crc_range_start+crc_range_len-1))
 				resf.write(serial_output+"\n\n")
 				#seg += 1 #for timer math
-			return True
+		'''
+		#	return True  #doh I'm not eating it all just 1?
 		#adge_check(serial_output)	#obsolete
-		sleep(1)
-		ser.write(b'R\r\n') #will this help? longer sleep? before sleep 2 didn't eat everything, after? maybe sleep 1 before and after?
-		sleep(1)
-		serial_output = ser.read(100000).decode()
-	return False
+		#sleep(1)
+		#ser.write(b'R\r\n') #will this help? longer sleep? before sleep 2 didn't eat everything, after? maybe sleep 1 before and after?   this made it worse?
+		#sleep(2) #maybe I don't need any sleeps, my loop was just fucked?
+		#sleep(1)
+		#serial_output = ser.read(100000).decode()
+
+	return found
 
 
-#I thought using a CRC of length 11 was much more reliable than using 10. Not sure I took notes on it. might be some weird interaction before I used nulls
-#4096 = min NUMSEGS 16*256 max SEGLEN
+
 
 seg_start = 0
-
-
-crcs = crcs_10
 CRC_REPEAT = 8
 NUMSEGS = 16*CRC_REPEAT
 SEGLEN = 256//CRC_REPEAT
-REPEAT = 20  #40 works? 20 seems reliable 15 too, 10 works 2/3rds of time?  15 missed 2 out of 4 after I removed the +2 wrap-around   missed 1 when I put it back...
+REPEAT = 25  #40 works? 20 seems reliable 15 too, 10 works 2/3rds of time?  15 missed 2 out of 4 after I removed the +2 wrap-around   missed 1 when I put it back...
 
 #preamble 5+3 not 6+2?
 #preamble = [4, 4, 4, 0,  4, 0, 4, 0,  2, 4, 6, 0,  0, 0, 0, 0,  6, 4, 2, 0,  0, 0, 4, 4] + [2, 7, 7, 4,  6, 7, 5, 6]
@@ -228,16 +256,13 @@ data_bytes = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] #seg 49  B d0 d0 E
 
 #[128, 135, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] segment: 91 B d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d7 d0 d7 d0 d7 E -- length = 22 0x0000000000000000
 #[128, 135, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] segment: 0  B d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d0 d7 d0 d7 d0 d7 E -- length = 22 0x0000000000000000
-
-#seg_start = 118
-#for q in [65]+[qq for qq in range(71,256)]:
-for q in [] + [qq for qq in range(171,256)]:
+seg_start = 113
+for q in [3]+[range(0,8)]:
 	new_seg = True
-	data_bytes = [0,0,0,0,q,0,0,0,0,0,0,0,0,0,0,0]
-	data_bytes = [1,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0]
+	data_bytes = [0x80,0x87,0] + [0,0,0,0,11,0,0,0,0,0,0,0,0,0,0,pow(2,q)]
 	#prepend mutable preambls
-	data_bytes = [0x80,0x87,0] + data_bytes
-	print("data_bytes =", data_bytes,"\n")
+	#data_bytes = [0x80,0x87,0] + data_bytes
+	print("\ndata_bytes =", data_bytes,"\n")
 	assert(len(data_bytes)==19)
 
 	expected_symbols = [0]*4*len(data_bytes)
@@ -269,23 +294,24 @@ for q in [] + [qq for qq in range(171,256)]:
 			for bitlevel in range(1,6):
 				div = 2**bitlevel
 				bits = bits * 2
-				print("Testing range {} to {}".format(seg*SEGLEN+ bits*SEGLEN//div,  seg*SEGLEN+ bits*SEGLEN//div+ SEGLEN//div -1))
+				#print("Testing range {} to {}".format(seg*SEGLEN+ bits*SEGLEN//div,  seg*SEGLEN+ bits*SEGLEN//div+ SEGLEN//div -1))
 				if test_crc_range(seg*SEGLEN+ bits*SEGLEN//div, SEGLEN//div, data_bytes): 
 					bits += 0
 				else: 
 					bits += 1 #assume!!!
-				print("################")
-				print("# bits = {:0{}b}{} #".format(bits,bitlevel,'?'*(5-bitlevel)))
-				print("################")
+				#print("################")
+				#print("# bits = {:0{}b}{} #".format(bits,bitlevel,'?'*(5-bitlevel)))
+				print("bits = {:0{}b}{}".format(bits,bitlevel,'?'*(5-bitlevel)))
+				#print("################")
 
 			#if bits%2 == 1:
 			if True:
-				print("verifying assumed bits...")
-				print("Testing range {} to {}".format(seg*SEGLEN+ bits*SEGLEN//div,  seg*SEGLEN+ bits*SEGLEN//div+ SEGLEN//div -1))
+				#print("verifying assumed bits...")
+				print("Verifying CRC index {}... ".format(seg*SEGLEN+ bits*SEGLEN//div, end="")
 				if test_crc_range(seg*SEGLEN + bits*SEGLEN//div, SEGLEN//div, data_bytes):
-					print("Verification successful")
+					print("Success")
 				else:
-					print("Failure to verify CRC!\n # bits = {:05b}".format(bits))
+					print("FAILED!")
 
 			'''
 			#16
