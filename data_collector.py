@@ -1,3 +1,5 @@
+#use serial interface to update the packet, then capture the packet and record it
+
 import serial
 import re
 import sys
@@ -44,7 +46,7 @@ def read_symbols():
 
 def get_data_symbols(prev_data, n=0):
 	#print(n)
-	if n == 20:
+	if n == 50:
 		print("get_data_symbols failure n ==", n)
 		sys.exit(1)
 	#data = None
@@ -66,9 +68,33 @@ def get_data_symbols(prev_data, n=0):
 		data = get_data_symbols(prev_data,n+1)
 	return data
 
+def get_data_symbols_long(prev_data, n=0):
+	#print(n)
+	if n == 50:
+		print("get_data_symbols failure n ==", n)
+		sys.exit(1)
+	#data = None
+	data = read_symbols()
+	while data == None:
+		print(".",end='')
+		sys.stdout.flush()
+		#sys.stdout.flush()
+		sleep(0.1)
+		data = read_symbols()
+	#data = read_symbols()
+	#print(data)
+	data = data.split('4 4 4 0 4 0 4 0 2 4 6 0 0 0 0 0 6 4 2 0 0 0 4 4 2 7 7 4 6 7 5 6 ')[1] #chop header
+	#data = [int(s) for s in data.split(' ')] #convert to list
+	#data = data[] #return just user data portion
+	
+	if data == prev_data or data == None:
+		sleep(0.1)
+		data = get_data_symbols_long(prev_data,n+1)
+	return data
 
-def update_packet(a,b=0,c=0,d=0,e=0,f=0,debug=False):
-	str = 'u {0:02x}{1:02x}{2:02x}{3:02x}{4:02x}{5:02x}000000'.format(a,b,c,d,e,f)
+
+def update_packet(a=0,b=0,c=0,d=0,e=0,f=0,g=0,h=0,i=0, debug=False):
+	str = 'u {0:02x}{1:02x}{2:02x}{3:02x}{4:02x}{5:02x}{6:02x}{7:02x}{8:02x}'.format(a,b,c,d,e,f,g,h,i)
 	if debug: print("update_packet set to", str)
 	ser.write(str.encode())
 	sleep(0.10)
@@ -83,6 +109,24 @@ def update_packet(a,b=0,c=0,d=0,e=0,f=0,debug=False):
 	#print(r)
 	sleep(0.4)	#0.3 fails
 	
+def update_packet_ary(data, debug=False):
+	str = 'u {0:02x}{1:02x}{2:02x}{3:02x}{4:02x}{5:02x}{6:02x}{7:02x}{8:02x}'.format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8])
+	if debug: print("update_packet set to", str)
+	ser.write(str.encode())
+	sleep(0.10)
+	ser.write(b'y\r\n')
+	sleep(0.15)
+	r = ser.read(1000).decode('ascii')
+	if debug: print(r)
+	if "Loading Data:" not in r:
+		print("update_packet: error with command to write data")
+		print('"Loading Data" not in', r)
+		sys.exit()
+	#print(r)
+	sleep(0.4)	#0.3 fails
+
+
+
 
 def main(debug=False):
 	print("#data_collector...", end=' ')
@@ -97,7 +141,7 @@ def main(debug=False):
 
 
 	
-	update_packet(0,0,255,0xff,0xff,0xff)
+	update_packet(0,0,255,0xff,0xff,0xff,debug=True)
 	symbols = get_data_symbols(0)
 	#print(symbols)
 	expected = [3, 7, 6, 2, 4, 4, 5, 4, 6, 2, 1, 5, 2, 6, 7, 6, 4, 3, 0, 1, 7, 4, 0, 2, 0, 7, 6, 6, 1, 6, 4, 1, 3, 1, 4, 4, 0, 7, 7, 3, 5, 2, 7, 7]
@@ -109,7 +153,7 @@ def main(debug=False):
 
 
 
-	
+	'''
 	a=b=d=e=f=0
 	for c in range(0, 256):
 		for d in range(0, 256):
@@ -128,6 +172,26 @@ def main(debug=False):
 			for l in db: 
 				outfile.write(str(l)+",\n")
 			outfile.write(']\n')		
+	'''
+
+	for x in range(0,1000):
+		for pos in range(0,9):
+			for bit in range(0,8):
+				data = 9*[0]
+				print(pos,bit)
+				data[pos]=pow(2,bit)
+				update_packet_ary(data,debug=True)
+				symbols = get_data_symbols_long(symbols)
+				#db.append([data,symbols])
+				db.append(symbols) #just save it like normal data, I can decode
+
+		with open("data_1_bit_per_byte_raw_4.txt", 'a') as outfile:
+			#outfile.write('[\n')
+			for l in db: 
+				outfile.write(str(l)+"\n")
+			#outfile.write(']\n')
+			db = []
+
 
 	#print('\n\n[')
 	#for l in db: print(l,end=",\n")
