@@ -1,9 +1,11 @@
+#scrape a capture for every unique CRC, then sort and print them
+
 filename = "test_0s_100_40_11_symbols_3.txt"
 crcs = []
 l = 11
 cutoff = 8
 #9/4 3922  11/4 7264  11/5 6490   11/8 4418  11/9 3800
-with open(filename, "r") as infile:	
+with open("data_captures/"+filename, "r") as infile:	
 	line = infile.readline()
 	while line:	
 		#print(line)
