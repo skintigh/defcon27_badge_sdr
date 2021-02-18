@@ -1,6 +1,6 @@
 rm synthetic_signal.wav
 python write_signal.py
-grcc -r d8psk_generator_no_gui.grc
+grcc -r grc/d8psk_generator_no_gui.grc
 
 echo -e \\nTrim black beginning of generated signal
 sox trans_output.wav trans_output_trim.wav trim 76s
