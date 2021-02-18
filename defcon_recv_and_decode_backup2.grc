@@ -561,7 +561,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: ./symbols_raw_1.579_1.1905.txt
+    file: /home/pentoo/defcon27_badge_sdr/symbols.txt
     type: short
     unbuffered: 'False'
     vlen: '1'
@@ -991,7 +991,7 @@ blocks:
 
 
       increasing gain to spread out the clouds made a huge improvement!'
-    corr0: '0'
+    corr0: '100'
     corr1: '0'
     corr10: '0'
     corr11: '0'
@@ -1307,7 +1307,7 @@ blocks:
     tr_slope: qtgui.TRIG_SLOPE_POS
     tr_tag: '""'
     type: complex
-    update_time: '0.1'
+    update_time: '0.01'
     width1: '1'
     width10: '1'
     width2: '1'
