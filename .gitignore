@@ -1,4 +1,11 @@
-backups
+__pycache__/
+backups/
+old_parse/
+signal.bin
+trans_output.wav
+trans_output_trim.wav
+trans_output_trim_resamp.wav
+recorder.wav
+synthetic_signal.wav
 symbols.txt
-top_block.py
-mpsk_stage6.py
+temp.txt
