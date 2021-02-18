@@ -156,7 +156,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		sys.exit()
 
 	#test with a startup data packet.        #correct value is ?!?!?
-	if 0:
+	if 1:
 		#startup #1
 		packet = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6,6,1,4,1,5,0,5,2,3,0,0,0,2,1,5,5,0,3,3,2,5,4,5,0,5,0,0,6,2,6,2,3,2,3,5,4,2,4,6,1,7,3,1,1,5,5,1,6,1,7,6,1,1,4,1,1,6,7,7,3,5,2,7,7]#, 5,0,0,3,6,0,4,4,0,0, 4,0,7,7] startup #1
 		packet = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 6,1,4,1,5,0,5,2,3,0,0,0,2,1,5,5,0,3,3,2, 5,4,5,0,5,0,0,6,2,6,2,3,2,3,5,4,2,4,6,1,7,3,1,1,5,5,1,6,1,7,6,1,1,4,1,1,6,7,7,3,5,2,7,7, 5,0,0,3,6,0,4,4,0,0, 0,0]#4,0,7,7]
@@ -202,7 +202,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 
 		packet = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6,2,5,2,2,6,6,2,7,4,4,2,4,4,1,6,7,0,7,3,2,5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 7,7,7,3,0,3,1,6,4,4  ,0,0]
 		solution = solver(len(packet)//4*[0], packet, ignore=0, debug=False, print_error=False, print_result=True)  #ignore preamble
-		sys.exit()
+		print()
 
 
 	#sanity check could be, known value is
@@ -365,7 +365,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 
 	#guess all in file
 	if 1: #guess all in file including last 3 bytes of preamble, second count digit vascilates by 8 still
-		filename = "temp8.txt"
+		filename = "temp.txt"
 		with open(filename, "r") as infile:	
 			print("using", filename)
 			line = infile.readline()
@@ -378,7 +378,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 				#print (solution) 
 
 				crc = solution[-1]*65536 +solution[-2]*256 + solution[-3]
-				print(solution,"    \t{:05x}".format(crc))
+				print(solution[3:],"    \t{:05x}".format(crc))
 				#print in hex
 				#for c in solution: 	print("x{:02x}".format(c),end=" ")
 				#print()
@@ -402,8 +402,8 @@ if __name__ == "__main__":   #only run if this file is run as main script
 
 
 	#verify vs recorded counts
-	if 1:
-		filename = "test_0s_20_70_147_symbols.txt" #227745 total packets 0 impossibles, 4 major errors, 48 skips, 5 doubles  [*, *, 25-31-0] 
+	if 0:
+		filename = "test_0s_20_70_147_symbols.txt" #227745 total packets 0 impossibles, 4 major errors, 48 skips, 5 doubles  [*, *, 25-31-0]    IMP near 59000??? or maybe upper bytes/CRC is IMP
 			#bad filename = "test_0s_20_50_147_symbols.txt" #227698:  10 impossibles, 5 major errors, 12 skips, 41 doubles
 		'''
 		filename = "test_0s_20_70_147_symbols_2_missing_lots.txt" #3371  0 impossibles, 357 major errors, 696 skips, 0 doubles
@@ -571,11 +571,23 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		sys.exit()	
 			
 	#try to find the mask value of the zero symbols
-	if 0:
-		symbols =       [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,   5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7, ]# 1,0,0,3,2,0,0,0,0,0]	
+	if 1:
+		print("Value of zeroes mask:")
+		symbols =       [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,           5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7, ]# 1,0,0,3,2,0,0,0,0,0]	
+		#new zeroes
+		#symbols =       [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,0,0,0,0,0,0,0,0,0, 2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,           5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1,  5, 2, 3, 4,  4, 7, 5, 1,  1, 2, 5, 5,   5, 0, 6, 1,  0,3,1,6, 4,4,  0,0, 0,0,0,0] 
+
+
 		zeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,] + [0]*(len(symbols)-32)
 		solution = solver([0]*(len(symbols)//4), symbols, debug=False, ignore=0, print_error=False, print_result=True, default=False, zeros_symbols=zeros_symbols)#, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
-		if solution == "Impossible": print(solution)
+		if solution == "Impossible": 
+			print(solution)
+		else:
+			print("Values:")
+			for x in solution: print("{:02x}".format(x), end=" ")
+			print("\nInverted:")
+			for x in solution: print("{:02x}".format(x^255), end=" ")
+			print("\n")
 			
 	#I think this found 4096 possible CRC values
 	if 0:
