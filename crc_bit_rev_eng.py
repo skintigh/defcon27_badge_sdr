@@ -240,6 +240,23 @@ bit_values = [[664227, 657590, 33339, 696474, 43053, 698897, 666255, 658080], [3
 # a0891 a022f a0090 08028 02014 0080a 00205 a8085 
 # a2025 a0815 a020d a0081 a0027 a0014 0800a 02005 
 # a8805 a2205 a0885 a0225 a0095 a002d a0011 a000f 
+#xor a2a11
+# 008b2 022a7 aa82a 08a8b a823c 08000 0009e 020b1 
+# aa8a1 a0aa9 a222d a280f a2a9e 0aa31 a8a01 a0219 
+# a2015 a2893 a2ab0 0aa26 00a0d aa21f a0816 0a295 
+# a8833 a0280 0a03e 00881 aa2b9 a0825  N/A   N/A  
+# 0aa80 00a3e 02201 aa819 a0a95 a2233 a2800 0aa9e 
+# 00a31 aa201 a0819 a2295 a2833 a2a80 0aa3e 00a01 
+# aa219 a0815 a2293 a2830 0aa86 00a3d aa207 a081a 
+# 0a293 a8830 08286 0003d aa087 a08ba 0a2a3 a8828 
+# 0828a 0003b aa084 088bc 002a0 0202e 02889 aaabd 
+# a0a27 a220a 0a81b a8a94 08234 00004 0209c 028b0 
+# 02aa6 02a2d aaa0f a0a1e 0a211 a8811 a0291 a2031 
+# a2881 a2ab9 a2a25 a2a0b a2a1c 0aa10 00a16 02215 
+# aa813 a0a90 0a236 00805 aa29b a0834 0a284 0083c 
+# 02280 0283e 02a81 aaa39 a0a05 a221b a2814 0aa94 
+# 00a34 02204 0281c 02a90 02a36 02a05 aaa1b a0a14 
+# 0a214 00814 02294 02834 02a84 02a3c 02a00 02a1e 
 
 depth = len(bit_values)
 
@@ -331,18 +348,19 @@ def find_bits(solution,last_solution=None,baseline=None):
 		print_bit_values(bit_values)
 
 
-def print_bit_values(bit_values):
+def print_bit_values(bit_values,xor=0):
+	if xor: print("xor {:05x}".format(xor))
 	#print(bit_values)
 	for x in range(0,len(bit_values)):
 		print("# ",end="")
 		for y in range(0,8):
 			if bit_values[x][y]: 
-				print("{:05x}".format(bit_values[x][y]), end = " ")
+				print("{:05x}".format(bit_values[x][y] ^ xor), end = " ")
 			else:
 				print(" N/A ", end=" ")
 		print()
 
-def compute_crc(solution, baseline, silent=False):#crc_list.baseline_crc_value):
+def compute_crc(solution, baseline=BASELINE, silent=False):#crc_list.baseline_crc_value):
 	computed_crc_value = baseline
 	#print("baseline_crc_value starts as {:05x}".format(computed_crc_value))
 	for i in range(0,depth):
@@ -360,6 +378,8 @@ def compute_crc(solution, baseline, silent=False):#crc_list.baseline_crc_value):
 
 if __name__ == "__main__": 
 	print_bit_values(bit_values)
+	print()
+	print_bit_values(bit_values, xor=BASELINE)
 
 	#just do transistions only
 	if 0:
@@ -433,11 +453,12 @@ if __name__ == "__main__":
 		#for filename in ["test_glitched_100_40_11_symbols.txt","test_glitched_100_40_11_symbols_2.txt","test_glitched_100_40_11_symbols_3.txt","test_glitched_100_40_11_symbols_4.txt","test_glitched_100_40_11_symbols_b.txt"]:
 		#for filename in ["test_glitched_100_40_11_symbols_b.txt","test_glitched_100_40_11_symbols_2.txt","test_glitched_100_40_11_symbols_3.txt","test_glitched_100_40_11_symbols_4.txt"]: # _b is cleaner than orig
 		#for filename in ["eleven_0s.txt"]:
+		#for filename in ["byte_15.txt"]:
 			#with open("data_captures/"+filename, "r") as infile:	
 		#for filename in ["data_1_bit_per_byte_raw.txt","data_1_bit_per_byte_raw_2.txt","data_1_bit_per_byte_raw_3.txt","data_1_bit_per_byte_raw_4.txt"]:#,"../data_1_bit_per_byte_raw.txt"]: 1 does byte 4 up to 9, 2 does 16, 3 to 29, 4 up to 46   all end with 777 with new zeros
-			#with open("generated_data_byte_captures/"+filename, "r") as infile:	
-		#for filename in ["temp.txt"]:
-		for filename in ["byte_13.txt"]:
+		#	with open("generated_data_byte_captures/"+filename, "r") as infile:	
+		for filename in ["temp.txt"]:
+		#for filename in ["byte_15.txt"]:
 			with open(filename, "r") as infile:	
 				print("\n\n\nUsing:", filename)
 				count = 0		
@@ -461,7 +482,9 @@ if __name__ == "__main__":
 					print("error", e)
 					sys.exit()
 
+
 				last_solution = solver([0]*(len(symbols)//4),symbols, debug=False, ignore=8-3, print_error=False, print_result=False)
+				if last_solution == "Impossible": print(last_solution)
 				print("".join("{:3d} ".format(num) for num in last_solution))
 
 				baseline = find_baseline(last_solution)
