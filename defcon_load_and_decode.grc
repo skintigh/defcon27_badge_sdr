@@ -405,7 +405,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: ./decode_rse3_double_diff_symbols.txt
+    file: /home/pentoo/defcon27_badge_sdr/symbols.txt
     type: short
     unbuffered: 'False'
     vlen: '1'
@@ -477,7 +477,7 @@ blocks:
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: '320000'
+    samples_per_second: '3200000'
     type: complex
     vlen: '1'
   states:
@@ -493,7 +493,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    file: /home/pentoo/defcon27_badge_sdr/recorded_10.579_PCsync_0PPM_11905.wav
+    file: /home/pentoo/defcon27_badge_sdr/recorder_ffffffffffffffffff.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
@@ -1172,7 +1172,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [416, 340.0]
+    coordinate: [1472, 12.0]
     rotation: 0
     state: true
 - name: qtgui_time_raster_sink_x_0
@@ -1229,7 +1229,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 540.0]
+    coordinate: [896, 468.0]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0_0
