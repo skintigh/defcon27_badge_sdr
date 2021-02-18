@@ -101,11 +101,13 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zer
 	even_single = [4*even_bits[x] for x in range(0, length)]
 	#if debug: print("even_single  :", even_single)
 	
+	
 	odd_11 = [4*((odd_bits[x]+odd_bits[x-1]+odd_bits[x-2]+odd_bits[x-3])==2 or (odd_bits[x]+odd_bits[x-1]+odd_bits[x-2]+odd_bits[x-3])==3) for x in range(0, length)]
 	#odd_11 = [4*((((odd_bits[x]+odd_bits[x-1]+odd_bits[x-2]+odd_bits[x-3])==2) and (odd_bits[x-3:x+1] != [0,1,1,0])) or (odd_bits[x]+odd_bits[x-1]+odd_bits[x-2]+odd_bits[x-3])==3) for x in range(0, length)]
 	
 	odd_1001000 = [4 * (odd_bits[x-6]*odd_bits[x-3]) for x in range(0, length)]#1nn1nnn   was working but made no sense
 	#odd_1001000 = [0,0,0,0,0,0] + [4 * (odd_bits[x-6]*odd_bits[x-3]) for x in range(6, length)]#1nn1nnn
+	
 
 	odd_100010 = []
 	'''
@@ -120,7 +122,9 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zer
 		elif x%4==3: odd_100010.append(2 * (odd_bits[x-5]*odd_bits[x-1]))  #adds 128 6 6 2 6 used to work   2662 should equal merge rule 0,3
 	'''
 	for x in range(0, length):
-		if x%12 in [8,9]: odd_100010.append( ((4 + delta_1347[x+1+start])%8) * (odd_bits[x-5]*odd_bits[x-1]) ) #8 is a guess
+		if x%1 in [8,9]: odd_100010.append( ((4 + delta_1347[x+1+start])%8) * (odd_bits[x-5]*odd_bits[x-1]) ) #8 is a guess   wish i wrote down the reason for this rule, like a specific test...
+		#if x in [8,9,25,26,27,28,29,32]:odd_100010.append( ((4 + delta_1347[x+1+start])%8) * (odd_bits[x-5]*odd_bits[x-1]) ) 
+		#if x in [9,25,26,27,28,29,32, 35,36,38,39,40,42,46,47,50,51,52]:odd_100010.append( ((4 + delta_1347[x+1+start])%8) * (odd_bits[x-5]*odd_bits[x-1]) )  #nope, nust be related to lots of odd 1s
 		else: odd_100010.append( (delta_1347[x+1+start]) * (odd_bits[x-5]*odd_bits[x-1]) )
 
 		#else: odd_100010.append(0)
@@ -128,16 +132,25 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zer
 	#if x%4==3: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
 	#if x%4==1: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
 	#if x%4==2: odd_100010 = [2 * (odd_bits[x-5]*odd_bits[x-1]) for x in range(0, length)]
-
+	
 	odd_1000100 = [4 * (odd_bits[x-6]*odd_bits[x-2]) for x in range(0, length)] #was working but makes no sense
 	#odd_1000100 = [0,0,0,0,0,0] + [4 * (odd_bits[x-6]*odd_bits[x-2]) for x in range(6, length)] #was working but makes no sense
 
 	odd_1000010 = [4 * (odd_bits[x-6]*odd_bits[x-1]) for x in range(0, length)]
 	odd_1000001 = [4 * (odd_bits[x-6]*odd_bits[x-0]) for x in range(0, length)]
 	
+	#new rule to explain disparity with 0xd*
+	even_10001= [4 * (even_bits[x-4]*even_bits[x]) for x in range(0, length)]
+	even_10001x= [4 * (even_bits[x-5]*even_bits[x-1]) for x in range(0, length)]
+	even_10001000x = [4 * (even_bits[x-8]*even_bits[x-4]) for x in range(0, length)]
+	
+	
+	odd_111110 = [4 * (odd_bits[x-5]*odd_bits[x-4]*odd_bits[x-3]*odd_bits[x-2]*odd_bits[x-1]) for x in range(0, length)]
+	
+	
 	diff = [((odd_single_d0[x] + odd_single_d1[x] + odd_single_d2[x] + odd_single_d3[x] 
-	+ odd_single_d5[x] + odd_single_d6[x] + even_single[x] + odd_11[x] + odd_1001000[x] 
-	+ odd_100010[x] + odd_1000100[x] + odd_1000010[x] + odd_1000001[x] #+ odd_merge[x] 
+	+ odd_single_d5[x] + odd_single_d6[x] + even_single[x] #+ odd_11[x] + odd_1001000[x] 
+	+ odd_100010[x] #+ odd_1000100[x] + odd_1000010[x] + odd_1000001[x] + odd_111110[x]#+ even_10001000[x]#+ odd_merge[x] 
 	)%8) for x in range(0, length)]
 	
 	
@@ -173,18 +186,26 @@ def compute(in_data_orig, expected, debug=False, ignore=0, print_error=True, zer
 		print('\b\b]')
 		print("nips         :", nips[:-8],"\n")
 		print("odd_bits     :", odd_bits[:-8])
+		print("               "+ "|           "*17)
 		print("even_bits    :", even_bits[:-8])
+		print("even_single  :", even_single)
+		print("even_10001   :", even_10001[:-8])
+		print("even_10001x  :", even_10001x[:-8])
+		print("even_10001000x", even_10001000x[:-8])
+		print("               "+ "|           "*17)
+
 		print("odd_single_d0:", odd_single_d0)
 		print("odd_single_d1:", odd_single_d1)
 		print("odd_single_d2:", odd_single_d2)
 		print("odd_single_d3:", odd_single_d3)
 		print("odd_single_d5:", odd_single_d5)
 		print("odd_single_d6:", odd_single_d6)
-		print("even_single  :", even_single)
+		
 		print("odd_11       :", odd_11)
 		print("odd_1001000  :", odd_1001000)
 		print("odd_100010   :",  odd_100010)
 		print("odd_1000100  :", odd_1000100)
+		print("odd_111110   :", odd_111110)
 		print("odd_1000010  :", odd_1000010)
 		print("odd_1000001  :", odd_1000001)
 		#print("odd_merge    :", odd_merge)
