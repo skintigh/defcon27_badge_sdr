@@ -1,6 +1,7 @@
 __pycache__/
 backups/
 old_parse/
+grc/*.py
 signal.bin
 trans_output.wav
 trans_output_trim.wav
@@ -9,3 +10,4 @@ recorder.wav
 synthetic_signal.wav
 symbols.txt
 temp.txt
+multi_results.txt
