@@ -4,6 +4,8 @@
 import sys, ast
 #from compute import compute
 from compute_experimental import compute
+import compute_experimental
+divider = "-"*120
 
 def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=False, print_result=False, default=True, zeros_symbols=False, delta_1347=False, delta_2=False, delta_6=False):  #in_data_orig and expected are ONLY the values to be computed, ignore sets the pos in zero_symbols
 	in_data = in_data_orig.copy()# prevent modification of data
@@ -78,20 +80,29 @@ def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=False
 
 if __name__ == "__main__":   #only run if this file is run as main script
 
+	print("Sanity check: some value that I guess was tricky... ", end="")
 	solution = solver([4,4], [2, 1, 2, 0, 5, 5, 6, 1], debug=False, ignore=8, print_result=False)#, print_error=False, print_result=False)
 	if solution == "Impossible": 
-		print("Failed sanity check")
+		print("\n*** Failed sanity check")
 		sys.exit(1)
+	print("Pass")
 
-	lowest_count_seen = [4,0,0,6, 1,4,5,1, 4,3,1,2, 3,3,6,7, 0,3,3,2]
-	solution = solver([0,0,0], lowest_count_seen, debug=False, ignore=8, print_error=False, print_result=False)		#lowest count seen [45, 74, 5] 346669 (or [45, 74, 197]   0x2d 0x4a 0xc5  - J ?)
+	lowest_count_seen_symbols = [4,0,0,6, 1,4,5,1, 4,3,1,2, 3,3,6,7, 0,3,3,2]
+	solution = solver([0,0,0], lowest_count_seen_symbols, debug=False, ignore=8, print_error=False, print_result=False)		#lowest count seen [45, 74, 5] 346669 (or [45, 74, 197]   0x2d 0x4a 0xc5  - J ?)
 	if solution == "Impossible": 
-		print("Failed sanity check")
+		print("*** Failed to computer lowest count sanity check")
 		sys.exit(1)
-	print("sanity check lowest count seen:",solution, solution[0]+256*solution[1]+256*256*solution[2])
+	count = solution[0]+256*solution[1]+256*256*solution[2]
+	print("Sanity check: Computed lowest count seen:", solution, count, end="... ")
+	#should probably check the value is correct, now that I (think) I know the correct value
+	if count != 346637:
+		print("\n*** Failed sanity check: expected [13, 74, 5] 346637")
+		sys.exit(1)
+	print("Pass")
+	print(divider)
 
 
-	#similar CRCs
+	#similar CRCs, from when I was trying to reverse engineer the CRC
 	if 0:
 		print("these 2 have the same crc:")
 		packet = [4,2,1,0,7,0,6,1,3,2,4,2,2,2,7,5,6,2,5,6,4,7,2,5,5,7,1,0,1,5,6,1,2,5,3,2,4,1,5,4,6,2,0,2,0,7,6,6,1,6,4,1,5,2,3,4,4,7,5,1,1,2,5,5  ,1,4,4,0,6,1,1,1,2,4,4  ,0]
@@ -153,17 +164,20 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		solution = solver(len(packet)//4*[0], packet, ignore=8, debug=False, print_error=False, print_result=False)  #ignore preamble
 		for x in solution: print("%.2x"%x,end="")
 		print(" {:05x}".format(solution[-1]*65536 + solution[-2]*256 + solution[-3]))
+		print(divider)
 		sys.exit()
 
 	#test with a startup data packet.        #correct value is ?!?!?
-	if 1:
+	if 0:
+		print("Test with a startup data packet of (I think) NFMI buffer address")
 		#startup #1
 		packet = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6,6,1,4,1,5,0,5,2,3,0,0,0,2,1,5,5,0,3,3,2,5,4,5,0,5,0,0,6,2,6,2,3,2,3,5,4,2,4,6,1,7,3,1,1,5,5,1,6,1,7,6,1,1,4,1,1,6,7,7,3,5,2,7,7]#, 5,0,0,3,6,0,4,4,0,0, 4,0,7,7] startup #1
 		packet = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 6,1,4,1,5,0,5,2,3,0,0,0,2,1,5,5,0,3,3,2, 5,4,5,0,5,0,0,6,2,6,2,3,2,3,5,4,2,4,6,1,7,3,1,1,5,5,1,6,1,7,6,1,1,4,1,1,6,7,7,3,5,2,7,7, 5,0,0,3,6,0,4,4,0,0, 0,0]#4,0,7,7]
 		#packet =                                                                 [6,1,4,1,5,0,5,2,3,0,0,0,2,1,5,5,0,3,3,2,5,4,5,0,5,0,0,6,2,6,2,3,2,3,5,4,2,4,6,1,7,3,1,1,5,5,1,6,1,7,6,1,1,4,1,1,6,7,7,3,5,2,7,7]#, 5,0,0,3,6,0,4,4,0,0, 4,0,7,7]
-		print(len(packet))
+		print("length in symbols =", len(packet))
 		solution = solver(len(packet)//4*[0], packet, ignore=0, debug=False, print_error=False, print_result=True)  #ignore preamble
 		print("badge recieves 0xC0005A0081FF4F00   0x7300E30000014F00 0xD500FF003500FF00 3x 0x0000C000990001FF 0x7300230000014F00   0xD500FF003500FF00 then 5x 0x0000C000990001FF")
+		print('But now I know that since the packet length is "0" the badge is just printing uninitialized buffer, so I shouldn\'t expect the values to match.')
 		'''
 		Found:        [150, 1, 169, 0, 2, 48, 180, 48, 179, 77, 48, 52, 53, 0, 0, 0]
 		Hex:          0x96 0x1 0xa9 0x0 0x2    0x30 0xb4 0x30 0xb3 0x4d 0x30 0x34 0x35 0x0 0x0 0x0 
@@ -177,6 +191,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		'''
 		
 
+		print("\nTest another startup packet")
 		startup3 = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6,  
 					2, 7, 3, 4,  2, 7, 3, 5,  3, 4, 4, 2,  3, 4, 0, 7,  0, 7, 3, 2, 
 		            5, 4, 5, 0,  5, 0, 0, 6,  2, 6, 2, 3,  2, 3, 5, 4,  2, 4, 6, 1,  7, 3, 1, 1,  5, 5, 1, 6,  1, 7, 6, 1,  1, 4, 1, 1,  6, 7, 7, 3,  5, 2, 7, 7,  
@@ -199,30 +214,30 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		# 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x33 0x33 0xd 0x0 0x0 0x30 0x34 0xb0 0x33 0x45 0x30 0x34 0x95 0x0 0x0 0x0 0x81 0xaa 
 	    # 3 3 \d   0 4 ° 3 E 0 4      ª  
 
-
+		print("\nPacket of 8 0s, source is ??")
 		packet = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6,2,5,2,2,6,6,2,7,4,4,2,4,4,1,6,7,0,7,3,2,5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 7,7,7,3,0,3,1,6,4,4  ,0,0]
 		solution = solver(len(packet)//4*[0], packet, ignore=0, debug=False, print_error=False, print_result=True)  #ignore preamble
-		print()
-
-
-	#sanity check could be, known value is
+		print(divider)
+	
+	#potential sanity check, didn't end up needing it
 	#startup transmit packet [*] Loading Data: 0xD7D6DCD8D7D2DFDBD0D0D0D0D7DFD0D0
 	#0x76C872FB00007F00
 	if 0:
 		packet = [2,1,2,2,2,6,0,2,0,7,4,1,2,2,0,7,0,7,3,2,1,2,0,0,6,4,2,1,0,0,3,4,2,7,7,6,2,3,7,3,7,4,0,2,2,4,3,5,4,5,3,4,2,3,4,4,0,7,7,3,5,2,7,7]#,5,2,7,0,6,2,3,1,6,0]
 		solution = solver( len(packet)//4*[0], packet, ignore=8, debug=False, print_error=False, print_result=False)  #ignore preamble
-		print("Expected\n          76C872FB00007F00")
+		print("Expected\n          76c872fb00007f00") 
 		for x in solution: print("%.2x"%x,end="")
 		print()
 		packet = [6,1,2,2,2,6,0,2,0,7,4,1,2,2,0,7,0,7,3,2,1,2,0,0,6,4,2,1,0,0,3,4,2,7,7,6,2,3,7,3,7,4,0,2,2,4,3,5,4,5,3,4,2,3,4,4,0,7,7,3,5,2,7,7,1,4,4,3,]#6,0,4,4,]#4,4]
 		solution = solver( len(packet)//4*[0], packet, ignore=8, debug=False, print_error=False, print_result=False)  #ignore preamble
 		print("Expected\n          76C872FB00007F00")
 		for x in solution: print("%.2x"%x,end="")
-		print()
+		print(divider)
 		sys.exit()
 
 	#mini tests with sequential rollover values
 	if 0:  
+		print("Mini tests with sequential rollover values")
 		before = [6,5,0,3, 4,4,4,7, 5,0,2,2, 3,1,6,0, 4,6,1,4]# ,3,1,5,7,0,3,6,4,0 7 3 0 4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 1 0 4 4 6 5 1 5 6 0 3  146
 		after =  [2,3,3,6, 7,7,0,1, 3,2,0,2, 2,2,7,5, 2,6,1,4]  #,3,1,5,7,0,3,6,4,0 7 3 0 4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 7 1 4 7 0 4 3 2 0 0 4  152	
 		t3=[6,5,0,3,4,0,0,5,0,6,4,2,4,3,6,0,4,6,1,4]#,5,3,1,5,7,0,3,6,4,0,7,3,0,4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 5 2 5 2 4 5 6 7 2 4 1  43
@@ -235,28 +250,37 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		print(solution1) #Found: [254, 255, 119]
 		solution2 = solver([0,0,0], after, debug=False, ignore=8, print_error=False)#, print_result=False)
 		print(solution2)
-		#should assert coorect values
+		if (solution1[0]+256*solution1[1]+256*256*solution1[2] + 2) != solution2[0]+256*solution2[1]+256*256*solution2[2]:
+			print("*** fail rollover test 1")
+			sys.exit(1)
+		#could assert coorect values
 		'''
 		[254, 255, 223]
 		[0, 0, 224]
 		[254, 151, 223]
 		[0, 152, 223]
-		[248, 143, 223]
-		[248, 144, 223]
 		'''
-
-		solution3 = solver([0,0,0], t3, debug=False, ignore=8, print_error=False, print_result=False) 
-		print(solution3)
-		solution4 = solver([0,0,0], t4, debug=False, ignore=8, print_error=False, print_result=False)
-		print(solution4)
+		solution1 = solver([0,0,0], t3, debug=False, ignore=8, print_error=False, print_result=False) 
+		print(solution1)
+		solution2 = solver([0,0,0], t4, debug=False, ignore=8, print_error=False, print_result=False)
+		print(solution2)
+		if (solution1[0]+256*solution1[1]+256*256*solution1[2] + 2) != solution2[0]+256*solution2[1]+256*256*solution2[2]:
+			print("*** fail rollover test 2")
+			sys.exit(1)
 
 		solution5 = solver([0,0,0], t5, debug=False, ignore=8, print_error=False, print_result=False) 
 		print(solution5) #[248, 143, 223] odd_100010   : [0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 2, 0]
 		solution6 = solver([0,0,0], t6, debug=False, ignore=8, print_error=False, print_result=False) 
 		print(solution6) #[248, 16, 255]  odd_100010   : [0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 6]
+		#assert solution5 == [248, 143, 223]
+		#assert solution6 == [248, 144, 223]  off by 192?
+		assert solution5 == [248, 143, 31]
+		assert solution6 == [248, 144, 31]
+		print(divider)
 
 	#guess at byte 2 zero symbols    find 3240 42 44 46
 	if 0:
+		print("guess at byte 2 zero symbols    find 3240 42 44 46")
 		before = [6,5,0,3, 4,4,4,7, 5,0,2,2, 3,1,6,0, 4,6,1,4]# ,3,1,5,7,0,3,6,4,0 7 3 0 4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 1 0 4 4 6 5 1 5 6 0 3  146
 		after =  [2,3,3,6, 7,7,0,1, 3,2,0,2, 2,2,7,5, 2,6,1,4]  #,3,1,5,7,0,3,6,4,0 7 3 0 4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 7 1 4 7 0 4 3 2 0 0 4  152	
 		t3=[6,5,0,3,4,0,0,5,0,6,4,2,4,3,6,0,4,6,1,4]#,5,3,1,5,7,0,3,6,4,0,7,3,0,4 1 4 4 2 7 4 6 2 0 2 0 7 6 6 1 6 4 1 5 2 3 4 4 7 5 1 1 2 5 5 5 2 5 2 4 5 6 7 2 4 1  43
@@ -288,7 +312,10 @@ if __name__ == "__main__":   #only run if this file is run as main script
 	#[2, 3, 3, 6,  7, 7, 0, 1,  3, 2, 4,  6,  2, 2, 7, 5]
 	#[2, 3, 3, 6,  7, 7, 0, 1,  3, 2, 4,  2,  2, 2, 7, 5]
 	if 0:
+		print("Brute force symbol 11..15 of the mask symbols/zero_symbols, with my guess of the length mask and counter mask symbols known from testing")
+		print("I now know the correct answer is: 2, 3, 3, 6,  7, 7, 0, 1,  3, 2, 4,*2,  2, 2, 7, 5,* 0, 3, 3, 2.  (did I ever verify the 4th byte really is 0 somehow?)")
 		for a in range(0,8):
+			print("%d/8..."%a)
 			for b in range(0,8):
 				for c in range(0,8):
 					for d in range(0,8):
@@ -297,12 +324,12 @@ if __name__ == "__main__":   #only run if this file is run as main script
 							delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
 							delta_2 = [(x*2+3)%8 for x in zeros_symbols]
 							delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
-							solution = solver([0,0,0,0,0], lowest_count_seen, debug=False, ignore=0, print_error=False, print_result=False,default=False,zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)   #startup
+							solution = solver([0,0,0,0,0], lowest_count_seen_symbols, debug=False, ignore=0, print_error=False, print_result=False,default=False,zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)   #startup
 							#print(solution)
 							if solution != "Impossible": print(zeros_symbols[11:])
 							if solution[4] == 8:
 								print(8, zeros_symbols)
-							if solution[3] == 0:
+							if solution[3] == 0: #I guessed the 4th byte will be 0
 								print(0, zeros_symbols)							
 		sys.exit()
 
@@ -311,6 +338,8 @@ if __name__ == "__main__":   #only run if this file is run as main script
 	#8 [2, 3, 3, 6, 7, 7, 0, 1, 3, 2, 4, 6, 2, 2, 7, 5, 0, 7, 3, 2] [45, 74, 133, 0, 8]
 	#but is 3,2,4,6 even possible? yes! so far anyway, need longer counts
 	if 0:
+		print("brute force test of last counter symbol and of length")
+		print("I now know the correct answer for different lengths are:\n0:[2, 3, 3, 6, 7, 7, 0, 1, 3, 2, 4, 2  2, 2, 7, 5, 0, 3, 3, 2]\n8:[2, 3, 3, 6, 7, 7, 0, 1, 3, 2, 4,*2* 2, 2, 7, 5,*0, 7, 3, 2*]\n") 
 		for a in range(2,8,4):
 			for b in range(0,8):
 				for c in range(0,8):
@@ -320,14 +349,15 @@ if __name__ == "__main__":   #only run if this file is run as main script
 							delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in zeros_symbols]   # 001 010 101 110 
 							delta_2 = [(x*2+3)%8 for x in zeros_symbols]
 							delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
-							solution = solver([0,0,0,0,0], lowest_count_seen, debug=False, ignore=0, print_error=False, print_result=False,default=False,zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)   #startup
-							if solution[4] == 8:
+							solution = solver([0,0,0,0,0], lowest_count_seen_symbols, debug=False, ignore=0, print_error=False, print_result=False,default=False,zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)   #startup
+							if solution[4] == 8: #length should be 8
 								print(8, zeros_symbols, solution)
 
 		sys.exit()
 
 	#prints transitions that occur in long capture files
 	if 0:
+		print("Transitions that occur in long capture files, to help me reverse engineer the symbol math")
 		for filename in ["test_0s_20_70_147_symbols.txt", "test_0s_100_40_11_symbols_3.txt", "test_0s_50_40_11_symbols_4.txt", "test_0s_50_40_11_symbols_5.txt", 
 			"test_0s_50_40_11_symbols_6.txt", "test_0s_50_40_11_symbols_7.txt", "test_0s_50_40_11_symbols_8.txt"]:
 			with open("data_captures/"+filename, "r") as infile:	
@@ -362,12 +392,14 @@ if __name__ == "__main__":   #only run if this file is run as main script
 					#if (x-64)%(128*256) == 10: print()
 					line = infile.readline()
 					#if not x % 1000: input("Press any key to continue...")			
+		print(divider)
 
-	#guess all in file
-	if 1: #guess all in file including last 3 bytes of preamble, second count digit vascilates by 8 still
+	#guess all in file *with* preamble
+	if 1: 
+		print("guess/solve values for all packets in file *including* last 3 bytes of preamble")# (and manually verify second count digit no longer vascilates by 8)")
 		filename = "temp.txt"
 		with open(filename, "r") as infile:	
-			print("using", filename)
+			print("using file:", filename)
 			line = infile.readline()
 			while line:
 				#with preamble and crc
@@ -378,7 +410,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 				#print (solution) 
 
 				crc = solution[-1]*65536 +solution[-2]*256 + solution[-3]
-				print(solution[3:],"    \t{:05x}".format(crc))
+				print(solution[0:],"    \t{:05x}".format(crc))
 				#print in hex
 				#for c in solution: 	print("x{:02x}".format(c),end=" ")
 				#print()
@@ -386,11 +418,12 @@ if __name__ == "__main__":   #only run if this file is run as main script
 
 
 				line = infile.readline()
-		sys.exit()
+		print(divider)
 
-	#guess all in file
-	if 0:	#first digit vascilated by 32 without preamble
-		filename = "temp3.txt"
+	#guess all in file *without* preamble -- fail!
+	if 0:
+		print("guess all packet values in file *without* preamble. First digit vascilates by 32 without preamble")
+		filename = "temp.txt"
 		with open(filename, "r") as infile:	
 			print("Using {}".format(filename))	
 			line = infile.readline()
@@ -399,10 +432,11 @@ if __name__ == "__main__":   #only run if this file is run as main script
 				solution = solver([0]*16, symbols, debug=False, ignore=8, print_error=False, print_result=False)
 				print (solution)
 				line = infile.readline()
-
+		print(divider)
 
 	#verify vs recorded counts
 	if 0:
+		print("VSerify vs recorded counts. Check every packet against the next, report dropped packets and impossible values. Very slow.")
 		filename = "test_0s_20_70_147_symbols.txt" #227745 total packets 0 impossibles, 4 major errors, 48 skips, 5 doubles  [*, *, 25-31-0]    IMP near 59000??? or maybe upper bytes/CRC is IMP
 			#bad filename = "test_0s_20_50_147_symbols.txt" #227698:  10 impossibles, 5 major errors, 12 skips, 41 doubles
 		'''
@@ -430,8 +464,10 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		'''
 		with open("data_captures/"+filename, "r") as infile:	
 			print("Using {}".format(filename))
+
 			#print batches at transitions to help figure out math
 			if 0:		
+				print("print batches at transitions to help figure out math")
 				#num = 5+256*2
 				p = False
 				x = -1
@@ -568,16 +604,40 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		solution = solver([0,0,0,0,0], [2,3,3,6, 7,7,2,6, 2,7,4,3, 3,3,5,5, 2,6,1,4], debug=False, ignore=8, print_error=False)		
 		print(solution)
 
+		print(divider)
 		sys.exit()	
 			
 	#try to find the mask value of the zero symbols
-	if 1:
+	if 0:
+		print("Compute the value of zeroes mask, try to find a pattern:")
+		symbols = compute_experimental.dzeros_symbols
+
+		zeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,] + [0]*(len(symbols)-32)
+		solution = solver([0]*(len(symbols)//4), symbols, debug=False, ignore=0, print_error=False, print_result=True, default=False, zeros_symbols=zeros_symbols)#, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
+		if solution == "Impossible": 
+			print(solution)
+		else:
+			print("Values:  ", end=" ")
+			for x in solution: print("{:02x}".format(x), end=" ")
+			print("\nInverted:", end=" ")
+			for x in solution: print("{:02x}".format(x^255), end=" ")
+			print("\n")
+
+		print("-"*20)
 		print("Value of zeroes mask:")
-		symbols =       [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,4,2,7,7,4,6,7,5,6, 2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,           5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1, 3,1,4,4, 0,7,7,3, 5,2,7,7, ]# 1,0,0,3,2,0,0,0,0,0]	
-		#new zeroes
-		#symbols =       [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,0,0,0,0,0,0,0,0,0, 2,3,3,6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,           5,4,3,5, 7,0,3,6, 4,0,7,3, 0,4,1,4, 4,2,7,4, 6,2,0,2, 0,7,6,6, 1,6,4,1,  5, 2, 3, 4,  4, 7, 5, 1,  1, 2, 5, 5,   5, 0, 6, 1,  0,3,1,6, 4,4,  0,0, 0,0,0,0] 
-
-
+		zeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0, 4,0,0,0,0,0,0,0,0,0,] + [0]*(len(symbols)-32)
+		solution = solver([0]*(len(symbols)//4), symbols, debug=False, ignore=0, print_error=False, print_result=True, default=False, zeros_symbols=zeros_symbols)#, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
+		if solution == "Impossible": 
+			print(solution)
+		else:
+			print("Values:  ", end=" ")
+			for x in solution: print("{:02x}".format(x), end=" ")
+			print("\nInverted:", end=" ")
+			for x in solution: print("{:02x}".format(x^255), end=" ")
+			print("\n")
+		'''
+		print("\n\nValue of DIFFED zeroes mask:")
+		symbols =       [4,0,0,4,4,4,4,4,2,2,2,2,0,0,0,0,6,6,6,6,0,0,4,4,0,0,0,0,0,0,0,0,2,1,0,3,1,0,1,1,2,7,2,6,0,0,5,6,3,3,0,7,3,7,7,2,2,1,3,3,6,4,7,4,5,4,5,3,0,6,5,5,2,4,6,2,6,7,7,0,3,5,6,5,4,5,1,1,0,3,6,4,0,1,3,0,  2,6,1,4, 0,4,1,6, 1,2,0,0,]# 0,0,0,0]
 		zeros_symbols = [4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,] + [0]*(len(symbols)-32)
 		solution = solver([0]*(len(symbols)//4), symbols, debug=False, ignore=0, print_error=False, print_result=True, default=False, zeros_symbols=zeros_symbols)#, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
 		if solution == "Impossible": 
@@ -588,8 +648,73 @@ if __name__ == "__main__":   #only run if this file is run as main script
 			print("\nInverted:")
 			for x in solution: print("{:02x}".format(x^255), end=" ")
 			print("\n")
-			
-	#I think this found 4096 possible CRC values
+		'''
+
+		print("-"*20)
+		print("Value of (double) DIFFED zeroes mask:")
+		#symbols =  [2,1,0,3,1,0,1,1,2,7,2,6,0,0,5,6,3,3,0,7,3,7,7,2,2,1,3,3,6,4,7,4,5,4,5,3,0,6,5,5,2,4,6,2,6,7,7,0,3,5,6,5,4,5,1,1,0,3,6,4,0,1,3,0,2,6,1,4,0,4,1,6,1,2,0,0,]#0,0,0,0]
+		#print(symbols)
+		symbols = ([(compute_experimental.dzeros_symbols[x]-compute_experimental.dzeros_symbols[x-1])%8 for x in range(0,len(compute_experimental.dzeros_symbols))])
+		#print(symbols)
+		symbols = symbols[32:]
+		print(symbols)
+
+		zeros_symbols = [0]*(len(symbols))
+		solution = solver([0]*(len(symbols)//4), symbols, debug=False, ignore=0, print_error=False, print_result=True, default=False, zeros_symbols=zeros_symbols)#, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
+		if solution == "Impossible": 
+			print(solution)
+		else:
+			print("Values:  ", end=" ")
+			for x in solution: print("{:02x}".format(x), end=" ")
+			print("\nInverted:", end=" ")
+			for x in solution: print("{:02x}".format(x^255), end=" ")
+			print("\n")
+
+
+		print("-"*20)
+		print("Value of UNDIFFED zeroes mask:")
+		#symbols =  [2,1,0,3,1,0,1,1,2,7,2,6,0,0,5,6,3,3,0,7,3,7,7,2,2,1,3,3,6,4,7,4,5,4,5,3,0,6,5,5,2,4,6,2,6,7,7,0,3,5,6,5,4,5,1,1,0,3,6,4,0,1,3,0,2,6,1,4,0,4,1,6,1,2,0,0,]#0,0,0,0]
+		#print(symbols)
+		symbols = ([(compute_experimental.dzeros_symbols[x]+compute_experimental.dzeros_symbols[x-1])%8 for x in range(0,len(compute_experimental.dzeros_symbols))])
+		#print(symbols)
+		symbols = symbols[32:]
+		print(symbols)
+
+		zeros_symbols = [0]*(len(symbols))
+		solution = solver([0]*(len(symbols)//4), symbols, debug=False, ignore=0, print_error=False, print_result=True, default=False, zeros_symbols=zeros_symbols)#, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
+		if solution == "Impossible": 
+			print(solution)
+		else:
+			print("Values:  ", end=" ")
+			for x in solution: print("{:02x}".format(x), end=" ")
+			print("\nInverted:", end=" ")
+			for x in solution: print("{:02x}".format(x^255), end=" ")
+			print("\n")
+
+		print("-"*20)
+		#zeroes 4,4,4,0,4,0,4,0,2,4,6,0,0,0,0,0,6,4,2,0,0,0,4,0,0,0,0,0,0,0,0,0, 2,3,3,6,7,7,0,1,3,2,4,2,2,2,7,5,0,3,3,2, 5,4,3,5,7,0,3,6,4,0,7,3,0,4,1,4,4,2,7,4,6,2,0,2,0,7,6,6,1,6,4,1,5,2,3,4,4,7,5,1,1,2,5,5,7,5,6,2,2,6,7,5,6,0,0,0,0,0,0,0
+		print("Value of DIFFED zeroes mask:")
+		symbols =  [6,5,4,7, 5,4,5,5] #Impossible at symbol 4      					   #source???
+		symbols = [6,7,0,5, 7,0,7,7] #Impossible at symbol 2							#source?
+
+		# opposite 2, 3, 3, 6,  7, 7, 0, 1,  3, 2, 4, 2,  2, 2, 7, 5,  0, 3, 3, 2, 
+		symbols = [6,5,5,2] #8- Impossible at symbol 2									
+		symbols = [6,7,7,2, 3,3,4,5] #+4							
+		symbols = [2,5,0,6, 5,4,4,5] #undiff  IMP at 3				
+		symbols = [2,5,6,1, 5,6,7,1] #undiff  IMP at 3				
+		zeros_symbols = [0]*(len(symbols))
+		solution = solver([0]*(len(symbols)//4), symbols, debug=False, ignore=0, print_error=False, print_result=True, default=False, zeros_symbols=zeros_symbols)#, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
+		if solution == "Impossible": 
+			print(solution)
+		else:
+			print("Values:")
+			for x in solution: print("{:02x}".format(x), end=" ")
+			print("\nInverted:")
+			for x in solution: print("{:02x}".format(x^255), end=" ")
+			print("\n")
+		print(divider)
+
+	#I think this found 4096 possible CRC mask/zero values
 	if 0:
 		#First try all 1-byte zero states, then 2 bytes, etc.
 		#actuals = [[1,2,3,0], [7,1,2,5], [5,2,7,4], [1,6,1,1], [3,7,7,7], [3,1,0,4], [7,7,5,2], [5,0,2,6], [7,7,7,7], [1,0,6,6]]
@@ -623,6 +748,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 										print (Z, solution)
 								
 		print("Total solutions found:", total_good)
+		print(divider)
 
 	#more CRC stuff, code won't work without ignore changed
 	if 0:
@@ -654,12 +780,16 @@ if __name__ == "__main__":   #only run if this file is run as main script
 									
 			print("Total solutions found:", total_good)	
 			
-	#solve for last 9 symbols of preamble... why 9? Because they aren't in section 3
+	#solve for values of last 9 symbils of of preamble... why 9? Because they aren't in section 3. Get a bunch of solutions but none look any better
 	if 0:
-		print("solve for 2 mystery bytes after the confirmed header 6 bytes")
+		print("solve for 2 mystery byte values after the 6 confirmed header/preamble bytes using masks of 0, 0, 4, 0,  0, 0, 0, 0,  0, 0, 0, 0 and 0,0,4,2, 3,1,3,3, 4,2,2,4 ")
+		print("should double check delta math")
+
+		print("\n test 1")
 		#Found: [0, 0, 0, 0, 0, 128, 135, 0]
 		#0x0 0x0 0x0 0x0 0x0 0x80 0x87 0x0       1000 0000  1000 0111
 		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0, 0, 4, 0,  0, 0, 0, 0,  0, 0, 0, 0]
+		print("Z last 8:", Z[6*4:])
 		zeros_symbols = Z.copy()
 		actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0, 0, 4, 4,  2, 7, 7, 4,  6, 7, 5, 6]
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
@@ -722,13 +852,15 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
 		delta_2 = [(x*2+3)%8 for x in Z]
 		delta_6 = [1 + 6 * (x & 1) for x in Z]
-		solution = solver([0]*8, actual, debug=False, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6, print_error=True)
+		solution = solver([0]*8, actual, debug=False, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6, print_error=False)
 		if solution == "Impossible": print(solution)
 		#impossible
 
-		sys.exit()
+		#sys.exit()
 
+		print("\n test 6")
 		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4 ]
+		print("Z last 8:", Z[6*4:])
 		zeros_symbols = Z.copy()
 		actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
@@ -737,7 +869,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		solution = solver([0,0,0,0,0,0,0,0], actual, debug=False, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
 		#Hex:          0x0 0x0 0x0 0x0 0x0 0xe0 0xff 0x5f 
 
-
+		print("\n test 7")
 		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4 ]
 		zeros_symbols = Z.copy()
 		actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]
@@ -747,8 +879,9 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		solution = solver([0,0,0,0,0,0,0,0], actual, debug=False, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
 		#Hex:          0x0 0x0 0x0 0x0 0x0 0x40 0x78 0xff 
 
-
+		print("\n test 8")
 		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6]
+		print("Z last 8:", Z[6*4:])
 		zeros_symbols = Z.copy()
 		actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4 ]
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
@@ -757,8 +890,9 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		solution = solver([0,0,0,0,0,0,0,0], actual, debug=False, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
 		#Hex:          0x0 0x0 0x0 0x0 0x0 0x40 0x78 0x7d 
 
-
+		print("\n test 9")
 		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6 ,0,0,0,0]
+		print("Z last 8:", Z[6*4:])
 		zeros_symbols = Z.copy()
 		actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4 , 2, 3, 3, 6,]
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
@@ -768,24 +902,22 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		print(solution)
 		#impossible
 
-
+		print("\n test 10")
 		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6 ,2,3,3,6]
+		print("Z last 8:", Z[6*4:])
 		zeros_symbols = Z.copy()
 		actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4 , 2, 3, 3, 6,]
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
 		delta_2 = [(x*2+3)%8 for x in Z]
 		delta_6 = [1 + 6 * (x & 1) for x in Z]
-		solution = solver([0]*9, actual, debug=True, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
+		solution = solver([0]*9, actual, debug=False, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6, print_error=False)
 		print(solution)
 		#impossible
+		print(divider)
 
-
-
-		sys.exit()	
-
-	#solve for last 9 symbols of preamble... why 9? Because they aren't in section 2
+	#solve for last 9 symbols of preamble... why 9? Because they aren't in section 2. get: [0, 0, 0, 0, 0, 64, 120, 191] 
 	if 0:
-		print("solve for 2 mystery bytes after the confirmed header 6 bytes using section 2 preamble")
+		print("solve for 2 mystery bytes after the confirmed header 6 bytes using section 2 preamble  0,0,4,2, 3,1,3,3, 4,2,2,4")
 		#Found: [0, 0, 0, 0, 0, 128, 135, 0]
 		#0x0 0x0 0x0 0x0 0x0 0x80 0x87 0x0       1000 0000  1000 0111
 		Z 	   =        [4, 4, 4, 0,  4, 0, 4, 0,  2, 4, 6, 0,  0, 0, 0, 0,  6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4           ]
@@ -794,23 +926,25 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
 		delta_2 = [(x*2+3)%8 for x in Z]
 		delta_6 = [1 + 6 * (x & 1) for x in Z]
-		solution = solver([0,0,0,0,0,0,0,0], actual, debug=True, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
+		solution = solver([0,0,0,0,0,0,0,0], actual, debug=False, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
 		print(solution,"\n\n\n")
 		#Hex:          0x0 0x0 0x0 0x0 0x0 0x40 0x78 0xff
 		sys.exit()	
 
-
+	#solve for all after the confirmed header bytes. Obsolete. Better code above
 	if 0:
 		print("solve for all after the confirmed header bytes")
 		#Found: [0, 0, 0, 0, 0, 128, 135, 0]
 		#0x0 0x0 0x0 0x0 0x0 0x80 0x87 0x0       1000 0000  1000 0111
 		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, ]+4*11*[0]
 		zeros_symbols = Z.copy()
-		actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6,  2, 3, 3, 6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,  5,4,3,5, 7,0,3,6, 0,0,7,3, 0,4,1,0, 4,2,7,4, 6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3,]
+		#actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6,  2, 3, 3, 6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,  5,4,3,5, 7,0,3,6, 0,0,7,3, 0,4,1,0, 4,2,7,4, 6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3,]
+		#those had errors
+		actual = compute_experimental.dzeros_symbols
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
 		delta_2 = [(x*2+3)%8 for x in Z]
 		delta_6 = [1 + 6 * (x & 1) for x in Z]
-		solution = solver([0]*24, actual, debug=True, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
+		solution = solver([0]*24, actual, debug=False, ignore=0, print_result=True, default=False, zeros_symbols=zeros_symbols, delta_1347=delta_1347, delta_2=delta_2, delta_6=delta_6)#, print_error=False)
 		print(solution,"\n\n\n")
 		#Found:        [0, 0, 0, 0, 0, 128, 135, 0]
 		#Hex:          0x0 0x0 0x0 0x0 0x0  0x80 0x87 0x0 
@@ -818,7 +952,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		sys.exit()	
 
 
-	#solve for last 9 symbols of preamble... why 9? Because they aren't in section 3
+	#solve for last 9 symbols of preamble... why 9? Because they aren't in section 3. FAIL  copied from above?
 	if 0:
 		print("solve for all after the confirmed header bytes using sec2 preamble")
 		#Found: [0, 0, 0, 0, 0, 128, 135, 0]
@@ -826,6 +960,8 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0,  0,0,4,2, 3,1,3,3, 4,2,2,4         , 0, 0, 0, 0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, ]+4*11*[0]
 		zeros_symbols = Z.copy()
 		actual        = [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6, 2, 3, 3, 6, 7,7,0,1, 3,2,4,2, 2,2,7,5, 0,3,3,2,  5,4,3,5, 7,0,3,6, 0,0,7,3, 0,4,1,0, 4,2,7,4, 6,2,0,2,0,7,6,6,1,6,4,1,3,1,4,4,0,7,7,3,5,2,7,7, 5,4,4,3,]
+		actual = compute_experimental.dzeros_symbols
+
 		delta_1347 = [2 + 4*( x&1 ^ x>>1&1 ) for x in Z]  +[0]  # 001 010 101 110 
 		delta_2 = [(x*2+3)%8 for x in Z]
 		delta_6 = [1 + 6 * (x & 1) for x in Z]
@@ -858,10 +994,11 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		sys.exit()	
 
 
-	if 0:
+	if 0:  #needs to be updated for solver to actually use these zero values... obsolete copies of above code??
 
 		print("solve for 2 mystery bytes + 1 after the confirmed header 6 bytes")
 		print("zeros_symbols:", zeros_symbols)
+		Z 	   =        [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ] #I think?
 		zeros_symbols = Z.copy() + [4, 2, 1, 0, 7, 0, 6, 1, 3, 2] #must add at least 7 for a byte  		works
 		zeros_symbols = Z.copy() + [4, 2, 1, 0, 7, 0, 6, 1, 3, 2, 0,2] #must add at least 7 for a byte  		works
 		#zeros_symbols = Z.copy() + 10*[0]  #must add at least 7 for a byte  			works
@@ -883,11 +1020,11 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		delta_6 = [1 + 6 * (x & 1) for x in zeros_symbols]
 
 
-		print(len(zeros_symbols),len(actual),len([0,0,0,0,0,0,0,0]+[0]+[0]+[0])*4)
+		print("lengths are:", len(zeros_symbols),len(actual),len([0,0,0,0,0,0,0,0]+[0]+[0]+[0])*4)
 
 
 
-		solution = solver([0,0,0,0,0,0,0,0]+[0]+[0]+[0], actual, debug=True, ignore=0)#, print_error=False)
+		solution = solver([0,0,0,0,0,0,0,0]+[0]+[0]+[0], actual, debug=False, ignore=0)#, print_error=False)
 
 
 
@@ -907,6 +1044,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		solution = solver([0,0,0,0,0,0,0,0]+[0,0,0,0,0], startup4, debug=False, ignore=0)#, print_error=False)
 		print(solution)
 		'''
+
 
 		'''
 		#Code to try all 6 byte combos. takes a while.
@@ -959,7 +1097,7 @@ if __name__ == "__main__":   #only run if this file is run as main script
 				
 		#this also found nothing new.		
 		startup4 =      [4, 4, 4, 0, 4, 0, 4, 0, 2, 4, 6, 0, 0, 0, 0, 0, 6, 4, 2, 0, 0, 0, 4, 4, 2, 7, 7, 4, 6, 7, 5, 6] + [6,5, 6, 0, 1, 3, 7, 1, 4, 3, 1, 2, 3, 3, 6, 7, 0, 3, 3, 2]
-		with open("byte34_solutions.txt", 'r') as f:
+		with open("old_parse/byte34_solutions.txt", 'r') as f:
 			sols = ast.literal_eval(f.read()) 
 		for sol in sols:
 			zeros_data_5  = [4, 2, 1, 0, 7, 0, 6, 1, 3, 2] + sol + [0, 7, 3, 2]
