@@ -13,7 +13,8 @@ def prev(x):
 	x //= 2
 	return x
 
-def display(x): #chop up the bits now...
+
+def print_12bit_as_20bit(x): #display an index as a 5 bytes
 	a = (x & 0x001) * 0xa
 	b = int("{:04b}".format( ((x & 0x002) >> 1) + ((x & 0x004) >> 0) )[::-1],2)
 	c = int("{:04b}".format( ((x & 0x008) >> 3 ) + ((x & 0x010) >> 2) )[::-1],2)
@@ -23,121 +24,166 @@ def display(x): #chop up the bits now...
 
 	print("{:x}{:x}{:x}{:x}{:x}".format(a,b,c,d,e), end=" ")
 	return a*0x10000+b*0x1000+c*0x100+d*0x10+e
-	
+
+def crc_12bit_to_20bit(x): #convert an index(??? how baout just hex value or 12 bits?) to the 5 nibble format used by the badge
+	a = (x & 0x001) * 0xa
+	b = int("{:04b}".format( ((x & 0x002) >> 1) + ((x & 0x004) >> 0) )[::-1],2)
+	c = int("{:04b}".format( ((x & 0x008) >> 3 ) + ((x & 0x010) >> 2) )[::-1],2)
+	#c = int("{:03b}".format((x & 0x018) >> 3)[::-1],2)
+	d = int("{:04b}".format(((x & 0x020) >> 5) + ((x & 0x0c0) >> 4))[::-1],2)
+	e = int("{:04b}".format((x & 0xf00) >> 8)[::-1],2)
+
+	return a*0x10000+b*0x1000+c*0x100+d*0x10+e
+
+def crc_12bit_to_3bytes(x): #to dc_bytes? tx_bytes?
+	crc_value = crc_12bit_to_20bit(x)
+	return [crc_value & 0xff, (crc_value>>8)&0xff, (crc_value>>16)&0xff]
+
+crc_index_table = [0xc75, 0x6e9, 0xdd2, 0x5a7, 0xb4e, 0x89f, 0xf3d, 0x079, 
+0x0f2, 0x1e4, 0x3c8, 0x790, 0xf20, 0x043, 0x086, 0x10c, 
+0x218, 0x430, 0x860, 0xec3, 0x385, 0x70a, 0xe14, 0x22b, 
+0x456, 0x8ac, 0xf5b, 0x0b5, 0x16a, 0x2d4, 0x5a8, 0xb50, 
+0x8a3, 0xf45, 0x089, 0x112, 0x224, 0x448, 0x890, 0xf23, 
+0x045, 0x08a, 0x114, 0x228, 0x450, 0x8a0, 0xf43, 0x085, 
+0x10a, 0x214, 0x428, 0x850, 0xea3, 0x345, 0x68a, 0xd14, 
+0x42b, 0x856, 0xeaf, 0x35d, 0x6ba, 0xd74, 0x4eb, 0x9d6, 
+0xdaf, 0x55d, 0xaba, 0xb77, 0x8ed, 0xfd9, 0x1b1, 0x362, 
+0x6c4, 0xd88, 0x513, 0xa26, 0xa4f, 0xa9d, 0xb39, 0x871, 
+0xee1, 0x3c1, 0x782, 0xf04, 0x00b, 0x016, 0x02c, 0x058, 
+0x0b0, 0x160, 0x2c0, 0x580, 0xb00, 0x803, 0xe05, 0x209, 
+0x412, 0x824, 0xe4b, 0x295, 0x52a, 0xa54, 0xaab, 0xb55, 
+0x8a9, 0xf51, 0x0a1, 0x142, 0x284, 0x508, 0xa10, 0xa23, 
+0xa45, 0xa89, 0xb11, 0x821, 0xe41, 0x281, 0x502, 0xa04, 
+0xa0b, 0xa15, 0xa29, 0xa51, 0xaa1, 0xb41, 0x881, 0xf01, ]
+
+def compute_12bit_crc(data_bytes):
+	assert(len(data_bytes) == 16)
+	index = 0
+	for i in range(0,16):
+		for x in range(0,8):
+			if (data_bytes[i]&pow(2,x)):			
+				index ^= crc_index_table[i*8+x]
+	return(index)
 
 
+if __name__ == "__main__": 	
 
-#check next and prev
-for x in range(0,4096):
-	#print(hex(x))
-	y = next(x)
-	#print(hex(y))
-	y = prev(y)
-	#print(hex(y))
-	if x != y: 
-		sys.exit()
-		print(x)
+	#check next and prev
+	for x in range(0,4096):
+		#print(hex(x))
+		y = next(x)
+		#print(hex(y))
+		y = prev(y)
+		#print(hex(y))
+		if x != y: 
+			print("error verifying CRC table", x)
+			sys.exit(1)
 
 
-
-#build the table for 16 data bytes
-x = 0xc75
-for j in range(0,16):
-	for i in range(0,8):
-		display(x)
-		x = next(x) 
+	#build the table for 16 data bytes
+	print("CRC table in 5-byte format")
+	x = 0xc75
+	for j in range(0,16):
+		for i in range(0,8):
+			display(x)
+			x = next(x) 
+		print()
 	print()
-print()
 
-
-
-
-
-
-
-#build the table for 3 preamble bytes
-preamble_crc = [8*[0], 8*[0], 8*[0]]
-preamble_hex = [8*[0], 8*[0], 8*[0]]
-print("preamble_crc")
-#back up 3 bytes
-x = 0xc75
-for i in range(0,24):
-	x = prev(x)
-#make the table
-for i in range(0,3):
-	for j in range(0,8):
-		crc = display(x)
-		#print(crc)
-		preamble_crc[i][j] = crc
-		preamble_hex[i][j] = x
-		#print(crc, preamble_crc[i][j])
-		x = next(x) 	
+	print("CRC table in index format")
+	x = 0xc75
+	for j in range(0,16):
+		for i in range(0,8):
+			print("0x{:03x}, ".format(x), end="")
+			x = next(x) 
+		print()
 	print()
-print(preamble_crc)
-
-
-print("\nbaseline = 0xa2a11\n")
-print("Preamble 80 87 00 crc: {:05x}".format(preamble_crc[0][7]  ^ preamble_crc[1][7]^preamble_crc[1][2]^preamble_crc[1][1]^preamble_crc[1][0]))
-baseline = 0xa2a11
-print("Preamble 80 87 00 crc xor baseline: {:05x}".format(preamble_crc[0][7]  ^ preamble_crc[1][7]^preamble_crc[1][2]^preamble_crc[1][1]^preamble_crc[1][0] ^ baseline  )   )
-
-
-print("Preamble 80 87 00 hex: {:03x}".format(preamble_hex[0][7]  ^ preamble_hex[1][7]^preamble_hex[1][2]^preamble_hex[1][1]^preamble_hex[1][0]))
-
-
-print("Preamble a0 87 00 crc: {:05x}".format(preamble_crc[0][7]^preamble_crc[0][5] ^ preamble_crc[1][7]^preamble_crc[1][2]^preamble_crc[1][1]^preamble_crc[1][0]))
-
-
-l = [8342, 2091, 688658, 41097, 698403, 666134, 35467, 696994, 43185, 698943, 666264, 35500, 8886, 2235, 688698, 41117, 0] #698409, 666131, 658062, 33447, 696500, 43066, 10781, 690825,0]
-l = [8342, 2091, 688658, 41097, 698403, 666134, 35467, 696994, 43185, 698943, 666264, 35500, 8886, 2235, 688698, 41117, 698409, 666131, 658062, 33447, 696500, 43066, 10781, 690825,0]
-print(len(l))
-max =len(l)
-for a in range(0,max):
-	for b in range(min(max-1,a+1),max):
-		for c in range(min(max-1,b+1),max):
-			for d in range(min(max-1,c+1),max):
-				for e in range(min(max-1,d+1),max):
-					for f in range(min(max-1,e+1),max):
-						for g in range(min(max-1,f+1),max):
-							for h in range(min(max-1,g+1),max):
-								for i in range(min(max-1,h+1),max): 
-
-									if l[a]^l[b]^l[c]^l[d]^l[e]^l[f]^l[g]^l[h]^l[i] == 0xa2a11 : 
-										print("found it",a,b,c,d,e,f,g,h,i)
-										temp = pow(2,a-0)
-										temp += pow(2,b-0)
-										temp += pow(2,c-0)
-										temp += pow(2,d-0)
-										temp += pow(2,e-0)
-										temp += pow(2,f-0)
-										temp += pow(2,g-0)
-										temp += pow(2,h-0)
-										temp += pow(2,i-0)
-										#print("{:0{}x}".format(temp&(pow(2,max-1)-1), max//4))
-
-										print("{:02x} {:02x} {:02x}".format(temp&0xff, (temp&0xff00)>>8, (temp&0xff0000)>>16))
 
 
 
-sys.exit()
-print()
-x = 0xc75
-count = 0
-last2=0
-last=0
-while 1:
-	display(x)
-	#print("{:03x}".format(x), end=" ")
-	last2=last
-	last=x
-	x = next(x)
-	count += 1
-	if (last-last2)==(x-last): print(" ***** ")
-	if count%16 == 0 : print()
-	if x == 0xc75:
+
+
+
+	#build the table for 3 preamble bytes
+	preamble_crc = [8*[0], 8*[0], 8*[0]]
+	preamble_hex = [8*[0], 8*[0], 8*[0]]
+	print("possible preamble crc table")
+	#back up 3 bytes
+	x = 0xc75
+	for i in range(0,24):
+		x = prev(x)
+	#make the table
+	for i in range(0,3):
+		for j in range(0,8):
+			crc = display(x)
+			#print(crc)
+			preamble_crc[i][j] = crc
+			preamble_hex[i][j] = x
+			#print(crc, preamble_crc[i][j])
+			x = next(x) 	
+		print()
+	print(preamble_crc)
+
+
+	if 0: #find all preamble bit pattern that equal a value. misguided test to find crc offset
+
+		l = [8342, 2091, 688658, 41097, 698403, 666134, 35467, 696994, 43185, 698943, 666264, 35500, 8886, 2235, 688698, 41117, 0] #698409, 666131, 658062, 33447, 696500, 43066, 10781, 690825,0]
+		l = [8342, 2091, 688658, 41097, 698403, 666134, 35467, 696994, 43185, 698943, 666264, 35500, 8886, 2235, 688698, 41117, 698409, 666131, 658062, 33447, 696500, 43066, 10781, 690825,0]
+		print(len(l))
+		max =len(l)
+		for a in range(0,max):
+			for b in range(min(max-1,a+1),max):
+				for c in range(min(max-1,b+1),max):
+					for d in range(min(max-1,c+1),max):
+						for e in range(min(max-1,d+1),max):
+							for f in range(min(max-1,e+1),max):
+								for g in range(min(max-1,f+1),max):
+									for h in range(min(max-1,g+1),max):
+										for i in range(min(max-1,h+1),max): 
+
+											if l[a]^l[b]^l[c]^l[d]^l[e]^l[f]^l[g]^l[h]^l[i] == 0 : 
+												temp = pow(2,a-0)
+												temp += pow(2,b-0)
+												temp += pow(2,c-0)
+												temp += pow(2,d-0)
+												temp += pow(2,e-0)
+												temp += pow(2,f-0)
+												temp += pow(2,g-0)
+												temp += pow(2,h-0)
+												temp += pow(2,i-0)
+												#print("{:0{}x}".format(temp&(pow(2,max-1)-1), max//4))
+
+												if max == 25: 
+													#print("found it",a,b,c,d,e,f,g,h,i)
+													#print("{:02x} {:02x} {:02x}".format(temp&0xff, (temp&0xff00)>>8, (temp&0xff0000)>>16))
+													if temp&0xff == 0xa0:
+														print("found it",a,b,c,d,e,f,g,h,i)
+														print("{:02x} {:02x} {:02x}".format(temp&0xff, (temp&0xff00)>>8, (temp&0xff0000)>>16))
+												elif max == 17: 
+													print("found it",a,b,c,d,e,f,g,h,i)
+													print("{:02x} {:02x}".format(temp&0xff, (temp&0xff00)>>8))
+
+
+
+	sys.exit()
+	print()
+	x = 0xc75
+	count = 0
+	last2=0
+	last=0
+	while 1:
 		display(x)
-		print("count =", count)
-		break
+		#print("{:03x}".format(x), end=" ")
+		last2=last
+		last=x
+		x = next(x)
+		count += 1
+		if (last-last2)==(x-last): print(" ***** ")
+		if count%16 == 0 : print()
+		if x == 0xc75:
+			display(x)
+			print("count =", count)
+			break
 
 
 '''
