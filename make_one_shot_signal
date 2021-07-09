@@ -1,0 +1,13 @@
+rm synthetic_signal.wav
+python write_signal.py
+grcc -r grc/d8psk_generator_no_gui.grc
+
+echo -e \\nTrim black beginning of generated signal
+sox trans_output.wav trans_output_trim.wav trim 76s
+
+echo -e \\n Resample it to be 1.2MHz
+sox trans_output_trim.wav -r 1200000 trans_output_trim_resamp.wav
+
+echo -e \\nConcat files
+sox recordings/recorded_header_long_3_327.5.wav trans_output_trim_resamp.wav trans_output_trim_resamp_header_long.wav
+sox trans_output_trim_resamp_header_long.wav silence_2281ms.wav synthetic_signal.wav
