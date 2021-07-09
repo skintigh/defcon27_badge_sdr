@@ -22,9 +22,30 @@ from timeit import default_timer as timer
 from datetime import timedelta
 import subprocess
 from time import sleep
-from crc_list import crcs_10_ordered_by_symbol as crcs
+#from crc_list import crcs_10_ordered_by_symbol as crcs
+import crc_math
 import math # for log
 
+PRINT_ALL_PACKETS = True
+BREAK_AFTER_FIRST_FIND = True
+CRC_REPEAT = 16 #times to repeat a CRC in a packet when searching
+NUMSEGS = 16*CRC_REPEAT
+SEGLEN = 256//CRC_REPEAT  #256/8 = 32, 256/16=16 
+SEGBITS = int(math.log(SEGLEN,2))
+REPEAT = 12 #40 works? 20 seems reliable 15 too, 10 works 2/3rds of time?  15 missed 2 out of 4 after I removed the +2 wrap-around   missed 1 when I put it back... 25 still flaky with with [8,8] in packet, many hits with [8,8,8]
+			#20: 5 hits with 888. 10: 2+, 2, fail, fail, fail, fail, 2,  15: 2, seems to be very reliable, 2,2,2,3,2, missed 64,0,0
+			#30 could still miss, let's try 15 but with 16 CRC repeats
+			#after switching to using crc bytes, repeat of 15 gave 4 hits.
+PREAMBLE = [4, 4, 4, 0,  4, 0, 4, 0,  2, 4, 6, 0,  0, 0, 0, 0,  6, 4, 2, 0] # + [0, 0, 4, 4] + [2, 7, 7, 4,  6, 7, 5, 6]
+
+#crcrepeat of 16, 256 segments, repeat of 15, long header: 15.8"*256= 67:25 (assuming no findings or glitches) 4 packets when it hit
+#256 segs, repeat of 8, half header (271ms): 9" * 256 = 38:24  2 hits
+#256 seg, repeat 6, quarter header (136ms): miss twice
+#6 200ms miss
+#8 200ms miss
+#8 250ms miss x 2
+#8 half: miss miss miss then 2 packets, now it's acting lke crap. wtf
+#16 half, 8 hits, miss, 4 hits, 
 '''
 def badge_check(serial_output):
 	if "[*] Exiting Interactive Mode" in serial_output:
@@ -32,21 +53,19 @@ def badge_check(serial_output):
 		sys.exit(1)
 '''
 
-def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range of CRCs           # TO DO: I could probably reduce repeats
+def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range of CRCs          
+	expected_symbols = [0]*4*(3+16+3)
 	#compute packet to test groups of 8 CRCs
 	#write binary packets for use by GNURadio
-	with open("signal.bin","wb") as f:  #hardcoded filename
+	with open("signal.bin","wb") as f:  #hardcoded filename...
 
 		#test all CRCs in this chunk
-		#for crc_inc in range(0,SEGLEN+2):  #lets send 256 instead of 271 for now... lets not and sent 272...
-		#for crc_inc in range(0,crc_range_len):  #was +2 to test wrap around nad use up extra space...
-		for crc_inc in range(0,SEGLEN+2):  #was +2 to test wrap around nad use up extra space...
-
+		#for crc_inc in range(0,SEGLEN+2):  #was +2 to test wrap around nad use up extra space... A real packet is 272 long. With a repeat of 8 I was doing (32+2)*8 = 272. repeat of 16: (16+2)*16=288... yet that's working, but I should look into that
+		for crc_inc in range(0,SEGLEN+(16//CRC_REPEAT)):  #was +2 to test wrap around nad use up extra space... A real packet is 272 long. With a repeat of 8 I was doing (32+2)*8 = 272. repeat of 16: (16+2)*16=288...
 			crc_index = crc_inc%crc_range_len + crc_range_start
-			crc_str = crcs[crc_index]
-			crc_symbols = [int(c) for c in str(crc_str)]
-
-			diffed_packet = preamble + data_symbols + crc_symbols
+			crc_bytes = crc_math.crc_12bit_to_3bytes(crc_index)
+			data_symbols = compute_experimental.compute(data_bytes+crc_bytes, expected_symbols, debug=False, ignore=8-3, print_error=False)[0:-2]
+			diffed_packet = PREAMBLE + data_symbols
 
 			#now that we have the diffed packet we need to undiff it for transmittion
 			for n in range(0,CRC_REPEAT):  #global i guess
@@ -75,7 +94,7 @@ def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range
 	if proc_ret.returncode: print("Delete old signal .wav file exit code was: %d" % proc_ret.returncode)
 		 
 	#convert binary into 9PSK signal
-	proc_ret = subprocess.run("grcc -r d9psk_generator_no_gui_11905.grc".split(" "), stdout=subprocess.DEVNULL)
+	proc_ret = subprocess.run("grcc -r grc/d9psk_generator_no_gui_11905.grc".split(" "), stdout=subprocess.DEVNULL)
 	if proc_ret.returncode: print("Generate new .wav exit code was: %d" % proc_ret.returncode)
 	
 	#trim extra samples
@@ -83,7 +102,12 @@ def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range
 	if proc_ret.returncode: print("Trim .wav exit code was: %d" % proc_ret.returncode)
 
 	#concat header and signal
-	command = "sox " + REPEAT*"recordings/recorded_10.5551_PCsync_0PPM_119055_long_header.wav trans_output_trim.wav " + "synthetic_signal.wav"   #62 samples of 0
+	#command = "sox " + REPEAT*"recordings/recorded_10.5551_PCsync_0PPM_119055_long_header.wav trans_output_trim.wav " + "synthetic_signal.wav"   #62 samples of 0   541ms
+	command = "sox " + REPEAT*"recordings/recorded_10.5551_PCsync_0PPM_119055_long_header.wav trans_output_trim_327.5.wav " + "synthetic_signal.wav"
+	#command = "sox " + REPEAT*"recordings/recorded_10.5551_PCsync_0PPM_119055_long_header_half.wav trans_output_trim.wav " + "synthetic_signal.wav"   # 271 ms hit
+	#command = "sox " + REPEAT*"recordings/recorded_10.5551_PCsync_0PPM_119055_long_header_quarter.wav trans_output_trim.wav " + "synthetic_signal.wav"   #miss
+	#command = "sox " + REPEAT*"recordings/recorded_10.5551_PCsync_0PPM_119055_long_header_200ms.wav trans_output_trim.wav " + "synthetic_signal.wav"   #
+	#command = "sox " + REPEAT*"recordings/recorded_10.5551_PCsync_0PPM_119055_long_header_250ms.wav trans_output_trim.wav " + "synthetic_signal.wav"   #
 	proc_ret = subprocess.run(command.split(" "))
 	if proc_ret.returncode: print("Concat header and data files exit code was: %d" % proc_ret.returncode)
 	
@@ -102,7 +126,7 @@ def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range
 
 
 	#transmit the synthetic signal
-	proc_ret = subprocess.run("grcc -r player.grc".split(" "), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+	proc_ret = subprocess.run("grcc -r grc/player.grc".split(" "), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	if proc_ret.returncode: print("Player exit code was: %d" % proc_ret.returncode)
 
 	#check if it was received
@@ -140,48 +164,14 @@ def test_crc_range(crc_range_start, crc_range_len, data_bytes): #tests one range
 			else:
 				print(".",end="")
 
-			#ser.write(b'R\r\n') #badge usually exits receive mode after the first packet
-			#need a sleep here?
+
 			serial_output = ser.read(100000).decode()
 		print()
-		#else:
-		#	print("Recieved packet")
-
-
-		#if "Unique" in serial_output or "Badge thinks USB-to-serial adapter is removed, ignoring" not in serial_output:
-		'''
-			with open("multi_results.txt","a") as resf:
-				resf.write(str(data_bytes))
-				resf.write("\tsegment: "+str(crc_range_start/SEGLEN)+"\n")
-				resf.write('CRC is in range {} to {}'.format(crc_range_start,crc_range_start+crc_range_len-1))
-				resf.write(serial_output+"\n\n")
-				#seg += 1 #for timer math
-		'''
-		#	return True  #doh I'm not eating it all just 1?
-		#adge_check(serial_output)	#obsolete
-		#sleep(1)
-		#ser.write(b'R\r\n') #will this help? longer sleep? before sleep 2 didn't eat everything, after? maybe sleep 1 before and after?   this made it worse?
-		#sleep(2) #maybe I don't need any sleeps, my loop was just fucked?
-		#sleep(1)
-		#serial_output = ser.read(100000).decode()
-
 	return found
 
 
-PRINT_ALL_PACKETS = True
-CRC_REPEAT = 16
-NUMSEGS = 16*CRC_REPEAT
-SEGLEN = 256//CRC_REPEAT
-REPEAT = 15  #40 works? 20 seems reliable 15 too, 10 works 2/3rds of time?  15 missed 2 out of 4 after I removed the +2 wrap-around   missed 1 when I put it back... 25 still flaky with with [8,8] in packet, many hits with [8,8,8]
-			#20: 5 hits with 888. 10: 2+, 2, fail, fail, fail, fail, 2,  15: 2, seems to be very reliable, 2,2,2,3,2, missed 64,0,0
-			#30 could still miss, let's try 15 but with 16 CRC repeats
-seg_start = 0
-seg_end = NUMSEGS #last segment to test +1
-
-preamble = [4, 4, 4, 0,  4, 0, 4, 0,  2, 4, 6, 0,  0, 0, 0, 0,  6, 4, 2, 0] # + [0, 0, 4, 4] + [2, 7, 7, 4,  6, 7, 5, 6]
 
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)  # open serial port
-#ser = serial.Serial('/tmp/ttyV0', 115200, timeout=1)  # open serial port
 print("Connected to serial {}".format(ser.name))         	# check which port was really used
 ser.write(b'H\r\n')     	# request the help menu   need a delay between commands or even \r\n ?
 serial_output = ser.read(100000)
@@ -191,12 +181,11 @@ else:
 	ser.write(b'R\r\n')     	# enter receive mode
 	serial_output = ser.read(100000)
 	print(serial_output.decode())
-	#""Waiting for Packet(s)...""
 #badge_check(serial_output.decode())  #obsolete with my hacked FW which ignores glitches on USB connection
 
-#seg_start= 5
-#seg_end = seg_start+1
-for q in [128] :
+seg_start = 0 +111
+seg_end = NUMSEGS #last segment to test +1
+for q in [128]*10 :
 	new_seg = True
 	#data_bytes = [0x80,0x87,0] + [0,0,0,0,11,0,0,0,0,0,0,0,0,] + q
 	#data_bytes = [q,0x87,0] + [0,0,0,0,11] + 11*[0]
@@ -208,14 +197,14 @@ for q in [128] :
 	print("\n\ndata_bytes =", data_bytes,"\n")
 	assert(len(data_bytes)==19)
 
-	expected_symbols = [0]*4*len(data_bytes)
+	#expected_symbols = [0]*4*len(data_bytes)
 	#data_bytes = 16*[0]+[7,7,7,0,0,0]
-	data_symbols = compute_experimental.compute(data_bytes, expected_symbols, debug=False, ignore=8-3, print_error=False)
+	#data_symbols = compute_experimental.compute(data_bytes, expected_symbols, debug=False, ignore=8-3, print_error=False)
 	#print(data_symbols)
 	#sys.exit()
-	solution = guesser.solver([0]*(3+16), data_symbols, debug=False, ignore=5, print_error=False, print_result=False)
+	#solution = guesser.solver([0]*(3+16), data_symbols, debug=False, ignore=5, print_error=False, print_result=False)
 	#print(solution)
-	assert(solution == data_bytes) #verify it decodes to what I think it does. May not help if encoder is wrong in some sneaky way
+	#assert(solution == data_bytes) #verify it decodes to what I think it does. May not help if encoder is wrong in some sneaky way
 
 	#iterate through possible CRCs in chunks
 	seg = seg_start
@@ -230,25 +219,23 @@ for q in [128] :
 			print("{}".format(seg),end = " ")
 			sys.stdout.flush()
 
-		#run a test of 32 CRCs or 16...
-		if test_crc_range(seg*SEGLEN, SEGLEN, data_bytes): #if in this batch of 32
+		if test_crc_range(seg*SEGLEN, SEGLEN, data_bytes): #if in this batch of 16 or 32
 			print("Found in range {} to {}".format(seg*SEGLEN,seg*SEGLEN+SEGLEN-1))  #1568 to 1599
 			bits = 0
 
-			for bitlevel in range(1,int(math.log(SEGLEN,2))):
+			for bitlevel in range(1,SEGBITS+1):
 				div = 2**bitlevel
 				bits = bits * 2
 				#print("Testing range {} to {}".format(seg*SEGLEN+ bits*SEGLEN//div,  seg*SEGLEN+ bits*SEGLEN//div+ SEGLEN//div -1))
 				if test_crc_range(seg*SEGLEN+ bits*SEGLEN//div, SEGLEN//div, data_bytes): 
 					bits += 0
 				else: 
-					bits += 1 #assume!!! maybe I should doulbe check all if it remains unreliable...
+					bits += 1 #assume!!! maybe I should double check all if it remains unreliable...
 
-				print("bits = {:0{}b}{}".format(bits,bitlevel,'?'*(5-bitlevel)))
+				print("bits = {:0{}b}{}".format(bits,bitlevel,'?'*(SEGBITS-bitlevel) ) )
 
 			#if bits%2 == 1:  #verify only if last bit was a guess. That should be fine, except sometimes a positive result carries over from a previous test as I wasn't eating all of them...
 			if True:
-				#print("verifying assumed bits...")
 				print("Verifying CRC index {}... ".format(seg*SEGLEN+ bits*SEGLEN//div, end=""))
 				if test_crc_range(seg*SEGLEN + bits*SEGLEN//div, SEGLEN//div, data_bytes):
 					print("Success")
@@ -256,12 +243,12 @@ for q in [128] :
 					print("FAILED!")
 			
 			seg += 1 #for timer math    assuming the find was succesful.........
-			#break #go to next data to test or exit program
+			if BREAK_AFTER_FIRST_FIND: break #go to next data to test or exit program
 			
 		seg += 1
 		end = timer()
 		average = (end-start)/(seg-seg_start)
-		#print("Total elapse time: {} Segment split time {} Average segment time {} Remaining time {}".format(timedelta(seconds=end-start), timedelta(seconds=end-split), timedelta(seconds=average), timedelta(seconds=(NUMSEGS-seg)*average) ))
+		print("Total elapse time: {} Segment split time {} Average segment time {} Remaining time {}".format(timedelta(seconds=end-start), timedelta(seconds=end-split), timedelta(seconds=average), timedelta(seconds=(NUMSEGS-seg)*average) ))
 		split = end
 
 	end = timer()
