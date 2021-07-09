@@ -1,6 +1,6 @@
 options:
   parameters:
-    author: asd
+    author: Seth Kintigh
     category: '[GRC Hier Blocks]'
     cmake_opt: ''
     comment: ''
@@ -21,7 +21,7 @@ options:
     run_options: run
     sizing_mode: fixed
     thread_safe_setters: ''
-    title: asdasdas
+    title: Player with Gui
     window_size: ''
   states:
     bus_sink: false
@@ -50,7 +50,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 444.0]
+    coordinate: [1064, 20.0]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -62,7 +62,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 12.0]
+    coordinate: [264, 404.0]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -74,7 +74,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [352, 20.0]
+    coordinate: [272, 276.0]
     rotation: 0
     state: disabled
 - name: blocks_float_to_complex_0
@@ -98,8 +98,10 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    comment: ''
-    const: '.50'
+    comment: ".2 with loop almost touching\n1.0 with AM antenna 1CM away\n\nloop close\
+      \ 4pct .6\n\n.3 loop behind ant\n\tmissed 3\n\tdoubled first (size 21)\n\tmissed\
+      \ 2nd\n\tdoubled 2nd (size 12)\n\tsuccess! didn't close gui this time"
+    const: '.3'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: complex
@@ -126,9 +128,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 144.0]
+    coordinate: [8, 112.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_wavfile_source_0_0
   id: blocks_wavfile_source
   parameters:
@@ -144,7 +146,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 352.0]
+    coordinate: [8, 304.0]
     rotation: 0
     state: disabled
 - name: blocks_wavfile_source_0_1
@@ -153,7 +155,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: 1.2M sample rate
-    file: /home/pentoo/defcon27_badge_sdr/recorded_example_shorter_3.wav
+    file: /home/pentoo/defcon27_badge_sdr/recordings/recorde2_10.552_PCsync_0PPM_11905.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
@@ -162,7 +164,169 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 232.0]
+    coordinate: [8, 240.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_2
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/_synthetic_signal_fast_22.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 176.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_3
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/POC_B32.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 376.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_3_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/POC_printf_Goon_len5_00000B9D_E.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 440.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_3_1_0_0_0_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/POC_seth_was_here_all__print_recv.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 592.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_3_1_0_0_0_0_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/POC_seth_was_here_all__print_recv_faster.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 664.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_3_1_0_0_0_0_0_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/badge_stock_with_jacked_NFMI_POC/POC_seth_was_here_all_slow.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 768.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: length 51
+    file: /home/pentoo/defcon27_badge_sdr/POC_seth__print_recv__R456__2E2F__042D__Seth0d0a0045.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [272, 648.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/POC_seth__print_recv__R456__2E2F__042D__0d0a09_Seth_was_here_0d0a00E.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 744.0]
+    rotation: 0
+    state: enabled
+- name: blocks_wavfile_source_0_4
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/new_standard_signal.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 520.0]
     rotation: 0
     state: disabled
 - name: osmosdr_sink_0
@@ -340,7 +504,7 @@ blocks:
     freq7: 100e6
     freq8: 100e6
     freq9: 100e6
-    gain0: '-20'
+    gain0: '0'
     gain1: '10'
     gain10: '10'
     gain11: '10'
@@ -434,27 +598,27 @@ blocks:
     bw: samp_rate
     comment: ''
     fc: '0'
-    fftsize: '1024'
+    fftsize: '256'
     gui_hint: ''
     maxoutbuf: '0'
     minoutbuf: '0'
     name: '""'
-    plotconst: 'True'
+    plotconst: 'False'
     plotfreq: 'True'
     plottime: 'False'
     plotwaterfall: 'True'
-    rate: '10'
+    rate: '100'
     showports: 'False'
     showrf: 'False'
     type: complex
-    wintype: firdes.WIN_BLACKMAN_hARRIS
+    wintype: firdes.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [760, 324.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -552,18 +716,98 @@ blocks:
     coordinate: [480, 364.0]
     rotation: 0
     state: disabled
+- name: qtgui_waterfall_sink_x_0
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: ''
+    int_max: '10'
+    int_min: '-140'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.004'
+    wintype: firdes.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 440.0]
+    rotation: 0
+    state: true
 
 connections:
 - [blocks_float_to_complex_0, '0', blocks_multiply_const_vxx_0, '0']
 - [blocks_multiply_const_vxx_0, '0', osmosdr_sink_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_sink_x_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0, '0']
+- [blocks_multiply_const_vxx_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0, '1', blocks_float_to_complex_0, '1']
 - [blocks_wavfile_source_0_0, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0_0, '1', blocks_float_to_complex_0, '1']
 - [blocks_wavfile_source_0_1, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0_1, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_2, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_2, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_3, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_3, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_3_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_3_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_3_1_0_0_0_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_3_1_0_0_0_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_4, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_4, '1', blocks_float_to_complex_0, '1']
 
 metadata:
   file_format: 1
