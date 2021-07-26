@@ -1,6 +1,42 @@
 defcon27_badge_sdr
 ==================
 
+Ho to Craft and Transmit a Packet
+---------------------------------
+1. Convert your packet into symbols in signal.bin 
+  1. 4 counter bytes, 1 data length byte, 11 data bytes, all in hexidecimal:
+    python write_signal.py 0 0 0 0  8  1 2 3 4 5 6 7 8 0 0 0
+  2. Or count and length are still in hex, 11 data bytes in ASCII:
+    python write_signal.py -a 0 0 0 0  b  h e l l o ' ' w o r l d
+
+2. Convert those symbols into synthetic_signal.wav
+./make_signal
+
+3. Transmit it
+Open gnuradio-companion  
+load grc/player_wit_gui.grc 
+play synthetic_signal.wav
+
+Recieve Packets:
+----------------
+1) Launch the receiver
+Open gnuradio-companion
+load grc/d8psk_recv_and_decode.grc
+Run it
+
+2) Adjust the receiver
+Adjust the RF gain and LPF gain so a constelation of 8 clusters of dots fits in the Costas Loop Output window.
+Now the waveform in the Rational Resampler window should fit in the window and not be cut off by the top of the window.
+And the color bars in the bottom left window, which represent data, should be orderly and consistant, with very little noise or randomess.
+Raw symbols captures are now being dumped to symbols.txt
+
+3) Pull one packet per burst of 271 packets, save it to a file
+python parse_symbols_long_crc.py > temp.txt
+
+4) Decode the packets
+
+
+
 Introduction
 ------------
 
