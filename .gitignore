@@ -2,6 +2,7 @@ __pycache__/
 backups/
 old_parse/
 grc/*.py
+images/
 signal.bin
 trans_output.wav
 trans_output_trim.wav
