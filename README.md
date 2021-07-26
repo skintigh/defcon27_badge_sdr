@@ -66,7 +66,18 @@ grc file are run in gnuradio_companion with a HackRF, or can be modified for oth
 
 py files are python 3 run at the command line
 
-# How To
+Some Files in this Repo
+------------------
+
+defcon_recv_and_decode.grc recieves these bursts and converts them to differential symbols.
+
+parse_symbols.py parses that output file for unique symbol datagrams. Many will be corrupted by noise, so when a threshold of copies of one datagram is reached that is output as the valid datagram.
+
+data_collector.py communicated with the badge via USB serial, updates the transmitted packet, then uses live output from the GRC file to collect the correcsponding datagram
+
+recorder.grc records a wav file of the NFMI signal.
+
+# Using this Software
 
 How to Craft and Transmit a Single Packet
 ----------------------------------------
@@ -91,7 +102,7 @@ How to Craft and Transmit a Single Packet
 
 How to Craft and Transmit Multiple Packets:
 -------------------------------------------
-Right now you have to cut and paste .wavs together in Audacity
+Right now you have to cut and paste .wavs of single packets together in Audacity, sorry. Do not cut off the trailing silence, that's there to trick GNURadio into operating correctly and transmitting the entire .wav, if you remove it you won't transmit everything in your .wav.
 
 
 Recieve Packets:
@@ -112,13 +123,4 @@ python parse_symbols_long_crc.py > temp.txt
 
 4) Decode the packets
 
-Some Files in this Repo
-------------------
 
-defcon_recv_and_decode.grc recieves these bursts and converts them to differential symbols.
-
-parse_symbols.py parses that output file for unique symbol datagrams. Many will be corrupted by noise, so when a threshold of copies of one datagram is reached that is output as the valid datagram.
-
-data_collector.py communicated with the badge via USB serial, updates the transmitted packet, then uses live output from the GRC file to collect the correcsponding datagram
-
-recorder.grc records a wav file of the NFMI signal.
