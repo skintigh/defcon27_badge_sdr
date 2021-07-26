@@ -102,7 +102,7 @@ How to Craft and Transmit a Single Packet
 
 How to Craft and Transmit Multiple Packets:
 -------------------------------------------
-Right now you have to cut and paste .wavs of single packets together in Audacity, sorry. Do not cut off the trailing silence, that's there to trick GNURadio into operating correctly and transmitting the entire .wav, if you remove it you won't transmit everything in your .wav.
+Right now you have to cut and paste .wavs of single packets together in Audacity, sorry. **Do not** cut off the trailing silence, that's there to trick GNURadio into operating correctly and transmitting the entire .wav, if you remove it you won't transmit everything in your .wav.
 
 
 Recieve Packets:
