@@ -5,7 +5,7 @@ Ho to Craft and Transmit a Packet
 ---------------------------------
 1. Convert your packet into symbols in signal.bin 
    1. 4 counter bytes, 1 data length byte, 11 data bytes, all in hexidecimal:
-    python write_signal.py 0 0 0 0  8  1 2 3 4 5 6 7 8 0 0 0
+    ```python write_signal.py 0 0 0 0  8  1 2 3 4 5 6 7 8 0 0 0```
    2. Or count and length are still in hex, 11 data bytes in ASCII:
     python write_signal.py -a 0 0 0 0  b  h e l l o ' ' w o r l d
 
@@ -13,9 +13,9 @@ Ho to Craft and Transmit a Packet
 ./make_signal
 
 3. Transmit it
-   Open gnuradio-companion  
+   ```Open gnuradio-companion  
    load grc/player_wit_gui.grc 
-   play synthetic_signal.wav
+   play synthetic_signal.wav```
 
 Recieve Packets:
 ----------------
