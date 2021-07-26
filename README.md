@@ -1,21 +1,31 @@
 defcon27_badge_sdr
 ==================
 
-Ho to Craft and Transmit a Packet
----------------------------------
-1. Convert your packet into symbols in signal.bin 
+How to Craft and Transmit a Single Packet
+----------------------------------------
+1. Convert your desired packet into symbols in signal.bin 
    1. 4 counter bytes, 1 data length byte, 11 data bytes, all in hexidecimal:
-    ```python write_signal.py 0 0 0 0  8  1 2 3 4 5 6 7 8 0 0 0```
-   2. Or count and length are still in hex, 11 data bytes in ASCII:
-    python write_signal.py -a 0 0 0 0  b  h e l l o ' ' w o r l d
+      ```
+      python write_signal.py 0 0 0 0  8  1 2 3 4 5 6 7 8 0 0 0
+      ```
+   2. **Or** count and length are still in hex, but 11 data bytes in ASCII:
+      ```
+      python write_signal.py -a 0 0 0 0  b  h e l l o ' ' w o r l d
+      ```
 
 2. Convert those symbols into synthetic_signal.wav
 ./make_signal
 
 3. Transmit it
-   ```Open gnuradio-companion  
-   load grc/player_wit_gui.grc 
-   play synthetic_signal.wav```
+   1. Open gnuradio-companion  
+   2. load grc/player_wit_gui.grc 
+   3. play synthetic_signal.wav
+  
+
+How to Craft and Transmit Multiple Packets:
+-------------------------------------------
+Right now you have to cut and paste .wavs together in Audacity
+
 
 Recieve Packets:
 ----------------
