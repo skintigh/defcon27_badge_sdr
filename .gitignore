@@ -7,9 +7,6 @@ images/
 recordings/old/
 recordings/glitched_badge/glitch_long.wav
 signal.bin
-trans_output.wav
-trans_output_trim.wav
-trans_output_trim_resamp.wav
 recorder.wav
 synthetic_signal.wav
 symbols.txt
