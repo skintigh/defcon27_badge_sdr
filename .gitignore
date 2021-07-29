@@ -6,6 +6,7 @@ grc/null_detect.grc
 images/
 recordings/old/
 recordings/glitched_badge/glitch_long.wav
+temp/
 signal.bin
 recorder.wav
 synthetic_signal.wav
