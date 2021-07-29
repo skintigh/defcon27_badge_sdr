@@ -9,7 +9,7 @@ grcc -r d8psk_generator_no_gui.grc
 cd ..
 
 echo -e \\n2: Trim beginning of generated signal
-sox trans_output.wav temp/trans_output_trim.wav trim 76s
+sox temp/trans_output.wav temp/trans_output_trim.wav trim 76s
 
 echo -e \\n3: Resample it to 1.2MHz
 sox temp/trans_output_trim.wav -r 1200000 temp/trans_output_trim_resamp.wav
