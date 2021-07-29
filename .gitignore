@@ -2,6 +2,7 @@ __pycache__/
 backups/
 old_parse/
 grc/*.py
+grc/null_detect.grc
 images/
 recordings/old/
 recordings/glitched_badge/glitch_long.wav
