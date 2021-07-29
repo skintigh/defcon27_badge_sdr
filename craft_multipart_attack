@@ -1,0 +1,20 @@
+echo -e This script makes the beginning or middle packet of a multi-packet attack ONLY. Use make_one_shot_signal for a single, stand-alone crafted packet
+rm synthetic_signal.wav
+set -e
+#python write_signal.py
+
+echo -e \\n1: Convert signal.bin into a .wav
+cd grc #so generated .py files stay there
+grcc -r d8psk_generator_no_gui.grc
+cd ..
+
+echo -e \\n2: Trim beginning of generated signal
+sox trans_output.wav temp/trans_output_trim.wav trim 76s
+
+echo -e \\n3: Resample it to 1.2MHz
+sox temp/trans_output_trim.wav -r 1200000 temp/trans_output_trim_resamp.wav
+
+echo -e \\n4: Concat it onto a recording of a header
+sox recordings/recorded_header_long_3_327.5.wav temp/trans_output_trim_resamp.wav synthetic_signal.wav
+
+echo -e \\nOutput: synthetic_signal.wav
