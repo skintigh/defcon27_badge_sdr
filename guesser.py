@@ -1,11 +1,13 @@
 ###########################################################################################
 #This program guesses data bits to match a known/given zero-state and an known output value
 
+sanity_debug = False
 import sys, ast
 #from compute import compute
 from compute_experimental import compute
 import compute_experimental
 divider = "-"*120
+
 
 def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=False, print_result=False, default=True, zeros_symbols=False, delta_1347=False, delta_2=False, delta_6=False):  #in_data_orig and expected are ONLY the values to be computed, ignore sets the pos in zero_symbols
 	in_data = in_data_orig.copy()# prevent modification of data
@@ -80,12 +82,12 @@ def solver(in_data_orig, expected_orig, debug=False, ignore=0, print_error=False
 
 if __name__ == "__main__":   #only run if this file is run as main script
 
-	print("Sanity check: some value that I guess was tricky... ", end="")
+	if sanity_debug: print("Sanity check: some value that I guess was tricky... ", end="")
 	solution = solver([4,4], [2, 1, 2, 0, 5, 5, 6, 1], debug=False, ignore=8, print_result=False)#, print_error=False, print_result=False)
 	if solution == "Impossible": 
 		print("\n*** Failed sanity check")
 		sys.exit(1)
-	print("Pass")
+	if sanity_debug: print("Pass")
 
 	lowest_count_seen_symbols = [4,0,0,6, 1,4,5,1, 4,3,1,2, 3,3,6,7, 0,3,3,2]
 	solution = solver([0,0,0], lowest_count_seen_symbols, debug=False, ignore=8, print_error=False, print_result=False)		#lowest count seen [45, 74, 5] 346669 (or [45, 74, 197]   0x2d 0x4a 0xc5  - J ?)
@@ -93,14 +95,40 @@ if __name__ == "__main__":   #only run if this file is run as main script
 		print("*** Failed to computer lowest count sanity check")
 		sys.exit(1)
 	count = solution[0]+256*solution[1]+256*256*solution[2]
-	print("Sanity check: Computed lowest count seen:", solution, count, end="... ")
+	if sanity_debug: print("Sanity check: Computed lowest count seen:", solution, count, end="... ")
 	#should probably check the value is correct, now that I (think) I know the correct value
 	if count != 346637:
 		print("\n*** Failed sanity check: expected [13, 74, 5] 346637")
 		sys.exit(1)
-	print("Pass")
-	print(divider)
+	if sanity_debug:print("Pass")
+	if sanity_debug:print(divider)
 
+
+	#guess all in file *with* preamble
+	if 1: 
+		print("guess/solve values for all packets in file *including* last 3 bytes of preamble")# (and manually verify second count digit no longer vascilates by 8)")
+		filename = "temp.txt"
+		with open(filename, "r") as infile:	
+			print("using file:", filename)
+			line = infile.readline()
+			while line:
+				#with preamble and crc
+				symbols = [0,0,4,4, 2,7,7,4, 6,7,5,6] + [int(n) for n in line.split(' ')[0:-2]] #drop the count at end, 
+				solution = solver([0]*(16+3+3), symbols+[0,0], debug=False, ignore=8-3, print_error=False, print_result=False)
+
+				#print in decimal					
+				#print (solution) 
+
+				crc = solution[-1]*65536 +solution[-2]*256 + solution[-3]
+				print(solution[0:],"    \t{:05x}".format(crc))
+				#print in hex
+				#for c in solution: 	print("x{:02x}".format(c),end=" ")
+				#print()
+
+
+
+				line = infile.readline()
+		if sanity_debug: print(divider)
 
 	#similar CRCs, from when I was trying to reverse engineer the CRC
 	if 0:
@@ -392,32 +420,6 @@ if __name__ == "__main__":   #only run if this file is run as main script
 					#if (x-64)%(128*256) == 10: print()
 					line = infile.readline()
 					#if not x % 1000: input("Press any key to continue...")			
-		print(divider)
-
-	#guess all in file *with* preamble
-	if 1: 
-		print("guess/solve values for all packets in file *including* last 3 bytes of preamble")# (and manually verify second count digit no longer vascilates by 8)")
-		filename = "temp.txt"
-		with open(filename, "r") as infile:	
-			print("using file:", filename)
-			line = infile.readline()
-			while line:
-				#with preamble and crc
-				symbols = [0,0,4,4, 2,7,7,4, 6,7,5,6] + [int(n) for n in line.split(' ')[0:-2]] #drop the count at end, 
-				solution = solver([0]*(16+3+3), symbols+[0,0], debug=False, ignore=8-3, print_error=False, print_result=False)
-
-				#print in decimal					
-				#print (solution) 
-
-				crc = solution[-1]*65536 +solution[-2]*256 + solution[-3]
-				print(solution[0:],"    \t{:05x}".format(crc))
-				#print in hex
-				#for c in solution: 	print("x{:02x}".format(c),end=" ")
-				#print()
-
-
-
-				line = infile.readline()
 		print(divider)
 
 	#guess all in file *without* preamble -- fail!
