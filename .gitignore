@@ -3,6 +3,8 @@ backups/
 old_parse/
 grc/*.py
 images/
+recordings/old/
+recordings/glitched_badge/glitch_long.wav
 signal.bin
 trans_output.wav
 trans_output_trim.wav
@@ -12,4 +14,3 @@ synthetic_signal.wav
 symbols.txt
 temp.txt
 multi_results.txt
-recordings/glitched_badge/glitch_long.wav
