@@ -177,7 +177,11 @@ blocks:
 - name: freq
   id: variable_qtgui_range
   parameters:
-    comment: ''
+    comment: 'was 10.551 before hacking on soldered badge
+
+      10.59 for big loop, 5x LPF
+
+      10.57 for AM antenna, 3x LPF'
     gui_hint: 'controls@0: 0,0'
     label: Freq
     min_len: '200'
@@ -186,7 +190,7 @@ blocks:
     start: 10.3e6
     step: '10000'
     stop: 10.9e6
-    value: 10.551e6
+    value: 10.570e6
     widget: counter_slider
   states:
     bus_sink: false
@@ -261,7 +265,7 @@ blocks:
     start: '0'
     step: '.25'
     stop: '20'
-    value: '3'
+    value: '5'
     widget: counter_slider
   states:
     bus_sink: false
@@ -380,11 +384,11 @@ blocks:
     label: RF Gain
     min_len: '200'
     orient: Qt.Horizontal
-    rangeType: float
+    rangeType: int
     start: '0'
     step: '1'
     stop: '80'
-    value: '25'
+    value: '43'
     widget: counter_slider
   states:
     bus_sink: false
@@ -991,7 +995,7 @@ blocks:
 
 
       increasing gain to spread out the clouds made a huge improvement!'
-    corr0: '100'
+    corr0: '0'
     corr1: '0'
     corr10: '0'
     corr11: '0'
