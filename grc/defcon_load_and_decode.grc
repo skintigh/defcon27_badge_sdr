@@ -477,7 +477,7 @@ blocks:
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: '3200000'
+    samples_per_second: '320000'
     type: complex
     vlen: '1'
   states:
@@ -493,11 +493,11 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    file: /home/pentoo/defcon27_badge_sdr/recorder_ffffffffffffffffff.wav
+    file: /home/pentoo/defcon27_badge_sdr/recordings/new_standard_signal.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
-    repeat: 'False'
+    repeat: 'True'
   states:
     bus_sink: false
     bus_source: false
