@@ -384,11 +384,11 @@ blocks:
     label: RF Gain
     min_len: '200'
     orient: Qt.Horizontal
-    rangeType: float
+    rangeType: int
     start: '0'
     step: '1'
     stop: '80'
-    value: '40'
+    value: '41'
     widget: counter_slider
   states:
     bus_sink: false

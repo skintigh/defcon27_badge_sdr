@@ -78,7 +78,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: '.2'
+    const: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: complex
@@ -87,9 +87,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [496, 188.0]
+    coordinate: [496, 228.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_wavfile_source_0
   id: blocks_wavfile_source
   parameters:
@@ -107,7 +107,7 @@ blocks:
     bus_structure: null
     coordinate: [0, 0.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: blocks_wavfile_source_0_2
   id: blocks_wavfile_source
   parameters:
@@ -233,7 +233,7 @@ blocks:
     bus_structure: null
     coordinate: [0, 512.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: blocks_wavfile_source_0_3_1_0_0_0_0
   id: blocks_wavfile_source
   parameters:
@@ -516,6 +516,7 @@ blocks:
 
 connections:
 - [blocks_float_to_complex_0, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_float_to_complex_0, '0', osmosdr_sink_0, '0']
 - [blocks_multiply_const_vxx_0, '0', osmosdr_sink_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0, '1', blocks_float_to_complex_0, '1']

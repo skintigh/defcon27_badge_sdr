@@ -215,7 +215,7 @@ blocks:
     alias: ''
     bits_per_sample: '16'
     comment: ''
-    file: /home/pentoo/defcon27_badge_sdr/trans_output.wav
+    file: ../temp/trans_output.wav
     nchan: '2'
     samp_rate: '1188500'
   states:

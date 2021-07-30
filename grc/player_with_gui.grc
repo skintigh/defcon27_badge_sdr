@@ -44,7 +44,7 @@ blocks:
     start: 10.3e6
     step: '10000'
     stop: 10.6e6
-    value: 10.5551e6
+    value: 10.55515e6
     widget: counter_slider
   states:
     bus_sink: false
@@ -52,7 +52,49 @@ blocks:
     bus_structure: null
     coordinate: [1064, 20.0]
     rotation: 0
+    state: disabled
+- name: freq
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Freq
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: 10.3e6
+    step: '10000'
+    stop: 10.6e6
+    value: 10.569e6
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1240, 28.0]
+    rotation: 0
     state: enabled
+- name: freq
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Freq
+    min_len: '200'
+    orient: Qt.Horizontal
+    rangeType: float
+    start: 10.3e6
+    step: '10000'
+    stop: 10.6e6
+    value: 10.5552e6
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1408, 36.0]
+    rotation: 0
+    state: disabled
 - name: samp_rate
   id: variable
   parameters:
@@ -64,7 +106,7 @@ blocks:
     bus_structure: null
     coordinate: [264, 404.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: samp_rate
   id: variable
   parameters:
@@ -77,6 +119,18 @@ blocks:
     coordinate: [272, 276.0]
     rotation: 0
     state: disabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '1200000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 524.0]
+    rotation: 0
+    state: enabled
 - name: blocks_float_to_complex_0
   id: blocks_float_to_complex
   parameters:
@@ -101,7 +155,7 @@ blocks:
     comment: ".2 with loop almost touching\n1.0 with AM antenna 1CM away\n\nloop close\
       \ 4pct .6\n\n.3 loop behind ant\n\tmissed 3\n\tdoubled first (size 21)\n\tmissed\
       \ 2nd\n\tdoubled 2nd (size 12)\n\tsuccess! didn't close gui this time"
-    const: '.3'
+    const: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: complex
@@ -110,9 +164,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 188.0]
+    coordinate: [472, 172.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: blocks_wavfile_source_0
   id: blocks_wavfile_source
   parameters:
@@ -159,7 +213,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
-    repeat: 'True'
+    repeat: 'False'
   states:
     bus_sink: false
     bus_source: false
@@ -236,7 +290,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 592.0]
+    coordinate: [8, 608.0]
     rotation: 0
     state: disabled
 - name: blocks_wavfile_source_0_3_1_0_0_0_0_0
@@ -254,7 +308,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 664.0]
+    coordinate: [8, 680.0]
     rotation: 0
     state: disabled
 - name: blocks_wavfile_source_0_3_1_0_0_0_0_0_0
@@ -272,7 +326,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 768.0]
+    coordinate: [8, 784.0]
     rotation: 0
     state: disabled
 - name: blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0
@@ -310,14 +364,14 @@ blocks:
     bus_structure: null
     coordinate: [480, 744.0]
     rotation: 0
-    state: enabled
-- name: blocks_wavfile_source_0_4
+    state: disabled
+- name: blocks_wavfile_source_0_3_1_0_0_0_0_0_0_1
   id: blocks_wavfile_source
   parameters:
     affinity: ''
     alias: ''
-    comment: ''
-    file: /home/pentoo/defcon27_badge_sdr/new_standard_signal.wav
+    comment: doesn't work
+    file: /home/pentoo/defcon27_badge_sdr/POC_seth__print_recv__R456__2E2F__042D__0d0a09_Seth_was_here_0d0a00E.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
@@ -326,9 +380,28 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 520.0]
+    coordinate: [8, 856.0]
     rotation: 0
     state: disabled
+- name: blocks_wavfile_source_0_4
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 1.2MSps, 10.552MHz, long tail, sends 0x123456789001ff 10.569 better with
+      real ant
+    file: /home/pentoo/defcon27_badge_sdr/new_standard_signal.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 520.0]
+    rotation: 0
+    state: enabled
 - name: osmosdr_sink_0
   id: osmosdr_sink
   parameters:
@@ -806,6 +879,8 @@ connections:
 - [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0, '1', blocks_float_to_complex_0, '1']
 - [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0_0, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_0_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_1, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_1, '1', blocks_float_to_complex_0, '1']
 - [blocks_wavfile_source_0_4, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0_4, '1', blocks_float_to_complex_0, '1']
 

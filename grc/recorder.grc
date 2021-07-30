@@ -27,7 +27,7 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 8]
+    coordinate: [16, 12.0]
     rotation: 0
     state: enabled
 
@@ -59,16 +59,20 @@ blocks:
 - name: freq
   id: variable_qtgui_range
   parameters:
-    comment: ''
+    comment: 'was 10.55515e6
+
+      10.579e6 is supposedly the center
+
+      10.279e6 to visualize sidebands in baudline'
     gui_hint: ''
     label: ''
     min_len: '2000'
     orient: Qt.Horizontal
     rangeType: float
-    start: 10.3e6
+    start: '0'
     step: '1000'
     stop: 10.8e6
-    value: 10.55515e6
+    value: 10.569e6
     widget: counter_slider
   states:
     bus_sink: false
@@ -89,6 +93,19 @@ blocks:
     coordinate: [448, 12.0]
     rotation: 0
     state: enabled
+- name: nyquist_rate
+  id: variable
+  parameters:
+    comment: "The sample rate \nMUST be greater \nthan or equal to \nthe Nyquist rate!\n\
+      \nHackRF Max=20e6"
+    value: (10.569e6 + 200000 - freq) * 2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [288, 12.0]
+    rotation: 0
+    state: enabled
 - name: samp_rate
   id: variable
   parameters:
@@ -98,9 +115,21 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [176, 12.0]
+    coordinate: [184, 12.0]
     rotation: 0
     state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: 20e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [192, 76.0]
+    rotation: 0
+    state: disabled
 - name: blocks_complex_to_float_0
   id: blocks_complex_to_float
   parameters:
@@ -114,7 +143,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [656, 240.0]
+    coordinate: [712, 304.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -132,7 +161,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [288, 252.0]
+    coordinate: [344, 316.0]
     rotation: 0
     state: enabled
 - name: blocks_wavfile_sink_0
@@ -144,12 +173,12 @@ blocks:
     comment: ''
     file: /home/pentoo/defcon27_badge_sdr/recorder.wav
     nchan: '2'
-    samp_rate: int(bw)
+    samp_rate: int(samp_rate)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [840, 236.0]
+    coordinate: [904, 300.0]
     rotation: 0
     state: enabled
 - name: osmosdr_source_0
@@ -361,7 +390,7 @@ blocks:
     freq7: 100e6
     freq8: 100e6
     freq9: 100e6
-    gain0: '28'
+    gain0: '41'
     gain1: '10'
     gain10: '10'
     gain11: '10'
@@ -508,7 +537,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 172.0]
+    coordinate: [72, 236.0]
     rotation: 0
     state: enabled
 - name: qtgui_sink_x_0
@@ -537,9 +566,106 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 124.0]
+    coordinate: [728, 172.0]
     rotation: 0
-    state: enabled
+    state: disabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '""'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [736, 524.0]
+    rotation: 0
+    state: disabled
 - name: qtgui_waterfall_sink_x_0
   id: qtgui_waterfall_sink_x
   parameters:
@@ -592,13 +718,13 @@ blocks:
     nconnections: '1'
     showports: 'True'
     type: complex
-    update_time: '0.000000000010'
+    update_time: '0.000010000010'
     wintype: firdes.WIN_BLACKMAN_hARRIS
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 352.0]
+    coordinate: [728, 400.0]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_0
@@ -606,7 +732,7 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    comment: ''
+    comment: needed?
     decim: dec
     fbw: '0'
     interp: interp
@@ -618,7 +744,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [448, 228.0]
+    coordinate: [504, 292.0]
     rotation: 0
     state: enabled
 
@@ -629,6 +755,7 @@ connections:
 - [osmosdr_source_0, '0', blocks_multiply_const_vxx_0, '0']
 - [rational_resampler_xxx_0, '0', blocks_complex_to_float_0, '0']
 - [rational_resampler_xxx_0, '0', qtgui_sink_x_0, '0']
+- [rational_resampler_xxx_0, '0', qtgui_time_sink_x_0, '0']
 - [rational_resampler_xxx_0, '0', qtgui_waterfall_sink_x_0, '0']
 
 metadata:
