@@ -649,7 +649,25 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    file: /home/pentoo/defcon27_badge_sdr/recorder_10.55515_PCsync_0PPM_119055_.wav
+    file: /home/pentoo/defcon27_badge_sdr/recordings/recorded_10.5551_PCsync_0PPM_119055_short.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [0, 88.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    file: /home/pentoo/defcon27_badge_sdr/recordings/glitched_badge/recorded_glitch_10.400.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
@@ -658,9 +676,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [0, 88.0]
+    coordinate: [0, 160.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: controls
   id: qtgui_tab_widget
   parameters:
@@ -1135,6 +1153,8 @@ connections:
 - [blocks_throttle_0, '0', digital_pfb_clock_sync_xxx_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_0, '1', blocks_float_to_complex_0, '1']
 - [digital_constellation_decoder_cb_0, '0', blocks_char_to_short_0_1, '0']
 - [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0_0_0_0, '0']
 - [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0_0_2, '0']
