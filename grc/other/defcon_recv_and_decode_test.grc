@@ -1444,7 +1444,7 @@ blocks:
     bus_structure: null
     coordinate: [1440, 132.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: qtgui_time_raster_sink_x_0_0
   id: qtgui_time_raster_sink_x
   parameters:
@@ -1502,6 +1502,63 @@ blocks:
     coordinate: [1456, 404.0]
     rotation: 0
     state: true
+- name: qtgui_time_raster_sink_x_0_1
+  id: qtgui_time_raster_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    color1: '1'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    grid: 'False'
+    gui_hint: 0,2, 1,1
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    mult: '[]'
+    name: '"110"'
+    ncols: '110'
+    nconnections: '1'
+    nrows: '600'
+    offset: '[]'
+    samp_rate: samp_rate_out
+    type: byte
+    update_time: '0.001'
+    zmax: '7'
+    zmin: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1440, 28.0]
+    rotation: 0
+    state: disabled
 - name: rational_resampler_xxx_0
   id: rational_resampler_xxx
   parameters:
@@ -1586,6 +1643,7 @@ connections:
 - [blocks_multiply_const_vxx_0_0, '0', digital_pfb_clock_sync_xxx_0_0, '0']
 - [blocks_xor_xx_0, '0', qtgui_time_raster_sink_x_0_0, '0']
 - [blocks_xor_xx_0_0, '0', qtgui_time_raster_sink_x_0, '0']
+- [blocks_xor_xx_0_0, '0', qtgui_time_raster_sink_x_0_1, '0']
 - [digital_constellation_decoder_cb_0, '0', digital_diff_decoder_bb_0, '0']
 - [digital_constellation_decoder_cb_0_0, '0', digital_diff_decoder_bb_0_0, '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
