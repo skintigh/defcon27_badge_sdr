@@ -12,10 +12,11 @@ preamble_bytes = [0x80,0x87,0]
 parser = argparse.ArgumentParser(description='Convert packet data into a symbols that can be transmitted')
 parser.add_argument('data', nargs=16, help='4 counter bytes, 1 data length byte, 11 bytes data (hex)')
 parser.add_argument('-a', dest='ascii', action='store_true')
+parser.add_argument('-q', dest='quiet', action='store_true')
 parser.add_argument('--preamble', nargs=3, dest='preamble_list', help='3 preamble hex bytes (default: 80 87 00)')
 
 args = parser.parse_args()
-print(args.preamble_list)
+#print(args.preamble_list)
 if args.preamble_list:
 	preamble_bytes = [int(x, 16) for x in args.preamble_list]
 
@@ -26,7 +27,8 @@ else:
 	data_bytes = [int(x, 16) for x in args.data[0:5]] + [ord(c) for c in args.data[5:16]]
 #print(preamble_bytes, data_bytes)
 
-print ('Using preamble, data: [{}], [{}]'.format(', '.join(hex(x) for x in preamble_bytes), ', '.join(hex(x) for x in data_bytes) )  )
+if not args.quiet:
+	print ('Using preamble, data: [{}], [{}]'.format(', '.join(hex(x) for x in preamble_bytes), ', '.join(hex(x) for x in data_bytes) )  )
 data_bytes = preamble_bytes + data_bytes
 
 
@@ -148,7 +150,9 @@ with open("signal.bin","wb") as f:
 		assert(len(packet) == 110)
 		f.write(bytearray(packet))
 	f.write(bytearray(20*[0]))
-print("wrote signal.bin")
+
+if not args.quiet:
+	print("wrote signal.bin")
 
 
 
