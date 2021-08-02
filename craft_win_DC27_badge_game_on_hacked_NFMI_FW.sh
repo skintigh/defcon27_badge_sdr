@@ -1,5 +1,6 @@
 # This script creates creates the magic packets for SPEAKER VILLAGE CONTEST ARTIST GOON to win the badge game
 # This script creates 10 packets which become 5 packets in badges with my NFMI firmware hack
+# Note: the badge source code also indicates you need to pair with an UBER badge, but seems to set that game_flags bit the first time it pairs with *any* badge
 
 set -e
 HUMAN=0

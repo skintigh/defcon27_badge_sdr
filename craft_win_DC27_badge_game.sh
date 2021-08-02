@@ -1,4 +1,5 @@
 # This script creates creates the 5 magic packets for SPEAKER VILLAGE CONTEST ARTIST GOON to win the badge game
+# Note: the badge source code also indicates you need to pair with an UBER badge, but seems to set that game_flags bit the first time it pairs with *any* badge
 
 set -e
 HUMAN=0
