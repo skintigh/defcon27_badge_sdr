@@ -9,7 +9,7 @@ recordings/glitched_badge/glitch_long.wav
 temp/
 signal.bin
 recorder.wav
-synthetic_signal.wav
+synthetic_*.wav
 symbols.txt
 temp.txt
 multi_results.txt
