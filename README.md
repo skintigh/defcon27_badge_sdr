@@ -92,18 +92,18 @@ The exception to this is print_recv.bin and print_recv_with_hacked_NFMI_fw.bin a
 
 | Function                   | human.bin | stock_with... | print_recv* | notes |
 | :---:                      |  :---:    |     :---:     |    :---:    | :---: |
-| printf(R0...)              | 42d       | 42d            | 42d         | 0x42c + 1 for THUMB, set R0 to String Address below|
-| MOV R0,R4; POP {R4,PC}     | 2de9      | 2ddb or 4A83   | 2e4f| KL_GetPacket pops R4-R6, control R0 while only adding 8 bytes to the attack |
-| POP R0,R1,R2,R4,R5,PC      |           | 4c33           |             |       |
-| ADDS R0,R4,0; POP{R4,R5,PC}|           | 6410           |             |       |
-| SP and buf in KL_GetPacket | 20002F78  |20002F78        |20002F78     | |
-|dataBlob in KL_GetPacket    | 20002F84  | 20002F84       | 20002F84    | Address of data excluding ‘B’ |
-|Address of stack after PC   | 20002FA8  | 20002FA8       | 20002FA8    | dataBlob + (37-1=36=0x24) (based on the bytes I use before the string) |
-| String Address             | 20002FB0  | 20002FB0       | 20002FB0    | 20002FA8 + 8 |
+| printf(R0...)              | 42d       | 42d           | 42d         | 0x42c + 1 for THUMB, set R0 to String Address below|
+| MOV R0,R4; POP {R4,PC}     | 2de9      | 2ddb? or 4A83 | 2e4f| KL_GetPacket pops R4-R6, control R0 while only adding 8 bytes to the attack |
+| POP R0,R1,R2,R4,R5,PC      |           | 4c33          |             |       |
+| ADDS R0,R4,0; POP{R4,R5,PC}|           | 6410          |             |       |
+| SP and buf in KL_GetPacket | 20002F78  | 20002F78      | 20002F78    | |
+|dataBlob in KL_GetPacket    | 20002F84  | 20002F84      | 20002F84    | Address of data excluding ‘B’ |
+|Address of stack after PC   | 20002FA8  | 20002FA8      | 20002FA8    | dataBlob + (37-1=36=0x24) (based on the bytes I use before the string) |
+| String Address             | 20002FB0  | 20002FB0      | 20002FB0    | 20002FA8 + 8 |
 | control of R0 R1           | 			  | 6eb1		      |             | |
-| “0x%08X]\n\r” 			     |           | 2B70           |             | format to print int |
-| "-> Unique ID: 0x%08X" 	  |      	  | 75CC           |             | format to print int |
-| "Speaker\0"                |      	  | 7538           |             | others near by |
+| “0x%08X]\n\r” 			     |           | 2B70          |             | format to print int |
+| "-> Unique ID: 0x%08X" 	  |      	  | 75CC          |             | format to print int |
+| "Speaker\0"                |      	  | 7538          |             | others near by |
 
 
 Example Scripts
