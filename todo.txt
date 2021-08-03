@@ -1,0 +1,9 @@
+VM!
+add all firmware files and scripts
+verify both game-winning scripts
+
+Maybe:
+new demo? rickroll? SOS? lights?
+move all python to python/ ?
+delete backups/ ?
+remove or rename python files that have names that no longer make sense
