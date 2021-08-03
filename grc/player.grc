@@ -96,7 +96,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    file: /home/pentoo/defcon27_badge_sdr/new_standard_signal.wav
+    file: /home/pentoo/defcon27_badge_sdr/recordings/new_standard_signal.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
