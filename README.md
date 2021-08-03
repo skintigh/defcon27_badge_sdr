@@ -54,6 +54,13 @@ Then follow the instructions at this repo, copied here but possibly out of date:
 
 Then downlaod and run this repo.
 
+(You may need to install libsoapysdr-dev, libiio-dev)
+("avahi_service_browser_new() failed: Bad state" errors are fixed by... starting the daemon? reinstalling avahi?)
+(XInitThreads errors fixed by installed x11 xauth dbus-x11)
+(Qt session management errors fixed by... rnning as root?)
+(If you can recieve once, but when you run a GRC file a second time and GRC freezes.... ???!?!?! Maybe fixed with broadcast fix???)
+
+
 To broadcast, I had to rebuild osmosdr_sink.blobk.yml with gen_osmosdr_blocks.py Instructions and files here:
 https://gist.github.com/gbevan/8e583b9cf87aa3c58102251454fa48a6
 https://github.com/osmocom/gr-osmosdr/blob/master/grc/gen_osmosdr_blocks.py
