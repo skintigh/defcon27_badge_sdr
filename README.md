@@ -100,7 +100,7 @@ The exception to this is print_recv.bin and print_recv_with_hacked_NFMI_fw.bin a
 | Function \ Firmware:      | human.bin | stock_with... | print_recv* | Notes |
 |---                    | ---    |     ---     |    ---    | --- |
 | printf(R0...)              | 42d       | 42d           | 42d         | 0x42c + 1 for THUMB, set R0 to String Address below|
-| MOVS R0,R4<BR/>POP {R4,PC} | 2de9, 418f, 6551 | 2ddb? or 4A83 | 2e4f| KL_GetPacket pops R4-R6, control R0 while only adding 8 bytes to the attack |
+| MOVS R0,R4<BR/>POP {R4,PC} | 2de9, 418f, 6551 | 2ddb, 4A83,6571 | 2e4f| KL_GetPacket pops R4-R6, control R0 while only adding 8 bytes to the attack |
 | POP R0,R1,R2,R4,R5,PC      |           | 4c33          |             |       |
 | ADDS R0,R4,0; POP{R4,R5,PC}|           | 6410          |             |       |
 | SP and buf in KL_GetPacket | 20002F78  | 20002F78      | 20002F78    | |
