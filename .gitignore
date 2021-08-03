@@ -7,6 +7,7 @@ images/
 recordings/old/
 recordings/glitched_badge/glitch_long.wav
 temp/
+attack_examples/
 signal.bin
 recorder.wav
 synthetic_*.wav
