@@ -99,24 +99,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '1200000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [264, 404.0]
-    rotation: 0
-    state: disabled
-- name: samp_rate
-  id: variable
-  parameters:
-    comment: ''
     value: '1190550'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [272, 276.0]
+    coordinate: [296, 276.0]
     rotation: 0
     state: disabled
 - name: samp_rate
@@ -128,7 +116,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 524.0]
+    coordinate: [208, 20.0]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0
@@ -154,7 +142,10 @@ blocks:
     alias: ''
     comment: ".2 with loop almost touching\n1.0 with AM antenna 1CM away\n\nloop close\
       \ 4pct .6\n\n.3 loop behind ant\n\tmissed 3\n\tdoubled first (size 21)\n\tmissed\
-      \ 2nd\n\tdoubled 2nd (size 12)\n\tsuccess! didn't close gui this time"
+      \ 2nd\n\tdoubled 2nd (size 12)\n\tsuccess! didn't close gui this time\n\n\n\
+      With antenna 2.5 inches away, pointed slight down and to the left:\nconst 1\n\
+      RF gain 40 (but not sure that does anything?)\nIF and BB at 0 (also seems to\
+      \ do nothing)"
     const: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -185,60 +176,6 @@ blocks:
     coordinate: [8, 112.0]
     rotation: 0
     state: disabled
-- name: blocks_wavfile_source_0_0
-  id: blocks_wavfile_source
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 1.2Ms 10.552
-    file: /home/pentoo/defcon27_badge_sdr/recorder.wav
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    nchan: '2'
-    repeat: 'True'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [8, 304.0]
-    rotation: 0
-    state: disabled
-- name: blocks_wavfile_source_0_1
-  id: blocks_wavfile_source
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 1.2M sample rate
-    file: /home/pentoo/defcon27_badge_sdr/recordings/recorde2_10.552_PCsync_0PPM_11905.wav
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    nchan: '2'
-    repeat: 'False'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [8, 240.0]
-    rotation: 0
-    state: disabled
-- name: blocks_wavfile_source_0_2
-  id: blocks_wavfile_source
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    file: /home/pentoo/defcon27_badge_sdr/_synthetic_signal_fast_22.wav
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    nchan: '2'
-    repeat: 'True'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [8, 176.0]
-    rotation: 0
-    state: disabled
 - name: blocks_wavfile_source_0_3
   id: blocks_wavfile_source
   parameters:
@@ -254,7 +191,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 376.0]
+    coordinate: [8, 368.0]
     rotation: 0
     state: disabled
 - name: blocks_wavfile_source_0_3_0
@@ -280,8 +217,8 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    comment: ''
-    file: /home/pentoo/defcon27_badge_sdr/POC_seth_was_here_all__print_recv.wav
+    comment: only works with breakpoints?
+    file: /home/pentoo/defcon27_badge_sdr/attack_examples/POC_seth_was_here_all__print_recv.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
@@ -290,7 +227,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 608.0]
+    coordinate: [1328, 976.0]
     rotation: 0
     state: disabled
 - name: blocks_wavfile_source_0_3_1_0_0_0_0_0
@@ -390,7 +327,7 @@ blocks:
     alias: ''
     comment: 1.2MSps, 10.552MHz, long tail, sends 0x123456789001ff 10.569 better with
       real ant
-    file: /home/pentoo/defcon27_badge_sdr/new_standard_signal.wav
+    file: /home/pentoo/defcon27_badge_sdr/recordings/new_standard_signal.wav
     maxoutbuf: '0'
     minoutbuf: '0'
     nchan: '2'
@@ -399,8 +336,71 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 520.0]
+    coordinate: [8, 184.0]
     rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_4_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: "Win game on badge with modified NFMI firmware\n1.2MSPS 10.569MHz\nmostly\
+      \ works. \n0.5 const and -40 RF db help? \n(At least when recv is working at\
+      \ 40dB RF and 5x amp)\nIf nothing happens, badge badge probably has crashed\n\
+      Best to reboot if there's half a packet stuck in a the buffer?"
+    file: /home/pentoo/defcon27_badge_sdr/synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [512, 880.0]
+    rotation: 180
+    state: disabled
+- name: blocks_wavfile_source_0_4_0_0
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: "Win game on badge with modified NFMI firmware\n1.2MSPS 10.569MHz\nmostly\
+      \ works. \n0.5 const and -40 RF db help? \n(At least when recv is working at\
+      \ 40dB RF and 5x amp)\nIf nothing happens, badge badge probably has crashed\n\
+      Best to reboot if there's half a packet stuck in a the buffer?"
+    file: /home/pentoo/defcon27_badge_sdr/synthetic_signal_win_DC27_game.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 1016.0]
+    rotation: 0
+    state: disabled
+- name: blocks_wavfile_source_0_4_0_1
+  id: blocks_wavfile_source
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: "Print seth with hacked NFMI FW on stock badge FW\n1.2MSPS 10.569MHz\n\
+      \nmostly works. \n0.5 const and -40 RF db help? \n(At least when recv is working\
+      \ at 40dB RF and 5x amp)\nIf nothing happens, badge badge probably has crashed\n\
+      Best to reboot if there's half a packet stuck in a the buffer?"
+    file: /home/pentoo/defcon27_badge_sdr/synthetic_print_seth.wav
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    nchan: '2'
+    repeat: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [512, 1008.0]
+    rotation: 180
     state: enabled
 - name: osmosdr_sink_0
   id: osmosdr_sink
@@ -577,7 +577,7 @@ blocks:
     freq7: 100e6
     freq8: 100e6
     freq9: 100e6
-    gain0: '0'
+    gain0: '40'
     gain1: '10'
     gain10: '10'
     gain11: '10'
@@ -786,7 +786,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 364.0]
+    coordinate: [1104, 340.0]
     rotation: 0
     state: disabled
 - name: qtgui_waterfall_sink_x_0
@@ -859,12 +859,6 @@ connections:
 - [blocks_multiply_const_vxx_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0, '1', blocks_float_to_complex_0, '1']
-- [blocks_wavfile_source_0_0, '0', blocks_float_to_complex_0, '0']
-- [blocks_wavfile_source_0_0, '1', blocks_float_to_complex_0, '1']
-- [blocks_wavfile_source_0_1, '0', blocks_float_to_complex_0, '0']
-- [blocks_wavfile_source_0_1, '1', blocks_float_to_complex_0, '1']
-- [blocks_wavfile_source_0_2, '0', blocks_float_to_complex_0, '0']
-- [blocks_wavfile_source_0_2, '1', blocks_float_to_complex_0, '1']
 - [blocks_wavfile_source_0_3, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0_3, '1', blocks_float_to_complex_0, '1']
 - [blocks_wavfile_source_0_3_0, '0', blocks_float_to_complex_0, '0']
@@ -883,6 +877,12 @@ connections:
 - [blocks_wavfile_source_0_3_1_0_0_0_0_0_0_1, '1', blocks_float_to_complex_0, '1']
 - [blocks_wavfile_source_0_4, '0', blocks_float_to_complex_0, '0']
 - [blocks_wavfile_source_0_4, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_4_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_4_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_4_0_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_4_0_0, '1', blocks_float_to_complex_0, '1']
+- [blocks_wavfile_source_0_4_0_1, '0', blocks_float_to_complex_0, '0']
+- [blocks_wavfile_source_0_4_0_1, '1', blocks_float_to_complex_0, '1']
 
 metadata:
   file_format: 1
