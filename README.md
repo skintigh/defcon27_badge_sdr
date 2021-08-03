@@ -79,6 +79,46 @@ recorder.grc records a wav file of the NFMI signal.
 
 # Using this Software
 
+## Understanding Firmware
+There are 4 versions of firmware you can use [TODO: add to repo!!!]:
+1. human.bin -- the original firmware, extracted by CoD_Segfault (original sounce: https://github.com/lowerrandom/CoD-Segfault-DefCon27badge)
+2. stock_with_hacked_NFMI_FW.bin -- this is *almost* stock FW, but I removed the rickroll at reboot and fixed a bug that made the USB disconnect randomly. Then I added my hacked NFMI firmware which does not add "B" or "E" to packets and does not pad nibbles with 0xd, and it allows packet lengths up to 255 bytes (but only 11 bytes are real, the rest will output as 0s)
+3. print_recv.bin -- the above version of "stock" plus I added debugging features that print all invalid attempts at reading the ringbuffer and prints the results of all valid packets read from the buffer.
+4. print_recv_with_hacked_NFMI_fw.bin -- the above, plus the NFMI firmware hack
+
+Code changes in those firmware versions cause some functions to change addresses, so attacks for one may not work on the other.
+The exception to this is print_recv.bin and print_recv_with_hacked_NFMI_fw.bin as the only difference is the NFMI patch.
+(Note: software breakpoints will also move addresses if you compile you own firmware, as will various optimizations.)
+
+| Function                   | human.bin | stock_with... | print_recv* | notes |
+| :---:                      |  :---:    |     :---:     |    :---:    | :---: |
+| printf(R0...)              | 42d       | 42d            | 42d         | 0x42c + 1 for THUMB, set R0 to String Address below|
+| MOV R0,R4; POP {R4,PC}     | 2de9      | 2ddb or 4A83   | 2e4f| KL_GetPacket pops R4-R6, control R0 while only adding 8 bytes to the attack |
+| POP R0,R1,R2,R4,R5,PC      |           | 4c33           |             |       |
+| ADDS R0,R4,0; POP{R4,R5,PC}|           | 6410           |             |       |
+| SP and buf in KL_GetPacket | 20002F78  |20002F78        |20002F78     | |
+|dataBlob in KL_GetPacket    | 20002F84  | 20002F84       | 20002F84    | Address of data excluding ‘B’ |
+|Address of stack after PC   | 20002FA8  | 20002FA8       | 20002FA8    | dataBlob + (37-1=36=0x24) (based on the bytes I use before the string) |
+| String Address             | 20002FB0  | 20002FB0       | 20002FB0    | 20002FA8 + 8 |
+| control of R0 R1           | 			  | 6eb1		      |             | |
+| “0x%08X]\n\r” 			     |           | 2B70           |             | format to print int |
+| "-> Unique ID: 0x%08X" 	  |      	  | 75CC           |             | format to print int |
+| "Speaker\0"                |      	  | 7538           |             | others near by |
+
+
+Example Scripts
+---------------
+There are several craft_* scripts to build attacks for specific firmware versions.
+Example usage:
+1. Run craft_print_hack_the_planet_for_print_recv_FW.sh
+2. That will create the file synthetic_hack_the_planet_for_print_recv.wav
+3. Run gnuradio_companion
+4. Load grc/player_with_gui.grc
+5. Change the file name in the "wav source file" block if need be
+6. Click "play" (wait for it to complete if using attacks for hacked NFMI)
+7. On the badge, type "r" ro recieve the packet(s)
+8. It will rarely work the first time, you'll need to futz with amplification setting, distance of the antenna, etc. and resetting the badge a lot if it gets stuck (or even if it looks fine it could be in a corrupt state.)
+
 How to Craft and Transmit a Single Packet
 ----------------------------------------
 1. Convert your desired packet into symbols in signal.bin 
@@ -102,7 +142,8 @@ How to Craft and Transmit a Single Packet
 
 How to Craft and Transmit Multiple Packets:
 -------------------------------------------
-Right now you have to cut and paste .wavs of single packets together in Audacity, sorry. **Do not** cut off the trailing silence, that's there to trick GNURadio into operating correctly and transmitting the entire .wav, if you remove it you won't transmit everything in your .wav.
+See example scripts, or you could cut and paste .wavs of single packets together in Audacity. 
+**Do not** cut off the trailing silence, that's there to trick GNURadio into operating correctly and transmitting the entire .wav, if you remove it you won't transmit everything in your .wav.
 
 
 Recieve Packets:
