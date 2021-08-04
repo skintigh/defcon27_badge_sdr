@@ -27,12 +27,12 @@ END=0x45
 echo -e Creating SPEAKER magic packets
 #first 4 bytes of packet
 python write_signal.py -q  1 0 0 0  9   $BEGIN   d0 d0  d0 d1  d0 d2  d0 d3   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 #rename it
 mv synthetic_signal.wav temp/part1.wav
 #last 4 bytes of packet
 python write_signal.py -q  1 0 0 0  9   0 $SPEAKER  0 $MAGIC  0 0  0 0   $END   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 
 #concat them with delays
 sox temp/part1.wav recordings/silence_1000ms.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav
@@ -41,10 +41,10 @@ mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
 
 echo -e Creating VILLAGE magic packets
 python write_signal.py -q  1 0 0 0  9   $BEGIN  d0 d0  d0 d1  d0 d2  d0 d3   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 mv synthetic_signal.wav temp/part1.wav
 python write_signal.py -q  1 0 0 0  9   0 $VILLAGE  0 $MAGIC  0 0  0 0   $END   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 
 sox synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav temp/part1.wav recordings/silence_1000ms.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav
 mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
@@ -53,10 +53,10 @@ mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
 
 echo -e Creating CONTEST magic packets
 python write_signal.py -q  1 0 0 0  9   $BEGIN  d0 d0  d0 d1  d0 d2  d0 d3   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 mv synthetic_signal.wav temp/part1.wav
 python write_signal.py -q  1 0 0 0  9   0 $CONTEST  0 $MAGIC  0 0  0 0   $END   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 
 sox synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav temp/part1.wav recordings/silence_1000ms.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav
 mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
@@ -65,10 +65,10 @@ mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
 
 echo -e Creating ARTIST magic packets
 python write_signal.py -q  1 0 0 0  9   $BEGIN  d0 d0  d0 d1  d0 d2  d0 d3   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 mv synthetic_signal.wav temp/part1.wav
 python write_signal.py -q  1 0 0 0  9   0 $ARTIST  0 $MAGIC  0 0  0 0   $END   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 
 sox synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav temp/part1.wav recordings/silence_1000ms.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav
 mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
@@ -77,10 +77,10 @@ mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
 
 echo -e Creating GOON magic packets
 python write_signal.py -q  1 0 0 0  9   $BEGIN  d0 d0  d0 d1  d0 d2  d0 d3   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 mv synthetic_signal.wav temp/part1.wav
 python write_signal.py -q  1 0 0 0  9   0 $GOON  0 $MAGIC  0 0  0 0   $END   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 
 sox synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav temp/part1.wav recordings/silence_1000ms.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav
 mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
@@ -89,24 +89,24 @@ mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
 #stage 2: doesn't need to be magic
 
 #VENDOR
-echo -e Creating GOON magic packets
+echo -e Creating VENDOR non-magic packets
 python write_signal.py -q  1 0 0 0  9   $BEGIN  d0 d0  d0 d1  d0 d2  d0 d3   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 mv synthetic_signal.wav temp/part1.wav
-python write_signal.py -q  1 0 0 0  9   0 $VENDOR  0 $NON-MAGIC  0 0  0 0   $END   0 0
-./craft_multipart_attack
+python write_signal.py -q  1 0 0 0  9   0 $VENDOR  0 $NOT_MAGIC  0 0  0 0   $END   0 0
+./craft_multipart_attack.sh
 
 sox synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav temp/part1.wav recordings/silence_1000ms.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav
 mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
 
 
 #PRESS
-echo -e Creating GOON magic packets
+echo -e Creating PRESS non-magic packets
 python write_signal.py -q  1 0 0 0  9   $BEGIN  d0 d0  d0 d1  d0 d2  d0 d3   0 0
-./craft_multipart_attack
+./craft_multipart_attack.sh
 mv synthetic_signal.wav temp/part1.wav
-python write_signal.py -q  1 0 0 0  9   0 $PRESS  0 $NON-MAGIC  0 0  0 0   $END   0 0
-./craft_multipart_attack
+python write_signal.py -q  1 0 0 0  9   0 $PRESS  0 $NOT_MAGIC  0 0  0 0   $END   0 0
+./craft_multipart_attack.sh
 
 sox synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav temp/part1.wav recordings/silence_1000ms.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav
 mv temp/out.wav synthetic_signal_win_DC27_game_on_hacked_NFMI_FW.wav
