@@ -54,11 +54,13 @@ Then follow the instructions at this repo, copied here but possibly out of date:
 
 Then downlaod and run this repo.
 
+If the HackRF works once, then needs to be reset to work a second time, upgrade the firmware.
+
+Issues on OSes other than Pentoo:
 (You may need to install libsoapysdr-dev, libiio-dev)
 ("avahi_service_browser_new() failed: Bad state" errors are fixed by... starting the daemon? reinstalling avahi?)
 (XInitThreads errors fixed by installed x11 xauth dbus-x11)
-(Qt session management errors fixed by... rnning as root?)
-(If you can recieve once, but when you run a GRC file a second time and GRC freezes.... ???!?!?! Maybe fixed with broadcast fix???)
+(Qt session management errors fixed by... running as root?)
 
 
 To broadcast, I had to rebuild osmosdr_sink.blobk.yml with gen_osmosdr_blocks.py Instructions and files here:
