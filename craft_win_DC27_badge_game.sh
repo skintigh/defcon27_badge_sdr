@@ -67,14 +67,14 @@ mv temp/out.wav synthetic_signal_win_DC27_game.wav
 #vendor 
 #press
 echo -e Creating VENDOR NON-MAGIC packet
-python write_signal.py -q  1 0 0 0  8   0 1 2 3  $VENDOR $NON-MAGIC 0 0   0 0 0
+python write_signal.py -q  1 0 0 0  8   0 1 2 3  $VENDOR $NOT_MAGIC 0 0   0 0 0
 ./craft_multipart_attack.sh
 sox synthetic_signal_win_DC27_game.wav synthetic_signal.wav temp/out.wav #no delay
 #sox synthetic_signal_win_DC27_game.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav # 1s delay
 mv temp/out.wav synthetic_signal_win_DC27_game.wav
 
 echo -e Creating PRESS NON-MAGIC packet
-python write_signal.py -q  1 0 0 0  8   0 1 2 3  $PRESS $NON-MAGIC 0 0   0 0 0
+python write_signal.py -q  1 0 0 0  8   0 1 2 3  $PRESS $NOT_MAGIC 0 0   0 0 0
 ./craft_multipart_attack.sh
 sox synthetic_signal_win_DC27_game.wav synthetic_signal.wav temp/out.wav #no delay
 #sox synthetic_signal_win_DC27_game.wav synthetic_signal.wav recordings/silence_1000ms.wav temp/out.wav # 1s delay
