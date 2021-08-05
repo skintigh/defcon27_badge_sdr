@@ -34,12 +34,26 @@ The 16 bytes of data consist of:
 * 8 bytes of Defcon data
 * 3 more bytes that can be used by the badge if you hack it.
 
-Install
--------
+# Install
 
-Install Pentoo on a physical machine. Common belief is SDR won't work on a VM. This seems true on Oracle Virtualbox, but earlier experiments of mine suggest VMWare might work.
+You need to install GNURadio, which which can be a nightmare. 
+The easiest way is probably on Pentoo. 
+Another option is to compile everything from source, possible after editing and fixing bugs, but maybe that's fixed now.
 
-Gnuradio-companion will timeout on UHD for 10 seconds every time you try to run a program. This is an annoying and very old bug in soapyplutosdr 0.2.0. It was fixed in 2018, to fix it you need to uninstall 0.2.0 and build the latest version:
+## Pentoo
+
+Install Pentoo on a physical machine, or VMWare may be an option. Common belief is SDR won't work on a VM. This seems true on Oracle Virtualbox, but earlier experiments of mine suggest VMWare might work... https://www.pentoo.ch/isos/Beta/
+
+## Other OSes
+Here are some other instructions. For Ubuntu? The vague instrucions for fixing things are clairified in the comments. https://gist.github.com/gbevan/8e583b9cf87aa3c58102251454fa48a6
+(You may need to install libsoapysdr-dev, libiio-dev)
+("avahi_service_browser_new() failed: Bad state" errors are fixed by... starting the daemon? reinstalling avahi?)
+(XInitThreads errors fixed by installed x11 xauth dbus-x11)
+(Qt session management errors fixed by: running as root)
+
+# HackRF issues
+## 10 Second Timeouts
+Gnuradio-companion will timeout on UHD for 10 seconds every time you try to run a program. It's doing a DND lookup of a non-existant server for no reason, every time. This is an annoying and very old bug in soapyplutosdr 0.2.0. It was fixed in 2018, to fix it you need to uninstall 0.2.0 and build the latest version:
 
 > sudo emerge -Ca net-wireless/soapyplutosdr
 
@@ -52,24 +66,30 @@ Then follow the instructions at this repo, copied here but possibly out of date:
  > make  
  > sudo make install  
 
-Then downlaod and run this repo.
+Then download and run this repo.
 
-If the HackRF works once, then needs to be reset to work a second time, upgrade the firmware.
+## HackRF works once, hen needs to be reset to work a second time
+You may be running 2018 firmware and 2021 libraries. Upgrade the HackRF firmware.
 
-Issues on OSes other than Pentoo:
-(You may need to install libsoapysdr-dev, libiio-dev)
-("avahi_service_browser_new() failed: Bad state" errors are fixed by... starting the daemon? reinstalling avahi?)
-(XInitThreads errors fixed by installed x11 xauth dbus-x11)
-(Qt session management errors fixed by... running as root?)
+## Minute+ Timeouts
+Soapy is still probably being idiotic and doing DNS queeries for non-existant things for no reason, and the DNS service is down. Best you can do may be to make sure the avahi-daemon is running so the pointless lookup is faster. In pentoo: sudo avahi-daemon. On other OSes: sudo service avahi restart
 
-
-To broadcast, I had to rebuild osmosdr_sink.blobk.yml with gen_osmosdr_blocks.py Instructions and files here:
+## Transmit Block Errors
+To broadcast in 2019, I had to rebuild osmosdr_sink.blobk.yml with gen_osmosdr_blocks.py Instructions and files here:
 https://gist.github.com/gbevan/8e583b9cf87aa3c58102251454fa48a6
 https://github.com/osmocom/gr-osmosdr/blob/master/grc/gen_osmosdr_blocks.py
+But I didn't seem to have to do that in 2021.
 
+# Using this Software
+## Introduction
+I have example scripts for crafting a packet in a .wav file and building multi-packet attacks attacks, GRC files for communication over the air, and various python files a few of which will be useful for things like deoding a recieved packet.
 
-Running
--------
+### Running Files
+
+Scripts are run at the command line in the root dir
+`.\craft_win_DC27_badge_game.sh'
+That script creates 
+Note: scripts are tuned for specific hardware versions. The above is for the original firmware on badges, "human.bin"
 
 grc file are run in gnuradio_companion with a HackRF, or can be modified for other SDR hardware
 
@@ -86,8 +106,6 @@ data_collector.py communicated with the badge via USB serial, updates the transm
 
 recorder.grc records a wav file of the NFMI signal.
 
-# Using this Software
-
 ## Understanding Firmware
 There are 4 versions of firmware you can use [TODO: add to repo!!!]:
 1. human.bin -- the original firmware, extracted by CoD_Segfault (original sounce: https://github.com/lowerrandom/CoD-Segfault-DefCon27badge)
@@ -99,8 +117,8 @@ Code changes in those firmware versions cause some functions to change addresses
 The exception to this is print_recv.bin and print_recv_with_hacked_NFMI_fw.bin as the only difference is the NFMI patch.
 (Note: software breakpoints will also move addresses if you compile you own firmware, as will various optimizations.)
 
-| Function \ Firmware:      | human.bin | stock_with... | print_recv* | Notes |
-|---                    | ---    |     ---     |    ---    | --- |
+| Function \ Firmware:       | human.bin | stock_with... | print_recv* | Notes |
+|---                         | ---       |     ---       |    ---      | --- |
 | printf(R0...)              | 42d       | 42d           | 42d         | 0x42c + 1 for THUMB, set R0 to String Address below|
 | MOVS R0,R4<BR/>POP {R4,PC} | 2de9, 418f, 6551 | 2ddb, 4A83, 6571 | 2e4f| KL_GetPacket pops R4-R6, so this address lets you control R0 while only adding 8 bytes to the attack |
 | POP R0,R1,R2,R4,R5,PC      |           | 4c33          |             |       |
@@ -109,10 +127,10 @@ The exception to this is print_recv.bin and print_recv_with_hacked_NFMI_fw.bin a
 |dataBlob in KL_GetPacket    | 20002F84  | 20002F84      | 20002F84    | Address of data excluding ‘B’ |
 |Address of stack after PC   | 20002FA8  | 20002FA8      | 20002FA8    | dataBlob + (37-1=36=0x24) (based on the bytes I use before the string) |
 | String Address             | 20002FB0  | 20002FB0      | 20002FB0    | 20002FA8 + 8 |
-| control of R0 R1           | 			  | 6eb1		      |             | |
-| “0x%08X]\n\r” 			     |           | 2B70          |             | format to print int |
-| "-> Unique ID: 0x%08X" 	  |      	  | 75CC          |             | format to print int |
-| "Speaker\0"                |      	  | 7538          |             | others near by |
+| control of R0 R1           |           | 6eb1		      |             | |
+| “0x%08X]\n\r” 			          |           | 2B70          |             | format to print int |
+| "-> Unique ID: 0x%08X"  	  |      	    | 75CC          |             | format to print int |
+| "Speaker\0"                |      	    | 7538          |             | others near by |
 
 
 Example Scripts
