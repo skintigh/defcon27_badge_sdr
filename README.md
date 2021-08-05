@@ -88,23 +88,33 @@ I have example scripts for crafting a packet in a .wav file and building multi-p
 
 Scripts are run at the command line in the root dir
 `.\craft_win_DC27_badge_game.sh'
-That script creates 
+That script creates synthetic_signal_win_DC27_game.wav which must be broadcast from the GNURadio-companion file player_with_gui.grc or player.grc)
 Note: scripts are tuned for specific hardware versions. The above is for the original firmware on badges, "human.bin"
 
 grc file are run in gnuradio_companion with a HackRF, or can be modified for other SDR hardware
 
-py files are python 3 run at the command line
+py files are python 3 run at the command line.
 
 Some Files in this Repo
 ------------------
 
-defcon_recv_and_decode.grc recieves these bursts and converts them to differential symbols.
+defcon_recv_and_decode.grc recieves signals from badges, converts them to symbols, and dumps them to symbols.txt
 
-parse_symbols.py parses that output file for unique symbol datagrams. Many will be corrupted by noise, so when a threshold of copies of one datagram is reached that is output as the valid datagram.
+parse_symbols_long_crc.py parses that output file for unique symbol datagrams. Many will be corrupted by noise, so when a threshold of copies of one datagram is reached that is output as the valid datagram.
+`python parse_symbols_long_crc.py > temp.txt`
 
-data_collector.py communicated with the badge via USB serial, updates the transmitted packet, then uses live output from the GRC file to collect the correcsponding datagram
+guesser.py decodes those symbols by guessing at values and encoding those guesses and comparing them. (Not exactly efficient, but that made sense at the time when I was reverse engineering things.) It will automatically decode everything in temp.txt. 
+`python guesser.py`
 
 recorder.grc records a wav file of the NFMI signal.
+player_with_gui.grc plays a .wav file with a GUI output
+player.grc plays a .wav file with no GUI
+
+Other files you probbly won't need but I ought to document them all...:
+
+data_collector.py communicates with the badge via USB serial, updates the transmitted packet, then uses live output from the GRC file to collect the correcsponding datagram
+
+more...
 
 ## Understanding Firmware
 There are 4 versions of firmware you can use [TODO: add to repo!!!]:
