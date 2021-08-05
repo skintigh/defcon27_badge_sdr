@@ -154,7 +154,7 @@ Exmample for both **print_recv** versions for the badge firmware.
 How to Craft and Transmit Multiple Packets:
 -------------------------------------------
 See example scripts, or you could cut and paste .wavs of single packets together in Audacity. 
-**Do not** cut off the trailing silence, that's there to trick GNURadio into operating correctly and transmitting the entire .wav, if you remove it you won't transmit everything in your .wav.
+**Do not** cut off the trailing 2281ms of silence from the last packet, that's there to trick GNURadio into operating correctly and transmitting the entire .wav, if you remove it you won't transmit everything in your .wav. (For all I know you may need a longer silence on your setup...)
 
 
 Recieve Packets:
