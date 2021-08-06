@@ -1,0 +1,1 @@
+C:\"Program Files (x86)"\SEGGER\JLink\JLink.exe -CommandFile .\load_stock_compiled_with_hacked_NFMI.cmd
