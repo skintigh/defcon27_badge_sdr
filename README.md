@@ -1,3 +1,8 @@
+CVEs resulting from this work:<br>
+Overflow: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-38111<br>
+Off-by-one: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-46869 pending<br>
+Race Condition: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-46870 pending<br>
+
 defcon27_badge_sdr Info and Setup
 ==================
 Introduction
